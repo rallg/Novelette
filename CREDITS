@@ -1,0 +1,18 @@
+Novelette, a simplified LuaLaTeX document class for fiction writers.
+Copyright 2022 by Robert Allgeyer [Aptos, California USA]
+MIT License.
+
+Portions of the Novelette code have been copied or modified from code
+distributed by CTAN under license LPPL v1.3. Identification and attributions
+are written directly into the Novelette code files, and re-licensed as MIT,
+as permitted by LPPL v.1.3.
+
+Some code is the response to questions the Noveletee author asked at web sites
+such as stackexchange.com. Answers are attributed in Novelette code.
+
+Large portions of the Novelette code are copied or modified from the
+`novel' document class, by the same author as Novelette. That code is
+re-licensed in Novelette using the MIT License.
+
+Any Open Type font(s) included with Novelette are licensed under the
+SIL Open Font License, v1.1.
