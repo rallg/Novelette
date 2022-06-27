@@ -1,0 +1,212 @@
+%%
+%% This is file Novelette-Unchained.sty,
+%% part of Novelette document class.
+%% Copyright 2022 Robert Allgeyer.
+%%
+%% It may be used, distributed, and/or modified under the
+%% conditions of the MIT License. See:
+%% https://opensource.org/licenses/MIT
+%% 
+%%
+\ProvidesFile{Novelette-Unchained.sty}%
+[2022/06/22 v0.0.11 LuaLaTeX file (layout adjustments)]
+%%
+
+%% Why Unchained? Why not!
+%% TeX pre-sets various things for its primary purpose,
+%% which is academic publications in math-intensive disciplines.
+%% But many of those pre-sets are inappropriate for Novelette.
+%% Thus re-sets them to suitable values, often zero.
+
+
+%% MISCELLANOUS ADJUSTMENTS. Mostly remove "glue". Best to leave as-is.
+%% ----------------------------------------------------------------------------
+% Standard TeX \hoffset and \voffset is not relative to the MediaBox, but is
+%   relative to 1in from the top left corner of the MediaBox. Ouch.
+% When necessary, the 1in (72.27pt) is compensated in later calculations.
+\setlength\hoffset{0pt} % relative to 1in built-in offset at left
+\setlength\voffset{0pt} % relative to 1in built-in offset at top
+%
+\@twocolumnfalse
+\@twosidetrue
+\setlength\columnsep{12pt} % not needed, picked something at random
+\setlength\columnseprule{0pt}
+%
+\@mparswitchtrue % irrelevant
+\setlength\marginparwidth{0pt} % no marginal paragraphs allowed
+\setlength\marginparsep{0pt}
+\setlength\marginparpush{0pt}
+%
+\global\@topnum \z@
+\setlength\abovedisplayskip{0pt}
+\setlength\abovedisplayshortskip{0pt}
+\setlength\belowdisplayshortskip{0pt}
+\setlength\belowdisplayskip{0pt}
+\setlength\smallskipamount{0pt}
+\setlength\medskipamount{0pt}
+\setlength\bigskipamount{0pt}
+% Novelette uses grid setting. However, to allow for roundoff errors in
+% vertical position calculations, there is a tiny amount of wiggle room:
+\setlength\topsep{0pt}
+\setlength\partopsep{0pt}
+\setlength\parsep{0pt}
+\setlength\parskip{0pt}
+\setlength\floatsep{0pt}
+\setlength\textfloatsep{0pt}
+\setlength\dbltextfloatsep{0pt}
+\setlength\intextsep{0pt}
+% \topskip will be set as normal baselineskip, which must first be calculated.
+% That is done in Novelette-CalculateLayout.sty.
+\setlength\lineskip{0pt}
+\setlength\normallineskip{0pt}
+\setlength\lineskiplimit{-2pt} % allows some limited vertical clash
+\renewcommand\baselinestretch{1} % multiplier
+\widowpenalty 150 % same as TeX default
+\clubpenalty 150 % same as TeX default
+\@lowpenalty   51
+\@medpenalty  151
+\@highpenalty 301
+% Floats are limited, but just in case:
+\setcounter{topnumber}{2}
+\renewcommand\topfraction{.7}
+\setcounter{bottomnumber}{1}
+\renewcommand\bottomfraction{.3}
+\setcounter{totalnumber}{3}
+\renewcommand\textfraction{.2}
+\renewcommand\floatpagefraction{.5}
+\setcounter{dbltopnumber}{2}
+\renewcommand\dbltopfraction{.7}
+\renewcommand\dblfloatpagefraction{.5}
+%
+\DeclareOldFontCommand{\rm}{\normalfont\rmfamily}{\normalfont\rmfamily}
+\DeclareOldFontCommand{\sf}{\normalfont\sffamily}{\normalfont\sffamily}
+\DeclareOldFontCommand{\tt}{\normalfont\ttfamily}{\normalfont\ttfamily}
+\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\normalfont\bfseries}
+\DeclareOldFontCommand{\it}{\normalfont\itshape}{\normalfont\itshape}
+\DeclareOldFontCommand{\sl}{\normalfont\slshape}{\normalfont\slshape}
+\DeclareOldFontCommand{\sc}{\normalfont\scshape}{\normalfont\scshape}
+%
+\pagestyle{empty} % will be over-ridden by fancyhead in separate file
+\pagenumbering{arabic} % may be over-ridden in document
+\flushbottom % best for continuous text
+%
+%% End miscellaneous settings.
+
+
+
+%% FRONTMATTER, MAINMATTER.
+%% ----------------------------------------------------------------------------
+%
+% See Novelette.cls for the AtBeginShipout routine.
+%
+% These do not have @ in name, so that they can be used in document body:
+\newif \ifWithinFrontmatter % true within frontmatter
+\newif \ifWithinMainmatter % true within mainmatter
+\def\frontmatter{ % starts page count and frontmatter count at 1.
+  \ifWithinFrontmatter
+    \ClassError{Novelette}{\string\frontmatter\ used more than once}%
+    {You issued \string\frontmatter\ more than once.}%
+  \fi
+  \ifWithinMainmatter
+   \ClassError{Novelette}{\string\frontmatter\ cannot follow \mainmatter}%
+   {In order: \string\frontmatter\ \string\mainmatter ^^J%
+    but you do not need both of them.}%
+  \fi
+  \global\WithinFrontmattertrue\global\WithinMainmatterfalse
+  \clearpage
+  \pagenumbering{roman}
+  \setcounter{page}{1}
+}
+%
+\def\mainmatter{ % restarts page to 1, arabic numbers; freeze frontpagecount
+  \ifWithinMainmatter
+    \ClassError{Novelette}{\string\mainmatter\ used more than once}%
+    {You issued \string\mainmatter\ more than once.}%
+  \fi
+  \cleartorecto
+  \global\WithinFrontmatterfalse\global\WithinMainmattertrue
+  \pagenumbering{arabic}
+  \setcounter{page}{1}
+}
+% In Novelette, backmatter continues ordinary mainmatter page numbering.
+\def\backmatter{\cleartorecto}
+
+
+%% DISABLE OR NEUTRALIZE SOME STANDARD LATEX COMMANDS
+%% ----------------------------------------------------------------------------
+% Novelette disallows these commands, or neutralizes them by simply
+% repeating their arguments. In some cases, they request functionality that's
+% not implemented in Novelette. In other cases, functionality is part of core,
+% but would interfere with the Novelette emphasis on constant line skip.
+%
+%%%%%\gdef\null{\hbox{\strut}} % May be important!
+%
+% Standard LaTeX font sizes are ineffective:
+\gdef\@noSizeCommand#1{\ClassWarning{Novelette}{%
+  Standard LaTeX font sizes are ineffective in Novelette. ^^J%
+  Your use of command `#1' was ignored. ^^J}%
+}
+\gdef\@DisableFontSizes{% called by `Novelette.cls' \AtBeginDocument
+  \gdef\HUGE{\@noSizeCommand{HUGE}}
+  \gdef\Huge{\@noSizeCommand{Huge}}
+  \gdef\huge{\@noSizeCommand{huge}}
+  \gdef\LARGE{\@noSizeCommand{LARGE}}
+  \gdef\Large{\@noSizeCommand{Large}}
+  \gdef\large{\@noSizeCommand{large}}
+  \gdef\small{\@noSizeCommand{small}}
+  \gdef\footnotesize{\@noSizeCommand{footnotesize}}
+  \gdef\scriptsize{\@noSizeCommand{scriptsize}}
+  \gdef\tiny{\@noSizeCommand{tiny}}
+} %
+% In Novelette there is no academic organization.
+% All these do is echo the argument, if any:
+\long\gdef\part#1{#1}
+\long\gdef\chapter#1{#1}
+\long\gdef\section#1{#1}
+\long\gdef\subsection#1{#1}
+\long\gdef\subsubsection#1{#1}
+\long\gdef\paragraph#1{#1}
+\long\gdef\subparagraph#1{#1}
+\long\gdef\appendix#1{#1}
+% In some situations, the use will be interrupted:
+\DeclareDocumentCommand\@nodocommand { O{} +m } {%
+  \ClassError{Novelette}{No command or environment `#1' in this class}%
+   {Many academic layout commands or environments are disabled in Novelette.}%
+}
+% Here is the interruption list:
+\long\gdef\maketitle{\@nodocommand{maketitle}}
+\long\gdef\makeindex{\@nodocommand{makeindex}}
+\long\gdef\tableofcontents{\@nodocommand{tableofcontents}}
+\long\gdef\listoftables{\@nodocommand{listoftables}}
+\long\gdef\listoffigures{\@nodocommand{listoffigures}}
+\long\gdef\thebibliography{\@nodocommand{thebibliography}}
+\long\gdef\theindex{\@nodocommand{theindex}}
+\long\gdef\abstract{\@nodocommand{abstract}}
+
+\long\gdef\caption{\@nodocommand{caption}}
+\long\gdef\tabular{\@nodocommand{tabular}}
+\long\gdef\table{\@nodocommand{table}}
+\long\gdef\figure{\@nodocommand{figure}}
+\long\gdef\itemize{\@nodocommand{itemize}}
+\long\gdef\enumerate{\@nodocommand{enumerate}}
+\long\gdef\description{\@nodocommand{description}}
+\long\gdef\labeling{\@nodocommand{labeling}}
+%
+\newif \if@OnTitlePage % not really useful
+\DeclareDocumentEnvironment{titlepage}{s}{%
+  \clearpage
+  \thispagestyle{empty}
+  \global\@OnTitlePagetrue
+}{
+  \clearpage
+  \global\@OnTitlePagefalse
+}
+%% End disable or neutralize.
+
+
+%%
+\endinput
+%%
+%% End of file Novelette-Unchained.sty.
+
+

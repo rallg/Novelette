@@ -1,0 +1,408 @@
+%%
+%% This is file Novelette-CalculateLayout.sty,
+%% part of Novelette document class.
+%% Copyright 2022 Robert Allgeyer.
+%% 
+%% It may be used, distributed, and/or modified under the
+%% conditions of the MIT License. See:
+%% https://opensource.org/licenses/MIT
+%% 
+%%
+\ProvidesFile{Novelette-CalculateLayout.sty}%
+[2022/06/22 v0.0.1 LuaLaTeX file (layout calculations)]
+%%
+
+%%
+%% This file is loaded \AtEndPreamble, which precedes \AtBeginDocument.
+%%
+
+
+
+%% PROVIDE TRIM SIZE, MARGINS, AND NORMAL EM SIZE
+%% ----------------------------------------------------------------------------
+
+\newlength\@TrimWidth
+\newlength\@TrimHeight
+\newlength\@TopClearance
+\newlength\@OuterClearance
+\newlength\@BottomClearance
+\newlength\@InnerClearance
+\newlength\@NumFontSize % In TeX points = 803/800 x PostScript points.
+% \textwidth is a built-in macro.
+
+% Each template number has a specific text width, font size, and
+% lines per page (body). The trim size and clearances change with size name.
+
+\ifthenelse{\equal{\my@template}{1}}{
+  \gsetlength\textwidth{3.875in}
+  \gsetlength\@NumFontSize{11.54pt} % 11.5 PostScript points.
+  \gdef\@LinesPerPage{}
+  \ifthenelse{\equal{\my@trimname}{Novella} \OR \equal{\my@trimname}{novella}}{
+    \gsetlength\@TrimWidth{5in}
+    \gsetlength\@TrimHeight{8in}
+    \gsetlength\@TopClearance{.5in}
+    \gsetlength\@BottomClearance{.5in}
+    \gsetlength\@InnerClearance{.625}
+  }{}
+  \ifthenelse{\equal{\my@trimname}{B} \OR \equal{\my@trimname}{b}}{
+    \gsetlength\@TrimWidth{129mm} % 5.079in
+    \gsetlength\@TrimHeight{198mm} % 7.795in
+    \gsetlength\@TopClearance{.531in}
+    \gsetlength\@BottomClearance{.531in}
+    \gsetlength\@InnerClearance{.656in}
+  }{}
+  \ifthenelse{\equal{\my@trimname}{Memoir} \OR \equal{\my@trimname}{memoir}}{
+    \gsetlength\@TrimWidth{5.25in}
+    \gsetlength\@TrimHeight{8in}
+    \gsetlength\@TopClearance{.625in}
+    \gsetlength\@BottomClearance{.625in}
+    \gsetlength\@InnerClearance{.750in}
+  }{}
+}{}
+%
+\ifthenelse{\equal{\my@template}{2}}{
+  \gsetlength\textwidth{3.937in}
+  \gsetlength\@NumFontSize{11.74pt} % 11.7 PostScript points.
+  \gdef\@LinesPerPage{}
+  \ifthenelse{\equal{\my@trimname}{B} \OR \equal{\my@trimname}{b}}{
+    \gsetlength\@TrimWidth{129mm} % 5.079in
+    \gsetlength\@TrimHeight{198mm} % 7.795in
+    \gsetlength\@TopClearance{.512in}
+    \gsetlength\@BottomClearance{.512in}
+    \gsetlength\@InnerClearance{.630in}
+  }{}
+  \ifthenelse{\equal{\my@trimname}{Memoir} \OR \equal{\my@trimname}{memoir}}{
+    \gsetlength\@TrimWidth{5.25in}
+    \gsetlength\@TrimHeight{8in}
+    \gsetlength\@TopClearance{.594in}
+    \gsetlength\@BottomClearance{.594in}
+    \gsetlength\@InnerClearance{.719in}
+  }{}
+  \ifthenelse{\equal{\my@trimname}{Demy} \OR \equal{\my@trimname}{demy}}{
+    \gsetlength\@TrimWidth{135mm} % 5.315in
+    \gsetlength\@TrimHeight{216mm} % 8.504in
+    \gsetlength\@TopClearance{.630in}
+    \gsetlength\@BottomClearance{.630in}
+    \gsetlength\@InnerClearance{.748in}
+  }{}
+  \ifthenelse{\equal{\my@trimname}{Digest} \OR \equal{\my@trimname}{digest}}{
+    \gsetlength\@TrimWidth{5.5in}
+    \gsetlength\@TrimHeight{8.5in}
+    \gsetlength\@TopClearance{.719in}
+    \gsetlength\@BottomClearance{.719in}
+    \gsetlength\@InnerClearance{.844in}
+  }{}
+}{}
+%
+\ifthenelse{\equal{\my@template}{3}}{
+  \gsetlength\textwidth{4.375in}
+  \gsetlength\@NumFontSize{12.05pt} % 12 PostScript points.
+  \gdef\@LinesPerPage{}
+  % In template 3, Demy has small clearances. Not all Services accept this.
+  \ifthenelse{\equal{\my@trimname}{Demy} \OR \equal{\my@trimname}{demy}}{
+    \gsetlength\@TrimWidth{135mm} % 5.315in
+    \gsetlength\@TrimHeight{216mm} % 8.504in
+    \gsetlength\@TopClearance{.411in}
+    \gsetlength\@BottomClearance{.411in}
+    \gsetlength\@InnerClearance{.529in}
+  }{}
+  \ifthenelse{\equal{\my@trimname}{Digest} \OR \equal{\my@trimname}{digest}}{
+    \gsetlength\@TrimWidth{5.5in}
+    \gsetlength\@TrimHeight{8.5in}
+    \gsetlength\@TopClearance{.5in}
+    \gsetlength\@BottomClearance{.5in}
+    \gsetlength\@InnerClearance{.625in}
+  }{}
+  \ifthenelse{\equal{\my@trimname}{Trade} \OR \equal{\my@trimname}{trade}}{
+    \gsetlength\@TrimWidth{6in}
+    \gsetlength\@TrimHeight{9in}
+    \gsetlength\@TopClearance{.750in}
+    \gsetlength\@BottomClearance{.750in}
+    \gsetlength\@InnerClearance{.875in}
+  }{}
+  \ifthenelse{\equal{\my@trimname}{Royal} \OR \equal{\my@trimname}{royal}}{
+    \gsetlength\@TrimWidth{156mm} % 6.142in
+    \gsetlength\@TrimHeight{234mm} % 9.213in
+    \gsetlength\@TopClearance{.821in}
+    \gsetlength\@BottomClearance{.821in}
+    \gsetlength\@InnerClearance{.947in}
+  }{}
+}{}
+%%
+
+%% Apply upshift, if requested. Resulting baselineskip is checked later:
+\newlength\my@newtc
+\newlength\my@newbc
+\gsetlength{\my@newtc}{\@TopClearance - \my@upshift}
+\gsetlength{\my@newbc}{\@BottomClearance + \my@upshift}
+\ifthenelse{\dimtest{\my@newtc}{<}{13mm}}{}{
+  \gsetlength{\@TopClearance}{\my@newtc}
+}
+\ifthenelse{\dimtest{\my@newbc}{<}{13mm}}{}{
+  \gsetlength{\@BottomClearance}{\my@newbc}
+}
+%%
+
+% Always one-line header plus one-line gap to main text:
+\gdef\@HeadJump{2}
+% \headheight extends from 0.3em below to 1em above the header baseline:
+\gsetlength\headheight{1.3\@NumFontSize}
+\gsetlength\@OuterClearance{\@TrimWidth-\@InnerClearance-\textwidth}
+
+
+%% THEORY OF PAGE LAYOUT
+%% ----------------------------------------------------------------------------
+% The "available width" is the trim width minus the outer and inner margins:
+\newlength\@AvailableWidth
+\gsetlength\@AvailableWidth{\@TrimWidth-\@OuterClearance-\@InnerClearance}
+% The "occupied width" of the text block is the TeX dimension \textwidth.
+%   Your originally set layout can always fill the available width.
+\gsetlength\textwidth{\@AvailableWidth}
+% The "available height" is the trim height minus the top and bottom margins:
+\newlength\@AvailableHeight
+\gsetlength\@AvailableHeight{\@TrimHeight-\@TopClearance-\@BottomClearance}
+% The "occupied height" includes header, textblock, footer, and allowances
+%   for risers/diacriticals at top, descenders at bottom. It must fit within
+%   the available height. This is the tricky part, so pay attention:
+% In Novelette, the topmost line of text (main block or header)
+%   is positioned with its baseline at 1 normal em below available top.
+%   That provides good clearance for uppercase letters with diacritical marks.
+% The lowermost line of text (main block or footer) is positioned with its
+%   baseline at 0.3 normal em above available bottom. This provides
+%   good clearance for descenders.
+% So, if your text does not have uppercase diacriticals, or if you use
+%   a footer with lining numbers (no descenders), then the upper/lower margins
+%   will appear to be a little larger than you set them.
+% The headjump includes the line itself, plus any added gap to the main text.
+% In Novelette, it is always 2.
+% TeX assumes that your layout has a footer, even if you do not want one.
+%   Novelette handles this by setting the baseline of the mandatory footer at
+%   1 normal baselineskip below the last line of main text. Then, one line is
+%   subtracted from the occupied line count. That places the empty, unused
+%   virtual footer in the lower margin, where it does not matter.
+% Putting it all together, the "occupied height" is:
+%   1.3\@NumFontSize + (2+\@LinesPerPage-1)\baselineskip
+%
+%% End theory of page layout.
+
+
+%% In Novelette, the user does not directly set line-to-line spacing,
+%%   known as \baselineskip. Instead, \baselineskip is calculated from other
+%%   settings, so that "occupied height" fills "available height."
+%% See the above theory of layout, for the equations. Solve for \baselineskip =
+%%   (\@AvailableHeight-1.3\@NumFontSize)  divided by
+%%   (\@HeadJump+\@LinesPerPage-1)
+\edef\@tempLPP{%
+  \fpeval{%
+    (\@AvailableHeight - 0.3\@NumFontSize) % Adjusts for final descenders.
+    / (1.3*\@NumFontSize) % Denominator, with target skip/em ratio.
+  }%
+} %
+\FPtrunc{\@LinesPerPage}{\@tempLPP}{0} % Integer floor.
+\xdef\@AdjLPP{\fpeval{\@HeadJump+\@LinesPerPage-1}} % Used often.
+\edef\@tempBLS{%
+  \fpeval{(\@AvailableHeight-1.3\@NumFontSize) / \@AdjLPP}%
+} %
+\FPtrunc\@tempBLS{\@tempBLS}{2} % Round down to 2 decimal places.
+\gsetlength\baselineskip{\@tempBLS pt}
+%% End calculate baselineskip.
+
+%% Error if \baselineSkip is too tight, in relation to normal em size:
+\ifdimcomp{\baselineskip}{<}{1.225\@NumFontSize}{%
+  \ClassError{Novelette}{Requested \string\upshift\space is too much}%
+   {The \string\upshift\space exceeds limits, positive or negative. ^^J%
+    That would squeeze line-to-line spacing too tight.}%
+}{}
+%%
+
+%% FINISH LAYOUT
+%% ----------------------------------------------------------------------------
+% Default Media Size is same as Trim Size, unless \SetMediaSize used:
+\if@MediaSize\else
+    \gsetlength\paperwidth{\@TrimWidth}
+    \gsetlength\paperheight{\@TrimHeight}
+\fi
+% Sanity check for cover art, which needs bleed:
+\if@coverart
+  \setlength\@tempLength{\paperwidth-\@TrimWidth}
+  \ifthenelse{\dimtest{\@tempLength}{<}{6mm}}{%
+    \ClassWarning{Novelette}{^^JBIG BAD WARNING! Insufficient bleed width ?^^J%
+    Commercial printers generally require 0.125in (3mm) bleed,^^J%
+    on all four sides of the Trim. But your dimensions do not provide this.^^J%
+    Perhaps you need to increase the Media Width ?^^J}
+  }{}
+  \ifthenelse{\dimtest{\@tempLength}{>}{0.5in}}{%
+    \ClassWarning{Novelette}{^^JBIG BAD WARNING! Too much bleed width ?^^J%
+    Commercial printers generally require 0.125in (3mm) bleed,^^J%
+    on all four sides of the Trim. Sometimes as much as 0.25in (6mm) each.^^J%
+    But your dimensions provide more than this.
+    Perhaps you need to decrease the Media Width ?^^J}
+  }{}
+  \setlength\@tempLength{\paperheight-\@TrimHeight}
+  \ifthenelse{\dimtest{\@tempLength}{<}{5.83mm}}{% allows for pixel rounding
+    \ClassWarning{Novelette}{^^JBIG BAD WARNING! Insufficient bleed height ?^^J%
+    Commercial printers generally require 0.125in (3mm) bleed,^^J%
+    on all four sides of the Trim. But your dimensions do not provide this.^^J%
+    Perhaps you need to increase the MediaSize ?^^J}
+  }{}
+  \ifthenelse{\dimtest{\@tempLength}{>}{0.507in}}{% allows for pixel rounding
+    \ClassWarning{Novelette}{^^JBIG BAD WARNING! Too much bleed height ?^^J%
+    Commercial printers generally require 0.125in (3mm) bleed,^^J%
+    on all four sides of the Trim. Sometimes as much as 0.25in (6mm) each.^^J%
+    But your dimensions provide more than this.
+    Perhaps you need to decrease the MediaSize ?^^J}
+  }{}
+\fi
+% \textheight, normal font size, etc:
+\gsetlength\textheight{\@LinesPerPage\baselineskip}
+\renewcommand\normalsize{%
+  \@setfontsize\normalsize{\strip@pt\@NumFontSize}{\strip@pt\baselineskip}%
+}
+\normalsize % from this point, the "real" normal font size is effective
+%
+
+% \headsep is a confusing term. It is the separation between the nominal
+%   0.3em descenders of header text, and one baseline above the baseline
+%   of the top line of main text. Got that? Let me do the thinking for you:
+\gsetlength\headsep{\@HeadJump\baselineskip-\baselineskip-0.3\@NumFontSize}
+
+% \oddsidemargin is at the left (inner, spine edge) of recto pages.
+% Measured 1in (72.27pt) inside MediaBox, to the textblock. May be negative.
+\gsetlength\oddsidemargin{%
+  \@InnerClearance+0.5\paperwidth-0.5\@TrimWidth-72.27pt%
+}
+
+% \evensidemargin is at the left (outer edge) of verso pages.
+\gsetlength\evensidemargin{%
+  \@OuterClearance+0.5\paperwidth-0.5\@TrimWidth-72.27pt%
+}
+
+%
+% \topmargin is measured from 1in (72.27pt) below the top of the MediaBox,
+%   to the top of whatever comes first (header or textblock). May be negative.
+% For consistency, the topmost baseline (header or main text) will be
+%   positioned at 1em below the margin.
+
+  \gsetlength\topmargin{\@TopClearance+0.5\paperheight-0.5\@TrimHeight-72.27pt}
+  \if@HasHeader\else
+    \gsetlength\topmargin{\topmargin-\baselineskip+\@NumFontSize}
+  \fi
+
+% It seems that, unless specified by user, TeX may place the top text baseline
+%   in a vertical position that depends on the height of text in that line.
+% That height may vary, depending on ascenders or diacriticals there.
+% In order to fix the position, \topskip gets a non-flexible setting.
+% The best value is normal baselineskip, partly because it looks right,
+%   and also to avoid underfull vboxes on nearly every page.
+\gsetlength\topskip{\baselineskip} % Absorber.
+% In Novelette, footers are done in an unusual manner, explained above.
+% To fix the position of the virtual footer baseline:
+\gsetlength\footskip{\baselineskip}
+%% Sanity check: Trim Size must be contained within Media Size.
+\ifthenelse{%
+  \dimtest{\@TrimWidth}{>}{\paperwidth} %
+  \OR \dimtest{\@TrimHeight}{>}{\paperheight}%
+}{%
+  \ClassError{Novelette}{Media Size too small for TrimSize}%
+  {You wrote \string\SetMediaSize\space with length(s) too small ^^J%
+   for the default Trim Size or your values in \string\SetTrimSize.}%
+}{} %
+% end sanity check
+%% end finish layout.
+
+
+% \@getPageXY is used by markupcopy.
+% The 72.27pt compensates for built-in 1in TeX offsets.
+% Position of left edge of TrimBox, rightwards from left edge of MediaBox:
+\newlength\Trim@Left
+% Position of bottom of TrimBox, upwards from bottom of MediaBox:
+\newlength\Trim@Bottom
+\gdef\@getPageXY{%
+  \ifodd\c@page% Adjusts for left-right margin switching, verso/recto,
+    % and also for horizontal position of TrimBox within MediaBox:
+    \gsetlength\Trim@Left{\oddsidemargin-\@InnerClearance+72.27pt}%
+  \else%
+    \gsetlength\Trim@Left{\evensidemargin-\@OuterClearance+72.27pt}%
+  \fi%
+  % Adjusts for vertical position of TrimBox within MediaBox:
+    \gsetlength\Trim@Bottom{0.5\paperheight-0.5\@TrimHeight+\hoffset}%
+}%
+%% end \@getPageXY.
+
+
+%% POST-LAYOUT
+%% ----------------------------------------------------------------------------
+%% Adds cropmarks and label to markup copy.
+
+\if@markupcopy
+  \AddToShipoutPictureBG{%
+    \@getPageXY%
+    \AtPageUpperLeft{%
+      \hspace{\dimexpr\Trim@Left}%
+      \raisebox{-\Trim@Bottom - \nbs}%
+       {~MARKUP COPY~%
+        \lnum{1in:\space\rule{1in}{1bp}~1cm:\space\rule{1cm}{1bp}}%
+      }%
+    }%
+  }%
+\fi
+%%
+
+
+%% The "cropmarks"  are really "trim marks" because they indicate the TrimBox.
+%% P.O.D. Services request that your PDF does not have cropmarks,
+%% so Novelette does not provide them in the print-ready book file.
+%% But when \purpose{markup} and \media{markup}{width}{height} are both used,
+%% cropmarks are added to the markup copy, for your convenience.
+\newif \if@cropmarks
+\if@markupcopy\global\@cropmarkstrue\fi
+\ifthenelse{% Not using \media{markup}{}{}.
+  \dimtest{\@TrimWidth}{=}{\paperwidth} %
+  \AND \dimtest{\@TrimHeight}{=}{\paperheight}%
+}{\global\@cropmarksfalse}{}
+\if@cropmarks% Cropmark begins 0.125in from TrimBox, ends 0.25in from TrimBox.
+  % H top left:
+  \AddToShipoutPictureBG{\@getPageXY%
+  \AtPageLowerLeft{%
+  \hspace{\dimexpr\Trim@Left-0.25in}%
+  \rule[0.5\paperheight+0.5\@TrimHeight]{0.25in-0.125in}{0.25bp}}}
+  % H bottom left:
+  \AddToShipoutPictureBG{\@getPageXY\AtPageLowerLeft{%
+  \hspace{\dimexpr\Trim@Left-0.25in}%
+  \rule[\Trim@Bottom-0.5pt]{0.25in-0.125in}{0.25bp}}}
+  % H top right:
+  \AddToShipoutPictureBG{\@getPageXY\AtPageLowerLeft{%
+  \hspace{\dimexpr\Trim@Left+\@TrimWidth+0.125in}%
+  \rule[0.5\paperheight+0.5\@TrimHeight]{0.25in-0.125in}{0.25bp}}}
+  % H bottom right:
+  \AddToShipoutPictureBG{\@getPageXY\AtPageLowerLeft{%
+  \hspace{\dimexpr\Trim@Left+\@TrimWidth+0.125in}%
+  \rule[\Trim@Bottom-0.25bp]{0.25in-0.125in}{0.25bp}}}
+  % V top left:
+  \AddToShipoutPictureBG{\@getPageXY\AtPageLowerLeft{%
+  \hspace{\dimexpr\Trim@Left-0.25bp}%
+  \rule[0.5\paperheight+0.5\@TrimHeight+0.125in]%
+    {0.25bp}{0.25in-0.125in}}}
+  % V bottom left:
+  \AddToShipoutPictureBG{\@getPageXY\AtPageLowerLeft{%
+  \hspace{\dimexpr\Trim@Left-0.25bp}%
+  \rule[\Trim@Bottom-0.25in]{0.25bp}{0.25in-0.125in}}}
+  % V top right:
+  \AddToShipoutPictureBG{\@getPageXY\AtPageLowerLeft{%
+  \hspace{\dimexpr\Trim@Left+\@TrimWidth}%
+  \rule[0.5\paperheight+0.5\@TrimHeight+0.125in]%
+    {0.25bp}{0.25in-0.125in}}}
+  % V bottom right:
+  \AddToShipoutPictureBG{\@getPageXY\AtPageLowerLeft{%
+  \hspace{\dimexpr\Trim@Left+\@TrimWidth}%
+  \rule[\Trim@Bottom-0.25in]{0.25bp}{0.25in-0.125in}}}
+\fi
+%% End cropmarks.
+
+
+%%
+\endinput
+%%
+%% End of file Novelette-CalculateLayout.sty.
+
+

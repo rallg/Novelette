@@ -1,0 +1,447 @@
+%%
+%% This is file Novelette-PDFX.sty,
+%% part of Novelette document class.
+%% Copyright 2022 Robert Allgeyer.
+%%
+%% It may be used, distributed, and/or modified under the
+%% conditions of the MIT License. See:
+%% https://opensource.org/licenses/MIT
+%%
+%% File Novelette-PDFX.sty uses code, directly copied or modified,
+%% from file `pdfx.sty', part of CTAN package `pdfx': Copyright (c) 2015,
+%% CV Radhakrishnan, Han The Thanh, Ross Moore, Peter Selinger.
+%%
+%%
+\ProvidesFile{Novelette-PDFX.sty}%
+[2022/06/22 v0.0.1 LuaLaTeX file (PDF/X support for Novelette class)]
+% This package supports, and is part of, class Novelette.
+% No PDF/A. Cannot be used outside Novelette document class.
+
+%% This file is loaded \AtEndPreamble.
+
+%% Special PDF/X Metadata:
+% "Application" or "CreatorTool" is the text writing program. Example: MS Word.
+% "Producer" is the program that created the PDF/X. Example: Acrobat Distiller.
+\gdef\@NoveletteApplication{LuaLaTeX with Novelette}
+\gdef\@NoveletteProducer{LuaLaTeX with Novelette-PDFX}
+
+%% If \title not set, provide one:
+\ifthenelse{\equal{\thetitle}{} \OR \equal{\thetitle}{\space}}{
+  \title{IMPORTANT: Your book needs a title!}
+  \ClassWarning{Novelette}{^^JBIG BAD WARNING. Your book needs a title! ^^J}
+}{}
+
+%% Activate settings from \formatPDFX, or set defaults:
+\ifthenelse{\equal{\my@conformance}{}}{\gdef\my@conformance{X-1a:2001}}{}
+\ifthenelse{\equal{\my@intent}{}}{\gdef\my@intent{SWOP}}{}
+\ifthenelse{\equal{\my@conformance}{X-1a:2001}}{
+  \gdef\@PDFversion{PDF/X-1}
+  \gdef\@PDFXversion{PDF/X-1a:2001}
+  \gdef\@PDFXconformance{PDF/X-1a:2001}
+  \global\pdfminorversion=3
+}{}
+\ifthenelse{\equal{\my@conformance}{X-3:2002}}{
+  \gdef\@PDFversion{PDF/X-3}
+  \gdef\@PDFXversion{PDF/X-3:2002}
+  \gdef\@PDFXconformance{empty}
+  \global\pdfminorversion=3
+}{}
+%%
+
+%% Output Intent Definitions:
+% Novellete never embeds *.icc profiles.
+% If a specific Intent is required, but it is not pre-defined, use OTHER.
+% Then, you must edit OTHER to provide the required data.
+% Carefully look at the pre-defined macros, to see how it is done.
+% Remember: TeX special characters must be backslashed within these macros.
+% If  % or # or _ are in the data or file names,
+% then be sure that they are written as \% \# \_ or there will be trouble.
+% Do not break long lines into multiple lines.
+% The Identifier is also known as "reference name"
+\ifthenelse{\equal{\my@intent}{SWOP}}{ % Often used in USA.
+  \gdef\@OIidentifier{CGATS TR 001}
+  \gdef\@OIcondition{SWOP (Publication) printing in USA (Printing process definition: ANSI CGATS.6).}
+  \gdef\@OIinfo{U.S. Web Coated (SWOP) v2}
+  \gdef\@OIregistry{http://www.color.org}
+}{}
+\ifthenelse{\equal{\my@intent}{FOGRA39}}{ % Often used in Europe.
+  \gdef\@OIidentifier{FOGRA39}
+  \gdef\@OIcondition{Offset commercial and specialty printing according to ISO 12647-2:2004 / Amd 1, paper type 1 or 2 (gloss or matte coated offset, 115 g/m2), screen frequency 60/cm.}
+  \gdef\@OIinfo{Coated FOGRA39 (ISO 12647-2:2004)}
+  \gdef\@OIregistry{http://www.color.org}
+}{}
+\ifthenelse{\equal{\my@intent}{JC200103}}{ % Often used in Japan.
+  \gdef\@OIidentifier{JC200103}
+  \gdef\@OIcondition{Japan Color 2001 Coated: Printing process definition: ISO 12647-2:2004, sheet-fed offset printing, positive plates, paper type 3 (coated, 105 gsm), screen frequency 69/cm.}
+  \gdef\@OIinfo{Japan Color 2001 Coated}
+  \gdef\@OIregistry{http://www.color.org}
+}{}
+\ifthenelse{\equal{\my@intent}{OTHER}}{ % Provide values for these:
+  \gdef\@OIidentifier{}
+  \gdef\@OIcondition{}
+  \gdef\@OIinfo{}
+  \gdef\@OIregistry{}
+}{}
+\@tempTFfalse
+\ifthenelse{\equal{\@OIidentifier}{}}{\@tempTFtrue}{}
+\ifthenelse{\equal{\@OIcondition}{}}{\@tempTFtrue}{}
+\ifthenelse{\equal{\@OIinfo}{}}{\@tempTFtrue}{}
+\ifthenelse{\equal{\@OIregistry}{}}{\@tempTFtrue}{}
+\if@tempTF
+  \ClassError{Novelette}{PDF intent CUSTOM requires user-set values}%
+  {You wrote CUSTOM for second argument of \string\setPDF. ^^J%
+   That requires you to manually edit file Novelette-PDFX.sty. ^^J%
+   You must provide the required data for your intent. ^^J%
+   Follow the instructions in that file: Output Intent Definitions. ^^J%
+   Are you really sure that you need a CUSTOM intent?}
+\fi
+%% End Output Intent Definitions.
+
+\hypersetup{pdfencoding=auto}
+\expandafter\ifx\csname KV@Hyp@psdextra\endcsname\relax\else
+\hypersetup{psdextra}
+\fi
+\Hy@bookmarksfalse
+
+\expandafter\ifx\csname pdfresetpageorigin\endcsname\relax\else
+ \pdfresetpageorigin=0
+\fi
+\edef\pdfcreationdate{\pdfcreationdate}%
+\let\pdfx@mdfivesum\pdf@mdfivesum
+
+
+%% CALCULATE AND SPECIFY CROPBOX AND TRIMBOX
+%% ----------------------------------------------------------------------------
+%%
+% The MediaBox is automatically provided, so there is no need to write
+%   MediaBox in /pdfInfo (because it would be a duplicate).
+% TrimBox is always necessary for PDF/X.
+% Although CropBox is not necessary, it seems that it is often written
+%   by professional PDF software. For that reason, and for proper centering
+%   of TrimBox when MediaBox is larger, CropBox is created (= MediaBox).
+%
+\newcommand\@myMWN{\strip@pt\paperwidth}
+\FPmul{\@myMWN}{\@myMWN}{0.99626401}
+\FPround{\@myMWN}{\@myMWN}{3}
+\FPclip{\@myMWN}{\@myMWN}
+\newcommand\@myMHN{\strip@pt\paperheight}
+\FPmul{\@myMHN}{\@myMHN}{0.99626401}
+\FPround{\@myMHN}{\@myMHN}{3}
+\FPclip{\@myMHN}{\@myMHN}
+\newcommand\@myTWN{\strip@pt\@TrimWidth}
+\FPmul{\@myTWN}{\@myTWN}{0.99626401}
+\FPround{\@myTWN}{\@myTWN}{3}
+\newcommand\@myTHN{\strip@pt\@TrimHeight}
+\FPmul{\@myTHN}{\@myTHN}{0.99626401}
+\FPround{\@myTHN}{\@myTHN}{3}
+%
+\FPsub{\@myTWorigin}{\@myMWN}{\@myTWN}
+\FPmul{\@myTWorigin}{\@myTWorigin}{0.5}
+\FPround{\@myTWorigin}{\@myTWorigin}{3}
+\FPadd{\@myTWcorner}{\@myTWorigin}{\@myTWN}
+\FPround{\@myTWcorner}{\@myTWcorner}{3}
+\FPsub{\@myTHorigin}{\@myMHN}{\@myTHN}
+\FPmul{\@myTHorigin}{\@myTHorigin}{0.5}
+\FPround{\@myTHorigin}{\@myTHorigin}{3}
+\FPadd{\@myTHcorner}{\@myTHorigin}{\@myTHN}
+\FPround{\@myTHcorner}{\@myTHcorner}{3}
+%
+\FPclip{\@myTWorigin}{\@myTWorigin}
+\FPclip{\@myTWcorner}{\@myTWcorner}
+\FPclip{\@myTHorigin}{\@myTHorigin}
+\FPclip{\@myTHcorner}{\@myTHcorner}
+%
+\newcommand\Novelette@CropBox{/CropBox[0\space0\space\@myMWN\space\@myMHN]}
+%
+\newcommand\Novelette@TrimBox{%
+  /TrimBox[\@myTWorigin\space\@myTHorigin\space\@myTWcorner\space\@myTHcorner]%
+}
+%
+% BleedBox, only for cover art. Same size as MediaBox.
+\newcommand\Novelette@BleedBox{%
+  \if@coverart%
+    /BleedBox[0\space0\space\@myMWN\space\@myMHN]%
+  \fi%
+}
+%
+\begingroup\edef\next{%
+\endgroup\pdfpageattr{\Novelette@CropBox^^J\Novelette@BleedBox^^J\Novelette@TrimBox}}\next
+%
+%% End calculate and specify TrimBox.
+
+
+
+%% GENERAL PDF INTERNAL METADATA PREPARATION
+%% ----------------------------------------------------------------------------
+%
+% Create hashes that will be used for uuid data. Does not need to be fancy:
+\edef\xmp@docid{\pdfx@mdfivesum{jobname.pdf}}
+\edef\xmp@instid{\pdfx@mdfivesum{\pdfcreationdate}}
+%
+%% End general PDF in internal metadata preparation.
+
+
+
+%% PREPARATION OF XMP METADATA
+%% ----------------------------------------------------------------------------
+%% Data prepared here, will later be inserted into the XMP packet template,
+%%   then the processed template will be incuded in the PDF.
+%% XMP metadata is in utf-8 encoding.
+%
+% Make the XMP look pretty:
+\def\pad@ii{\space\space}
+\def\pad@iv{\pad@ii\pad@ii}
+\def\pad@vi{\pad@iv\pad@ii}
+\def\pad@viii{\pad@vi\pad@ii}
+\def\pad@x{\pad@viii\pad@ii}
+\def\pad@xii{\pad@x\pad@ii}
+\def\pad@xiv{\pad@xii\pad@ii}
+\def\pad@xvi{\pad@xiv\pad@ii}
+\def\pad@xviii{\pad@xvi\pad@ii}
+\def\pad@xx{\pad@xviii\pad@ii}
+\def\pad@xxxii{\pad@xvi\pad@xvi}
+\def\pad@lxiv{\pad@xxxii\pad@xxxii}
+\def\pad@cxxviii{\pad@lxiv\pad@lxiv}
+\def\pad@cclvi{\pad@cxxviii\pad@cxxviii}
+\def\pad@dxii{\pad@cclvi\pad@cclvi}
+%
+% Frankly, I am not sure if all this rigamarole is necessary, but it works!
+% Here, portions of XMP code are prepared. Later, they will be inserted
+%  into the XMP packet template.
+\gdef\@titleString{
+  \pad@vi<dc:title>^^J
+  \pad@viii<rdf:Alt>^^J
+  \pad@x<rdf:li xml:lang="x-default">\@title</rdf:li>^^J
+  \pad@viii</rdf:Alt>^^J
+  \pad@vi</dc:title>^^J
+}
+\if@markupcopy
+  \gdef\@titleString{
+    \pad@vi<dc:title>^^J
+    \pad@viii<rdf:Alt>^^J
+    \pad@x<rdf:li xml:lang="x-default">\@title\space - MARKUP COPY</rdf:li>^^J
+    \pad@viii</rdf:Alt>^^J
+    \pad@vi</dc:title>^^J
+  }
+\fi
+%
+\ifthenelse{\equal{\@author}{}}{
+  \gdef\@authorString{}
+}{
+  \gdef\@authorString{
+    \pad@vi<dc:creator>^^J
+    \pad@viii<rdf:Bag>^^J
+    \pad@x<rdf:li>\@author</rdf:li>^^J
+    \pad@viii</rdf:Bag>^^J
+    \pad@vi</dc:creator>^^J
+  }
+}
+%
+\def\@documentID{uuid:\xmp@docid}
+\def\@instanceID{uuid:\xmp@instid}
+%
+\def\@pdfVersion{1.\the\pdfminorversion}
+%
+\ifthenelse{\equal{\@PDFXconformance}{empty}}{
+  \gdef\@verconfString{}
+}{
+  \gdef\@verconfString{
+    \pad@vi<pdfx:GTS_PDFXVersion>\@PDFXversion</pdfx:GTS_PDFXVersion>^^J
+    \pad@vi<pdfx:GTS_PDFXConformance>%
+    \@PDFXconformance</pdfx:GTS_PDFXConformance>^^J
+  }
+}
+%
+\gdef\@pdfidString{
+  \pad@vi<pdfxid:GTS_PDFXVersion>\@PDFXversion</pdfxid:GTS_PDFXVersion>^^J
+}
+%
+\gdef\@applicationString{%
+   \pad@vi<xmp:CreatorTool>%
+   \@NoveletteApplication%
+   </xmp:CreatorTool>^^J%
+}
+\gdef\@producerString{%
+  \pad@vi<pdf:Producer>%
+  \@NoveletteProducer%
+  </pdf:Producer>^^J%
+}
+%
+% Calculation of Dates and Times, which must be in a specific format.
+% Each time you process to PDF, the current date/time is used,
+%   for all of the several metadata date/time strings.
+\def\xmp@cDate{\pdfx@getYear}
+{\catcode`\D=12 \catcode`\:=12
+ \gdef\pdfx@getYear D:#1#2#3#4{\edef\pdfx@xYear{#1#2#3#4}\pdfx@getMonth}
+}
+\def\pdfx@getMonth#1#2{\edef\pdfx@xMonth{#1#2}\pdfx@getDay}
+\def\pdfx@getDay#1#2{\edef\pdfx@xDay{#1#2}\pdfx@getHour}
+\def\pdfx@getHour#1#2{\edef\pdfx@xHour{#1#2}\pdfx@getMin}
+\def\pdfx@getMin#1#2{\edef\pdfx@xMin{#1#2}\pdfx@getSec}
+\def\pdfx@getSec#1#2{\edef\pdfx@xSec{#1#2}\pdfx@getTZh}
+\def\pdfx@getTZh{\futurelet\pdfx@next\pdfx@getTzh@branches}
+%
+{\catcode`\@=11 \catcode`\Z=12 \catcode`\+=12 \catcode`\-=12 % ends below
+\gdef\pdfx@getTzh@branches{%
+ \ifx\pdfx@next Z\let\pdfx@getTzbranch\pdfx@getTznozone
+ \else\ifx\pdfx@next +\let\pdfx@getTzbranch\pdfx@getTzplus
+ \else\ifx\pdfx@next -\let\pdfx@getTzbranch\pdfx@getTzminus
+ \else\let\pdfx@getTzbranch\pdfx@getTzerror
+ \fi\fi\fi \pdfx@getTzbranch }
+%
+\catcode`\0=12
+\gdef\pdfx@getTznozone Z#1\pdfx@getTzend{%
+ \edef\pdfx@xTzh{+00}\edef\pdfx@xTzm{00}}
+\gdef\pdfx@getTzplus +#1'#2'#3\pdfx@getTzend{%
+ \edef\pdfx@xTzh{+#1}\edef\pdfx@xTzm{#2}%
+ \ifx\relax#2\relax\def\pdfx@xTzm{00}\fi}
+\gdef\pdfx@getTzminus -#1'#2'#3\pdfx@getTzend{%
+ \edef\pdfx@xTzh{-#1}\edef\pdfx@xTzm{#2}%
+ \ifx\relax#2\relax\def\pdfx@xTzm{00}\fi}
+%
+\expandafter\ifx\csname pdfcreationdate\endcsname\relax
+\else
+ \expandafter\expandafter\expandafter\xmp@cDate\pdfcreationdate''\pdfx@getTzend
+ \xdef\pdfx@convDate{\pdfx@xYear\pdfx@xMonth\pdfx@xDay\pdfx@xHour
+  \pdfx@xMin\pdfx@xSec\pdfx@xTzh'\pdfx@xTzm'}%
+ \xdef\xmp@cDate{\pdfx@xYear-\pdfx@xMonth-\pdfx@xDay
+  T\pdfx@xHour:\pdfx@xMin:\pdfx@xSec\pdfx@xTzh:\pdfx@xTzm}%
+\fi
+}% End of \catcode`\@=11 etc.
+\let\@modifyDate\xmp@cDate
+\let\@createDate\xmp@cDate
+\let\@metadataDate\xmp@cDate
+% End dates and times.
+%
+%% End Prepare XMP metadata.
+
+
+
+%% WRITE THE XMP METADATA
+%%-----------------------------------------------------------------------------
+%% Inserts the prepared XMP metadata into XMP packet template, then writes
+%% the result at the start of the PDF, right now, before the document.
+%
+\begingroup
+  \makeatletter
+  \input{Novelette-XMPpacket.sty}
+  \global\let\@xmpData\@xmpPacket % from the above file
+  \begingroup
+    \pdfcompresslevel=0
+    \immediate\pdfobj stream attr {/Type /Metadata /Subtype /XML} {\@xmpData}
+    \pdfcatalog{/Metadata \the\pdflastobj\space 0 R}
+  \endgroup
+\endgroup
+%
+%
+%% End write the XMP metadata.
+
+
+
+%% PREPARE PDF /INFO METADATA
+%% ----------------------------------------------------------------------------
+%% PDF /Info is another form of metadata, older than XMP but still used.
+%% It is NOT in utf-8 encoding. Depending on content, one of two encodings
+%%   will be automatically used: PDFDoc encoding if metadata uses only
+%%   characters within Latin-1, or utf-16 if metadata is not within Latin-1.
+%% Either way, the input was utf-8 before processing.
+%% In principle, PDF /Info is not needed  whenever PDF/X is used, because
+%%   XMP metadata is supposed to prevail through the printing workflow.
+%% In practice, things don't always work that way. So, unless your PDF
+%%   has no metadata, essential items are re-encoded and copied to PDF /Info.
+%% Other than encoding, XMP metadata and PDF /Info must be exactly the same.
+%% All of those issues are handled automatically here.
+%% The result is written at the end of the PDF, after the document.
+%
+% Macro for massaging encodings:
+\def\@infotopdfstring#1#2{%
+  \ifx#2\@empty
+    \global\let#1\empty
+  \else
+    \begingroup
+      \hypersetup{pdfencoding=auto}%
+      \pdfstringdef#1{#2}%
+    \endgroup
+  \fi
+}
+% Now, massage the metadata:
+\if@markupcopy
+  \@infotopdfstring{\@infotitle}{\@title\space - MARKUP COPY}
+\else
+  \@infotopdfstring{\@infotitle}{\@title}
+\fi
+\@infotopdfstring{\@infoauthor}{\@author}
+\@infotopdfstring{\@infoapplication}{\@NoveletteApplication}
+\@infotopdfstring{\@infoproducer}{\@NoveletteProducer}
+%% End prepare PDF /Info.
+
+
+
+%% Write the Output Intent:
+\begingroup
+  \edef\@pctchar{\expandafter\@gobble\string\%} % Escaped in TeX, not PDF.
+  \edef\@bchar{\expandafter\@gobble\string\\} % For use as escape, below.
+  \edef\0{\string\0} % Not sure why, but it works.
+  \edef\({\string\(} % PDF Catalog requires escaped parentheses.
+  \edef\){\string\)} % PDF Catalog requires escaped parentheses.
+  \catcode`\_ 12 % The data might contain underscores.
+  \edef\@OIconditionString{/OutputCondition (\@OIcondition)}%
+  \edef\@OIidentifierString{/OutputConditionIdentifier (\@OIidentifier)}%
+  \edef\@OIinfoString{/Info (\@OIinfo)}%
+  \edef\@OIregistryString{/RegistryName (\@OIregistry)}%
+  \pdfcatalog{%
+    /OutputIntents [ <<%
+    /Type/OutputIntent%
+    /S/GTS_PDFX%
+    \@OIconditionString%
+    \@OIidentifierString%
+    \@OIinfoString%
+    \@OIregistryString%
+    >> ]%
+  }%
+\endgroup
+%% End Write the Output Intent.
+
+
+%% Prevent changes that will cause an incompatibility.
+\Hy@DisableOption{pdfauthor}%
+\Hy@DisableOption{pdftitle}%
+\Hy@DisableOption{pdfsubject}%
+\Hy@DisableOption{pdfcreator}%
+\Hy@DisableOption{pdfcreationdate}%
+\Hy@DisableOption{pdfmoddate}%
+\Hy@DisableOption{pdfproducer}%
+\Hy@DisableOption{pdfkeywords}%
+
+
+%% \@ActivatePDFInfo. Called \AtBeginDocument.
+\gdef\@ActivatePDFInfo{%
+  \pdfinfo{
+    \ifx\@infotitle\@empty\else /Title(\@infotitle)\fi
+    \ifx\@infoauthor\@empty\else /Author(\@infoauthor)\fi
+    \ifx\@infoapplication\@empty\else /Creator(\@infoapplication)\fi
+    \ifx\@pdfcreationdate\@empty
+      /CreationDate(D:\pdfx@convDate)%
+    \else
+      /CreationDate(\@pdfcreationdate)%
+    \fi
+    \ifx\@pdfmoddate\@empty
+      /ModDate(D:\pdfx@convDate)%
+    \else
+      /ModDate(\@pdfmoddate)%
+    \fi
+    \ifx\@infoproducer\@empty\else /Producer(\@infoproducer)\fi%
+    /Trapped/False%
+    /GTS_PDFXVersion(\@PDFXversion)%
+    /GTS_PDFXConformance(\@PDFXconformance)%
+  }%
+} % End \@ActivatePDFInfo.
+
+
+
+%%
+\endinput
+%%
+%% End of file Novelette-PDFX.sty.
+
+
