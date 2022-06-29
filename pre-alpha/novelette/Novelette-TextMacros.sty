@@ -239,10 +239,6 @@
 %% Some things must wait until after layout calculations:
 \gdef\@ActivateTextLengths{% called by `Novelette.cls' \AtEndPreamble
   % Store some normal values (main font) for global use in document body:
-  \newlength\nfs % abbreviation for normal font point size
-    \gsetlength\nfs{\@NumFontSize}
-  \newlength\nbs % abbreviation for normal baselineskip
-    \gsetlength\nbs{\baselineskip}
   \gsetlength\parindent{1.5em} % may be locally changed
   \newlength\normalparindent
     \gsetlength\normalparindent{\parindent}

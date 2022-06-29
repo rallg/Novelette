@@ -12,19 +12,28 @@
 [2022/06/22 v0.0.1 LuaLaTeX file (image placement)]
 %%
 
+%% General LaTeX has many ways to place an image, and various strategies
+%% for moving images to wherever they fit. That is fine for the kind of
+%% academic papers that use LaTeX, but it is inappropriate for fiction.
+%% In a work of fiction (or popular nonfiction, written like fiction)
+%% the line-to-line spacing must be constant. Cannot be disturbed by images.
+%% Also, there are a limited number of images, and a limited number
+%% of places where an image should be located. All this requires the
+%% standard LaTeX image placement code to be hacked here.
+%% Finally, P.O.D. Services usually require PDF/X-1a:2001 conformance.
+%% Novelette can do that, but all images must comply with certain
+%% requirements. External scripts (provided with Novelette) can automatically
+%% adjust images so that they comply with specifications.
+%% Then, when Novelette places in image in your document, it will inspect
+%% the image using Luacode, to ensure that it was pre-processed by script.
+%% All this would be very limiting for works such as graphic novels or
+%% other image-intensive works. But that is what Novelette does.
+%% Ordinary fiction and nonfiction use images in the way that Novelette
+%% can accomodate.
 
-%% In Novelette, images are handled with a view to preserve uniform line grid.
-%% Normally, a work of fiction has no (or very few) images within the main
-%% body of text. Images are more likely on display pages (such as title page)
-%% or in chapter starts, or maps, or the cover.
-
-%% There are two ways to place an interior image: inline, or float.
-%% Inline image does not occupy its own block, but mingles with flowing text.
-%% Float image occupies its own block, which will be placed where the command
-%% is written, if it fits on that page. If it doesn't fit, then it will be
-%% placed at the top of the following page. Surrounding text will be
-%% typeset so at to not leave a big gap. Althouth TeX allows several
-%% options for positioning a float, Novelette only allows one method.
+%% Image is a block element, occupying its own paragraph (or page).
+%% If you need text beside an image, then create a larger image
+%% with the text included. Cannot wrap text around an image.
 
 %% Be sure to read the separate documentation about how to prepare images.
 %% In general: (1) png or jpg only. (2) Flattened, no transparency.
@@ -36,7 +45,6 @@
 
 %% Luacode and related macro thanks to user Marcel Krüger,
 %% at tex.stackexchange.com.
-\RequirePackage{luacode}
 \begin{luacode*}
   function check_colorspaces(allowed_colorspace, name)
   local doc = epdf.open(name);
@@ -64,11 +72,13 @@
   return;
 end
 \end{luacode*}
-%
-\newcommand\PDFHasDisallowedColorspaceTF[1]{%
-  \directlua{check_colorspaces({DeviceCMYK=true, DeviceGray=true},"\luaescapestring{#1}")}%
-}
 %%
+\newcommand\PDFHasDisallowedColorspaceTF[1]{%
+  \directlua{%
+    check_colorspaces({DeviceCMYK=true, DeviceGray=true},%
+    "\luaescapestring{#1}")%
+  }%
+}
 %%
 \begin{luacode*}
   function utf16to8(u16str)
@@ -121,32 +131,35 @@ end
     end
   end
 \end{luacode*}
-\newcommand\PDFVerifyInfoFieldTF[3]{\directlua{check_pdf_info("\luaescapestring{#1}", "\luaescapestring{#2}", "\luaescapestring{#3}")}}
+\newcommand\PDFVerifyInfoFieldTF[3]{*
+  \directlua{%
+    check_pdf_info("\luaescapestring{#1}", %
+    "\luaescapestring{#2}", "\luaescapestring{#3}")
+  }%
+}
 %%
 
+\newcommand\coverimage[1]{\gdef\my@coverimage{#1}}
 
-%% New in version 1.50, makecmyk script, with special syntax:
-\LetLtxMacro\@scriptincludepdf\includepdf\relax
-\providecommand\includepdf[2][]{}
-\renewcommand\includepdf[2][]{% from package `pdfpages'
-  \ClassError{Novelette}{Cannot use \string\includepdf\space command}%
-   {You can use Novelette-scripts `makegray' and `makebw' to convert pdf %%J%
-    to a raster jpg or png, suitable for placement as an image.}%
-}
-\gdef\ScriptCoverImage#1{%
+\gdef\@CoverOrNot{% Called \AtBeginDocument.
   \if@coverart%
-    \PDFVerifyInfoFieldTF{#1}{NSprocessed}{true}%
-    {\@scriptincludepdf{#1}}%
-    {\ClassError{Novelette}{Book cover pdf must be pre-processed by Novelette-scripts}%
-     {Each pdf processed by Novelette-scripts is marked internally. ^^J%
+    \PDFVerifyInfoFieldTF{\my@coverimage}{NSprocessed}{true}%
+    {\thispagestyle{empty}\includepdf{my@coverimage}}%
+    {\ClassError{Novelette}{Cover image must be pre-processed by scripts}%
+     {Each image processed by Novelette-scripts is marked internally. ^^J%
      Your cover artwork pdf is unmarked. Use `makecmykpdf' script.}%
     }%
+    \end{document} % No text allowed!
   \else%
-    \ClassError{Novelette}{Cannot use \string\ScriptCoverImage\space in interior}%
-     {\string\ScriptCoverImage\space only with `coverart' class option.}%
+    \renewcommand\includepdf[2][]{% From package `pdfpages'.
+      \ClassError{Novelette}{Cannot use \string\includepdf\space command}%
+      {Use Novelette-scripts `makegray' and `makebw' to convert pdf ^^J%
+       to a raster jpg or png, suitable for placement as an image.}%
+    }%
   \fi%
-} %
+}
 %%
+
 
 
 % Pertains to images:
@@ -159,17 +172,13 @@ end
 \newlength\@imagehoffset
 \newlength\@imagevoffset
 \newlength\@mytotalht
-\newif \if@UsingNoveletteCommand % true within \InlineImage etc.
 %%
-\gdef\imagestarred{false}
-\gdef\imagefilename{unknown}
-\setkeys{Gin}{draft=false} % always shows the image, not a box outline
-\LetLtxMacro\Novelette@sub@inclgr\includegraphics\relax
+\setkeys{Gin}{draft=false} % Always shows the image, not a box outline.
+\LetLtxMacro\my@inclgr\includegraphics\relax
 \if@coverart\else % Need to allow it, for possible use by \includepdf in cover.
   \renewcommand\includegraphics[2][]{%
-    \ClassError{Novelette}{Direct use of \string\includegraphics\space forbidden}%
-     {You may only place images using commands specific to Novelette class. ^^J%
-      See Novelette documentation.}%
+    \ClassError{Novelette}{Use of \string\includegraphics\space forbidden}%
+     {Only place images using commands specific to Novelette class.}%
   }
 \fi
 %
@@ -192,155 +201,39 @@ end
 %%
 
 
-%% INLINE IMAGE
+%% BLOCK IMAGE
 %% ----------------------------------------------------------------------------
-% \InlineImage[xoffset,yoffset]{imagename.png} or jpg
-% As the name implies, an inline image is used within the flow of text, rather
-%   than in its own block. It may be used in main body, header, and footer.
-% Macros such as \imagefilename, \imagewidth, etc.
-%   are only set or re-set when the image in in the body. That prevents an
-%   intervening header/footer image from over-writing values set by%
-%   the most recent body image.
-% Without offsets, the image is positioned with is left edge at the cursor,
-%   and its top edge at the text baseline. Positive offsets are right and up.
-% If improperly positioned, the image can overlie (obscure) text that was
-%   previously placed. This is rarely desirable and may be flagged by
-%   some print services, because it looks wrong.
-% The image will underlie anything that follows. This may be used as a
-%   special effect, if allowed by the print service (probably OK).
-% With the un-starred command, the image occupies its natural cursor width.
-% With the starred command, the image occupies zero cursor width, so that
-%   anything following will overlie it.
-\DeclareDocumentCommand \InlineImage { s O{0pt} m }{%
-  \@TestImageExtension{#3}%
-  \@tempTFfalse%
-  \IfSubStr*{\@UnknownImages}{#3}{\@tempTFtrue}{}%
-  \IfSubStr*{\@AllGoodImages}{#3}{\@tempTFtrue}{}%
-  \if@tempTF\else\@NovelInspectImage{#3}\fi%
-  \StrDel{#2}{\space}[\@myila]%
-  \StrCut{\@myila}{,}{\@myilxa}{\@myilya}%
-  \ifthenelse{\equal{\@myilxa}{} \OR \equal{\@myilxa}{0}}{%
-    \def\@myilx{0pt}}{\def\@myilx{\@myilxa}%
-  }%
-  \ifthenelse{\equal{\@myilya}{} \OR \equal{\@myilya}{0}}{%
-    \def\@myily{0pt}}{\def\@myily{\@myilya}%
-  }%
-  \iftoggle{@inheadfoot}{}{\gdef\imagefilename{#3}}% for possible later use
-  \global\@UsingNovelCommandtrue%
-  \gdef\@mygraphic{\Novelette@sub@inclgr{#3}}%
-  \gdef\@mygraphicname{#3}%
-  \setlength\@imagewidth{\widthof{\@mygraphic}}%
-  \global\@imagewidth=\@imagewidth%
-  \iftoggle{@inheadfoot}{}{\setlength\imagewidth{\@imagewidth}}%
-  \setlength\@imageheight{\heightof{\@mygraphic}}%
-  \global\@imageheight=\@imageheight%
-  \iftoggle{@inheadfoot}{}{%
-    \setlength\imageheight{\@imageheight}%
-    \global\imageheight=\imageheight%
-  }%
-  %
-  \setlength\@imagehoffset{\@myilx}%
-  \IfBeginWith{\@myily}{b}{%
-    \StrDel[1]{\@myily}{b}[\temp@adjVoffseta]%
-    \ifthenelse{\equal{\temp@adjVoffseta}{} \OR \equal{\temp@adjVoffseta}{0}}{%
-      \def\temp@adjVoffset{0pt}}{\def\temp@adjVoffset{\temp@adjVoffseta}%
-    }%
-    \setlength\@imagevoffset{\temp@adjVoffset}%
-  }{%
-    \setlength\@imagevoffset{-\@imageheight}%
-    \addtolength\@imagevoffset{\@myily}%
-  }%
-  %
-  \IfBooleanTF{#1}%
-  % starred:
-  {%
-    \iftoggle{@inheadfoot}{}{\gdef\imagestarred{true}}%
-    \makebox[0pt][l]{%
-      \hspace{\@imagehoffset}%
-      \stake\smash{\raisebox{\@imagevoffset}{\@mygraphic}}%
-    }%
-  }%
-  % unstarred:
-  {%
-    \iftoggle{@inheadfoot}{}{\gdef\imagestarred{false}}%
-    \hspace{\@imagehoffset}%
-    \stake\smash{\raisebox{\@imagevoffset}{\@mygraphic}}%
-  }% end IfBooleanTF{#1}
-  \iftoggle{@inheadfoot}{}{\setlength\imagehoffset{\@imagehoffset}}%
-  \iftoggle{@inheadfoot}{}{\setlength\imagevoffset{\@imagevoffset}}%
-  \global\@UsingNovelCommandfalse%
-} % 
-% end Inline Image
-%%
+% \image{yourimagename.png} % or jpg
+% Cannot be used in header.
+% Image is placed as a block element, in its own paragraph (or own page).
+% Image is placed where code is written, if it fits there.
+% If it does not fit there, it is moved to top of following page.
+% Required argument: Image filename with extension. Possibly with path.
+% The image is horizontally centered in the printable area.
+% If you need to tweak it left/right, put something such as non-breaking
+% spaces or \hbox elements before or after.
+% This is a substitute for LaTeX floats. Does not require `float' package.
 
-
-%% FLOAT IMAGE
-%% ----------------------------------------------------------------------------
-%% New in v.1.50. \FloatImage. Centered unless offset.
-% \FloatImage[floatmethod,xoffset,yoffset]{yourimagename.png} % or jpg
-% This is a substitute for other floats. Does not require `float' package.
-% Default: [ht,0pt,\nfs].
-% Method ht attempts to place the image where the code is written. But if it
-%   doesn't fit on that page, it will float to the top of the next page.
-% Method b attempts to place the image on the bottom of the page where the
-%   code is written. If not, it floats to the bottom of the next page.
-% Allowed float methods: ht hb t b. Equivalent to LaTeX floats with !.
-% Parsing the optional argument: comma-separated values, ignoring space.
-%   May be empty before or between commas.
-%   Example: [,,2em] is read as default method, xoffset 0pt, yoffset 2em.
-%   Example: [b] is valid, because a single value is read as method.
-\providecommand*\floatlocation[2]{\@namedef{fps@#1}{#2}}
-\floatlocation{figure}{!ht} % default
-\gdef\ftype@figure{1} % mystery TeX code
-\DeclareDocumentCommand \FloatImage { s O{ht} m } {% starred not in use
-  \iftoggle{@inheadfoot}{%
-    \ClassError{Novelette}{Cannot use \string\FloatImage\space in header/footer}%
-      {Header footer allow \string\InlineImage, but not \string\FloatImage.}%
+% Many of these are built-in LaTeX commands, with the usual mystery syntax:
+\providecommand*\floatlocation[2]{\@namedef{fps@figure}{!ht}}
+\floatlocation{figure}{!ht} % Here, or top of next page.
+\gdef\ftype@figure{1} % Mystery TeX code.
+\DeclareDocumentCommand \image { m } {%
+  \iftoggle{@inheader}{%
+    \ClassError{Novelette}{Cannot use \string\image\space in header}%
+      {Image is a block element. Not allowed in header.}%
   }{}%
-  \@TestImageExtension{#3}%
+  \@TestImageExtension{#1}%
   \@tempTFfalse%
-  \IfSubStr*{\@UnknownImages}{#3}{\@tempTFtrue}{}%
-  \IfSubStr*{\@AllGoodImages}{#3}{\@tempTFtrue}{}%
-  \if@tempTF\else\@NovelInspectImage{#3}\fi%
-  % Sadly, parsing with `xstring' involves roundabout code:
-  \StrDel{#2}{\space}[\@tempArgs]%
-  \StrCut{\@tempArgs}{,}{\@tempArgA}{\@tempArgX}%
-  \StrCut{\@tempArgX}{,}{\@tempArgB}{\@tempArgC}%
-  \ifthenelse{\equal{\@tempArgA}{}}{%
-    \def\@tempArgAa{ht}%
-  }{%
-    \def\@tempArgAa{\@tempArgA}%
-  }%
-  \ifthenelse{\equal{\@tempArgB}{0}\OR\equal{\@tempArgB}{}}{%
-    \def\@tempArgBb{0pt}%
-  }{%
-    \def\@tempArgBb{\@tempArgB}%
-  }%
-  \ifthenelse{\equal{\@tempArgC}{0}\OR\equal{\@tempArgC}{}}{%
-    \def\@tempArgCc{0pt}%
-  }{%
-    \def\@tempArgCc{\@tempArgC}%
-  }%
-  \StrDel{\@tempArgAa}{!}[\@tempArgAa]%
-  \@tempTFfalse%
-  \ifthenelse{\equal{\@tempArgAa}{ht}}{\@tempTFtrue}{}%
-  \ifthenelse{\equal{\@tempArgAa}{hb}}{\@tempTFtrue}{}%
-  \ifthenelse{\equal{\@tempArgAa}{t}}{\@tempTFtrue}{}%
-  \ifthenelse{\equal{\@tempArgAa}{b}}{\@tempTFtrue}{}%
-  \if@tempTF\else%
-    \ClassWarning{Novelette}{Incorrect position for \string\FloatImage, ^^J%
-     page \thepage. Default position ht substituted.}%
-  \fi%
-  \floatlocation{figure}{!\@tempArgAa}% enable current float method
-  %\vfil% One l.
+  \IfSubStr*{\@UnknownImages}{#1}{\@tempTFtrue}{}%
+  \if@tempTF\else\@NovelInspectImage{#1}\fi%
   \@float{figure}%
-  \@FloatImage{\@tempArgBb}{\@tempArgCc}{#3}%
+  \@FloatImage{#1}% Defined below.
   \end@float\par%
-  \floatlocation{figure}{!ht}% restore default float method
   \null%
   \vspace{0.01pt plus 0pt minus 0.02pt} % caulk
-} %
-%
+}
+%%
 
 %% Environment @floatimagegap. Only used by \@FloatImage command.
 % Creates a gap at fixed height, regardless of content.
@@ -360,28 +253,26 @@ end
   \vspace*{#1\nbs}%
 } %
 %%
-\DeclareDocumentCommand \@FloatImage { m m m }{% DO NOT CALL DIRECTLY
+\DeclareDocumentCommand \@FloatImage { m }{% DO NOT CALL DIRECTLY
   \global\@UsingNovelCommandtrue%
-  \gdef\@mygraphic{\Novelette@sub@inclgr[scale=\@TMratio]{#3}}%
-  \gdef\@mygraphicname{#3}%
+  \gdef\@mygraphic{\myinclgr[scale=\@TMratio]{#1}}%
+  \gdef\@mygraphicname{#1}%
   \gsetlength\@imagewidth{\widthof{\@mygraphic}}%
   \gsetlength\@imageheight{\heightof{\@mygraphic}}%
-  \setlength\@imagehoffset{#1}%
-  \setlength\@imagevoffset{#2-\@imageheight+\normalXheight}%
   \setlength\@mytotalht{\@imageheight+0.3\nbs}%
   \FPdiv{\@mytotalhtN}{\strip@pt\@mytotalht}{\strip@pt\nbs}%
   \FPadd{\@mytotalhtN}{\@mytotalhtN}{0.5}% round upward
   \FPround{\@mytotalhtN}{\@mytotalhtN}{0}% to integer
-  \FPmin{\@allowmyoverflow}{\@mytotalhtN}{\@LinesPerPage}% not exceeding lpp
+  \FPmin{\@allowmyoverflow}{\@mytotalhtN}{\my@lpp}% not exceeding lpp
   % If a full-page image is too tall for a page, standard TeX float will
-  %   delay it until the time that floats are cleared, typically by \clearpage.
-  %   That would probably be at the end of a chapter.
+  % delay it until the time that floats are cleared, typically by \clearpage.
+  % That would probably be at the end of a chapter.
   % In Novelette this behavior is hacked. Regardless of the image's actual
-  %   height, it is treated as if its height does not exceed whatever will
-  %   fit on a single page. Then, a full-page float will appear at the first
-  %   opportunity, rather than being delayed. As a consquence, an oversized
-  %   full-page float may overflow into the footer or bottom margin.
-  %   To fix that (if it matters), you need to edit the image in graphics.
+  % height, it is treated as if its height does not exceed whatever will
+  % fit on a single page. Then, a full-page float will appear at the first
+  % opportunity, rather than being delayed. As a consequence, an oversized
+  % full-page float may overflow into the bottom clearance.
+  % To fix that, you need to edit the image in graphics.
   \begin{@floatimagegap}{\@allowmyoverflow}%
     \vspace*{-\nfs}%
     \null%
@@ -470,18 +361,8 @@ end
 
 %%
 % Examine png or jpg image for Novelette-make as comment:
-% Known-good images, will not be inspected. Comma-separated list:
-\newcommand\SetKnownGoodImages[1]{
-  \gdef\@KnownGoodImages{#1}
-}
-\SetKnownGoodImages{} % default empty
-\gdef\@AllGoodImages{}
 \gdef\@UnknownImages{}
 %
-\gdef\@GatherGoodImages{% called \AtBeginDocument.
-  \let\SetKnownGoodImages\relax
-  \xdef\@AllGoodImages{\@KnownGoodImages\space \@AllGoodImages}
-}
 % This is the (decimal) code string:
 \gdef\@Novelettemake{110,111,118,101,108,109,97,107,101}
 %
@@ -492,9 +373,7 @@ end
   }{% jpg or JPG:
     \Novelettegetbytes{#1}{0}{256}%
   }%
-  \IfSubStr{\Novelettebytesare}{\@Novelettemake}{%
-    \xdef\@AllGoodImages{\@AllGoodImages\space #1}%
-  }{%
+  \IfSubStr{\Novelettebytesare}{\@Novelettemake}{}{%
     \xdef\@UnknownImages{\@UnknownImages\space #1}%
   }%
 }
@@ -506,12 +385,12 @@ end
   \@tempTFfalse%
   \ifthenelse{\equal{\@UnknownImages}{}}{}{\@tempTFtrue}%
   \if@tempTF%
-      \typeout{^^JClass Novelette Alert: Some images not processed by scripts.^^J%
+      \typeout{^^JNovelette Alert: Some images not processed by scripts.^^J%
        \space List of unprocessed images: \@UnknownImages ^^J%
        \space Above list does not include any `known good' set by you. ^^J^^J}%
       \ClassWarning{Novelette}{\@testintentional %
       Some images may not meet PDF/X specifications. ^^J%
-      See near end of log file for `Some images not processed by scripts`. ^^J}%
+      See near end of log file, `Some images not processed by scripts'. ^^J}%
   \fi%
 }
 %%

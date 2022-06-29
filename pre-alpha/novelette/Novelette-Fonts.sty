@@ -17,16 +17,17 @@
 %% ----------------------------------------------------------------------------
 % Novelette uses the `fontspec' package for sophisticated font choices.
 % Fonts are not activated until \AtEndPreamble. Until then, the basic TeX fonts
-%   are temporarily specified, so that packages can load without complaint.
+% are temporarily specified, so that packages can load without complaint.
 % These are Latin Modern fonts, which are Open Type and will work, but are not
-%   stylistically suitable for works of fiction. The only reason they are
-%   used here, is because just about every TeX installation has them.
+% stylistically suitable for works of fiction. The only reason they are
+% used here, is because just about every TeX installation has them.
 \gdef\rmdefault{lmr} % Latin Modern Roman
 \gdef\sfdefault{lmss} % Latin Modern Sans
 \gdef\ttdefault{lmtt} % Latin Modern Mono
+
 % The following might become unnecessary if fontspec adds the capability to
 % disable keys. For now: Color and Opacity cannot be used as font features,
-%   for a black/white printed book. Alas, fontspec over-rules xcolor.
+% for a black/white printed book. Alas, fontspec over-rules xcolor.
 % So, this code over-rules fontspec:
 \gdef\@CheckFontspecFeatures#1{%
   \@tempTFfalse%
@@ -41,177 +42,126 @@
     {You defined a font, or added a font feature, with Color or Opacity. ^^J%
      That is disallowed in Novelette.}%
   \fi%
-} % end \@CheckFontspecFeatures
+} % End \@CheckFontspecFeatures.
+
 % Default font features (will be changed later):
-\defaultfontfeatures{} % reset
-\defaultfontfeatures{SmallCapsFeatures={Renderer=Basic},Ligatures=TeX,} % all
-% Main and sans fonts: kerning, ligatures, and OldStyle numbers if available:
-\defaultfontfeatures[\rmfamily,\sffamily]%
-  {Kerning=On,Numbers=OldStyle,Ligatures=Common}
-%% end initialization
+\defaultfontfeatures{} % Reset.
+\defaultfontfeatures{SmallCapsFeatures={Renderer=Basic},Ligatures=TeX,} % All.
+\defaultfontfeatures[\sffamily]{Kerning=On} % Sans font only uses kerning.
 
 
-%% SETTINGS FOR PARENT FONT, DESCENDANTS, OTHERS
-%% ----------------------------------------------------------------------------
-% Novelette requires a `parent font' to be set. The parent font is
-%   the ancestor of the main (normal) font, and several other descendants.
-% The parent font features, if any, should be a minimal set that will be
-%   applied to all descendants. For example, if the font has an an alternate
-%   style for a particular letter, and you want to use it for all descendants,
-%   then you would spedify that feature for the parent font.
-% For now, these settings are merely stored. Later, \AtEndPreamble,
-%   the main (normal) font inherits the settings for the parent font.
-%   Other descendants inherit those settings, with their own features added.
-%   Anything not set by you, will have a suitable default set automatically.
-\newif \if@ParentFontSet
-\gdef\parentfontfeatures{}
-\gdef\parentfontname{}
-\DeclareDocumentCommand \SetParentFont { O{} m O{} } {% from version 1.1.
-  \@CheckFontspecFeatures{#1,#3}
-  \gdef\parentfontfeatures{#1,#3}
-  \gdef\parentfontname{#2}
-  \global\@ParentFontSettrue
-}%%
-% In a work of fiction, you probably do not need a sans or mono font.
-%   So, \AtEndPreamble, fonts Latin Modern Sans and Mono are set,
-%   because LaTeX always has them.
-% If you wish to set your own sans and mono fonts, do it using standard
-%   `fontspec' syntax. There is no special method in Novelette:
-%   \setsansfont[features]{font name}
-%   \setmonofont[features]{font name}
-%
-% The headfont is used in headers:
-\newif \if@HeadFontSet
-\gdef\@headfontfeatures{}
-\gdef\@headfontname{}
-\DeclareDocumentCommand \SetHeadFont { O{} m O{} } {%
-  \@CheckFontspecFeatures{#1,#3}
-  \gdef\@headfontfeatures{Numbers=Lining,%
-    WordSpace=\@looseheadword,#1,#3}% loose letters added in header styles
-  \gdef\@headfontname{#2}
-  \global\@HeadFontSettrue
-}%
-% The chapter font is used by the \ChapterTitle command:
-\newif \if@ChapterFontSet
-\gdef\@chapterfontfeatures{}
-\gdef\@chapterfontname{}
-\DeclareDocumentCommand \SetChapterFont { O{} m O{} } {%
-  \@CheckFontspecFeatures{#1,#3}
-  \gdef\@chapterfontfeatures{Numbers=Lining,#1,#3}
-  \gdef\@chapterfontname{#2}
-  \global\@ChapterFontSettrue
-}%
-% The subch font is used by the \ChapterSubtitle command:
-\newif \if@SubchFontSet
-\gdef\@subchfontfeatures{}
-\gdef\@subchfontname{}
-\DeclareDocumentCommand \SetSubchFont { O{} m O{} } {%
-  \@CheckFontspecFeatures{#1,#3}
-  \gdef\@subchfontfeatures{Numbers=Lining,#1,#3}
-  \gdef\@subchfontname{#2}
-  \global\@SubchFontSettrue
-}%
-% For syntax consistency:
-\ExplSyntaxOn
-\cs_new_eq:NN \NewFontFamily \newfontfamily
-\cs_new_eq:NN \NewFontFace \newfontface
-\cs_new_eq:NN \SetSansFont \setsansfont
-\cs_new_eq:NN \SetMonoFont \setmonofont
-\cs_new_eq:NN \AddFontFeatures \addfontfeatures
-\cs_new_eq:NN \AddFontFeature \addfontfeatures
-\ExplSyntaxOff
-%
-%% end settings for parent font and others.
+
+%% Font classes.
+% \setfont{which}{family name}[features]
+% Where 'which' is one of:  main header footnote titling delegate deco
+% {main} is the main body text. Default: Swainson.
+% {header} is used in page headers. Default: Swainson, scaled 0.88.
+% {footnote} is used in footnotes. Default: SwainsonNote, scaled 0.88
+% {titling} is used in chapter titles. Default: SwainsonTitling, scaled 1.6.
+% {delegate} provides substitute characters for above fonts (but not deco).
+% Default delegate: Libertinus Serif. Not pre-installed; you may never need it.
+% {deco} used for decorative text, such as title, on book title page.
+% Default deco is Swainson, scaled 2.5. Better if you choose something stylish.
+
+% When you \setfont{main}, then your choice will also become the header,
+% footnote, titling, and deco fonts, with appropriate scale.
+% If you need other fonts, you must set each one, possibly with its features.
 
 
-%% CREATING NEW FONT FONT FEATURES
-%% ----------------------------------------------------------------------------
-% \CreateFontFeature{substitutions}{feature code}
-% Problem: Font has one or more alternate glyphs that you would like to use,
-%   but they are not listed in a feature set for the font.
-% Solution: Create your own feature set, with \CreateFontFeature. The created
-%   feature may then be used like a real feature, in any font definition.
-% The substitutions are a comma-separated list, char=char.alt and so forth.
-% For example, the following substitutions are syntactically OK:
-%   emdash=emdah.alt, one=one.rev, ntilde=ntilde.03
-% If a substitution is not available in a particular font, it is ignored.
-% You have to look at the font in a font editor, to know what is available.
-% It is possible to make silly substitutions, such as a=b, five=three without
-%   throwing an error, unless your code causes a cycle.
-% The most useful application of this command is to reach alternate emdash,
-%   and alternate oldstyle one. Not every font has these.
-% The feature code is a 4-character pseudo- Open Type code, otherwise unused.
-% For example, the feature code might be myfs (my fake substitution)
-%   but it cannot be a pre-defined code such as lnum or smcp. It may be
-%   a style set such as ss03 if you are sure that the font in question
-%   do not already have ss03 (but this is taking a chance).
-% Once defined, you may use it like this (for example):
-%   \SetParentFont[RawFeature=+myfs]{fontname}
-%   \NewFontFamily\myfake[RawFeature=+myfs]{fontname}
-%   In the document body: {\addfontfeature{myfs} text}
-\DeclareDocumentCommand \CreateFontFeature { m m } {%
-  \IfEndWith{#1}{,}{\StrGobbleRight{#1}{1}[\@fakezero]}{\def\@fakezero{#1}}
-  \def\@fakeone{"\@fakezero"}
-  \StrSubstitute{\@fakeone}{=}{"]="}[\@fakeone]
-  \StrSubstitute{\@fakeone}{,}{",\space["}[\@fakeone]
-  \directlua{
-    fonts.handlers.otf.addfeature {
-      name = "#2",
-      type = "substitution",
-      data = {\@fakeone},
+\newcommand\my@nosuchfont{%
+  \ClassError{Novelette}{\string\setfont\space requested font not installed}%
+  {The second argument of \string\setfont\space requests a font family. ^^J%
+   But that font was not found. Install it. Or, try this: ^^J%
+   Refresh file database (command: mktexlsr). ^^J%
+   Clear LuaTeX font cache (command: luaotfload-tool --cache=erase).}%
+}
+
+\DeclareDocumentCommand\setfont { m m O{} } {
+  \@tempTFfalse
+  \ifthenelse{\equal{#1}{main}}{
+    \@tempTFtrue
+    \IfFontExistsTF{#2}{
+      \setmainfont{#2}[#3]
+      \newfontfamily\mainfont{#2}[#3]
+      \gdef\my@mainfontname{#2}
+    }{
+      \my@nosuchfont
     }
-  }
-} %
-%% end \CreateFontFeature. Above thanks to fontspec 2016.
+  }{}
+  \ifthenelse{\equal{#1}{header}}{
+    \@tempTFtrue
+    \IfFontExistsTF{#2}{
+      \newfontfamily\headerfont{#2}[#3]
+    }{
+      \newfontfamily\headerfont{\my@mainfontname}[Scale=0.88]
+      \ClassWarning{Novelette}{Did not find requested header font. ^^J%
+       Using default Swainson instead, scale 0.88.}
+    }
+  }{}
+  \ifthenelse{\equal{#1}{footnote}}{
+    \@tempTFtrue
+    \IfFontExistsTF{#2}{
+      \newfontfamily\footnotefont{#2}[#3]
+    }{
+      \newfontfamily\footnotefont{\my@mainfontname}[Scale=0.88]
+      \ClassWarning{Novelette}{Did not find requested footnote font. ^^J%
+       Using main font instead, at scale 0.88.}
+    }
+  }{}
+  \ifthenelse{\equal{#1}{titling}}{
+    \@tempTFtrue
+    \IfFontExistsTF{#2}{
+      \newfontfamily\titlingfont{#2}[#3]
+    }{
+      \newfontfamily\titlingfont{\my@mainfontname}[Scale=1.6]
+      \ClassWarning{Novelette}{Did not find requested titling font. ^^J%
+       Using main font instead, at scale 1.6.}
+    }
+  }{}
+  \ifthenelse{\equal{#1}{deco}}{
+    \@tempTFtrue
+    \IfFontExistsTF{#2}{
+      \newfontfamily\decofont{#2}[#3]
+    }{
+      \newfontfamily\decofont{\my@mainfontname}[Scale=2.5]
+      \ClassWarning{Novelette}{Did not find requested deco font. ^^J%
+       Using main font instead, at scale 2.5.}
+    }
+  }{}
+  \ifthenelse{\equal{#1}{delegate}}{ % Usually not requested.
+    \@tempTFtrue
+    \IfFontExistsTF{#2}{
+      \newfontfamily\delegate{#2}[#3]
+    }{
+      \IfFontExistsTF{Libertinus Serif}{
+        \newfontfamily\delegate{Libertinus Serif}[Scale=0.94]
+        \ClassWarning{Novelette}{Did not find requested delegate font. ^^J%
+         But found Libertinus Serif. Using it instead, scale 0.94.}
+      }{
+        \ClassWarning{Novelette}{Did not find requested delegate font. ^^J%
+         Also did not find default delegate, Libertinus Serif. ^^J%
+         No delegate. Using ordinary font.}
+      }
+    }
+  }{}
+  \if@tempTF\else
+    \ClassError{Novelette}{Bad font class in \string\setfont}%
+     {First argument is one of: main header footer titling delegate deco}
+  \fi
+} % End \setfont.
+%% Defaults:
+\setfont{main}{Swainson}
+\setfont{header}{Swainson}[Scale=0.88]
+\setfont{footnote}{SwainsonNote}[Scale=0.88]
+\setfont{titling}{SwainsonTitling}[Scale=1.6]
+\setfont{deco}{Swainson}[Scale=2.5]
+%%
 
 
 %% ACTIVATE FONTS \AtEndPreamble
 %% ----------------------------------------------------------------------------
-\gdef\@ActivateFonts{% called by `Novelette.cls' \AtEndPreamble
-  \ifthenelse{\equal{\rmdefault}{lmr}}{% Font not yet set.
-    \IfFontExistsTF{Swainson}{\SetParentFont{Swainson}}{% Comes with Novelette.
-      \SetParentFont[SmallCapsFont={Latin Modern Roman Caps}]%
-        {Latin Modern Roman} % Last choice! Only because it comes with LaTeX.
-      \let\scshape\oldscshape % Or small caps won't work.
-      \let\smcp\oldscshape % Or small caps won't work.
-    }%
-  }{% If \rmdefault is not lmr, it means the user chose the font.
-    % If the choice was made via \SetParentFont, no problem. But if done by
-    % incorrect method, an error is thrown:
-    \if@ParentFontSet\else
-      \ClassError{Novelette}{Wrong command used to set main font}%
-      {You tried to define the main document font the wrong way. ^^J%
-      Bad: \string\renewcommand\string\rmdefault{font}\space ^^J%
-      Bad: \string\usepackage{font package}\space ^^J%
-      Bad: \string\RequirePackage{font package}\space ^^J%
-      Bad: \string\setmainfont[features]{font}\space ^^J%
-      Those are incorrect in Novelette. ^^J%
-      Use \string\SetParentFont[features]{font}\space instead.}%
-    \fi
-  }%
-  % Now we are ready for the main (normal) font, descending from parent font:
-  \setmainfont[\parentfontfeatures]{\parentfontname}
-  \let\mainfont\rmfamily\relax % backwards compatibility
-  % The headfont, which descends from parent font:
-  \if@HeadFontSet\else % default if not user-set:
-    \SetHeadFont[Letters=SmallCaps,\parentfontfeatures,Scale=0.92]%
-      {\parentfontname}
-  \fi
-  \newfontfamily\headfont[\@headfontfeatures]{\@headfontname}
-  % The chapter font, descending from parent font:
-  \if@ChapterFontSet\else % if no user-set font, default:
-    \SetChapterFont[\parentfontfeatures,Scale=1.6]{\parentfontname}
-  \fi
-  \newfontfamily\chapterfont[\@chapterfontfeatures]{\@chapterfontname}
-  % The subch font, descending from parent font:
-  \if@SubchFontSet\else % if no user-set font, default:
-    \SetSubchFont[\parentfontfeatures,Scale=1.2]{\parentfontname}
-  \fi
-  \newfontfamily\subchfont[\@subchfontfeatures]{\@subchfontname}
-  % The remaining fonts are not descendants of parent font:
-  \ifthenelse{\equal{\ttdefault}{lmtt}}{\setmonofont{Latin Modern Mono}}{}
-  \ifthenelse{\equal{\sfdefault}{lmss}}{\setsansfont{Latin Modern Sans}}{}
-%
+\gdef\@ActivateFonts{% Called \AtEndPreamble.
+  %%%%% Nothing.
 } % end \@ActivateFonts, called by `Novelette.cls' \AtEndPreamble.
 %%
 

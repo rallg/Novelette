@@ -173,7 +173,7 @@
 %
 \gdef\@fourem{% length of rule separating footnotes from main text
   \vspace{-\nbs}%
-  \noindent\strut\smash{\rule[-2pt]{0.33\textwidth}{0.05\@NumFontSize}}%
+  \noindent\strut\smash{\rule[-2pt]{0.33\textwidth}{0.05\my@fontsize}}%
 }
 \let\footnoterule\@fourem
 %
@@ -394,7 +394,7 @@
   \ifthenelse{\equal{\@myfnsymbols}{*}}{\setcounter{@maxfnsymbol}{8}}{}
   \ifthenelse{\equal{\@myfnsymbols}{†}}{\setcounter{@maxfnsymbol}{6}}{}
   % Values to be used by footnotes:
-  \FPdiv{\@myFontScale}{\strip@pt\@NumFontSize}{12}
+  \FPdiv{\@myFontScale}{\strip@pt\my@fontsize}{12}
   % Substitute for \footnotesize, but only works for actual footnotes,
   %   about 10pt with similarly reduced skip:
   \FPmul{\@myfootnotesizeN}{\@myFontScale}{10}

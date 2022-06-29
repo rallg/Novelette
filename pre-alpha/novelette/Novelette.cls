@@ -90,110 +90,7 @@
 \RequirePackage{fp} % Used everywhere for calculations. Includes xfp.
 \FPmessagesfalse % Eliminates numerous friendly messages from the log.
 
-
-%% Define \purpose{book,markup,cover}:
-\newif \if@book
-\newif \if@coverart
-\newif \if@markupcopy
-\newcommand\purpose[1]{
-  \@tempTFfalse
-  \ifthenelse{\equal{#1}{book}}{\@booktrue \@tempTFtrue}{}
-  \ifthenelse{\equal{#1}{cover}}{\@coverarttrue \@tempTFtrue}{}
-  \ifthenelse{\equal{#1}{markup}}{\@markupcopytrue \@tempTFtrue}{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad choice in \string\purpose{choice}}%
-    {Available choices:  book  markup  cover }
-  \fi
-}
-\purpose{book} % Default.
-
-%% Define \template{number}{name}:
-\newif \if@templateset
-\newcommand\template[2]{%
-  \gdef\my@template{#1}
-  \gdef\my@trimname{#2}
-  \IfSubStr{1 2 3}{\my@template}{}{%
-    \ClassError{Novelette}{Incorrect choice of template number}%
-    {In \string\template{number}{name} number must be 1, 2, or 3.}%
-  }
-  \IfSubStr{Novella B Memoir Demy Digest Trade Royal}{\my@trimname}{}{%
-    \ClassError{Novelette}{Incorrect choice of size name}%
-    {In \string\template{number}{name} name must be one of: ^^J%
-     Novella B Memoir Demy Digest Trade Royal ^^J%
-     The name is case-sensitive.}%
-  }
-  \@templatesettrue
-}
-%%
-
-%% Define \upshift{length} Tweak: Moves page content up/down..
-\newlength\my@upshift
-\gsetlength\my@upshift{0in}
-\newcommand\upshift[1]{ % Units of mm, cm, in.
-  \@tempTFfalse
-  \ifthenelse{\equal{#1}{} \OR \equal{#1}{0}}{\@tempTFtrue}{}
-  \IfEndWith{#1}{in}{\@tempTFtrue}{}
-  \IfEndWith{#1}{mm}{\@tempTFtrue}{}
-  \IfEndWith{#1}{cm}{\@tempTFtrue}{}
-  \if@tempTF
-    \ifthenelse{\equal{#1}{} \OR \equal{#1}{0}}{}{\gsetlength\my@upshift{#1}}
-  \else
-    \ClassError{Novelette}{Bad value for \string\upshift}%
-    {Must be length, with units:  mm  cm  in ^^J%
-     or 0, or leave empty.}
-  \fi
-}
-%%
-
-%% Define \media{book,markup}{width}{height}
-\newif \if@MediaSize % When trim size is floated in larger PDF page size.
-\newcommand\media[3]{
-  \@tempTFfalse
-  \ifthenelse{\equal{#1}{book}}{\@tempTFtrue}{}
-  \ifthenelse{\equal{#1}{markup}}{\@tempTFtrue}{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
-    {First argument:  book  markup}%
-  \fi
-  \@tempTFfalse
-  \IfEndWith{#2}{in}{\@tempTFtrue}{}
-  \IfEndWith{#2}{mm}{\@tempTFtrue}{}
-  \IfEndWith{#2}{cm}{\@tempTFtrue}{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
-    {Second argument must be width. Units: mm cm in}%
-  \fi
-  \@tempTFfalse
-  \IfEndWith{#3}{in}{\@tempTFtrue}{}
-  \IfEndWith{#3}{mm}{\@tempTFtrue}{}
-  \IfEndWith{#3}{cm}{\@tempTFtrue}{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
-    {Third argument must be height. Units: mm cm in}%
-  \fi
-  \ifthenelse{\dimtest{#2}{<}{#3}}{
-    \ifthenelse{\equal{#1}{book}}{
-      \if@book
-        \@MediaSizetrue
-        \gsetlength\paperwidth{#2}
-        \gsetlength\paperheight{#3}
-      \fi
-    }{}
-    \ifthenelse{\equal{#1}{markup}}{
-      \if@markupcopy
-        \@MediaSizetrue
-        \gsetlength\paperwidth{#2}
-        \gsetlength\paperheight{#3}
-      \fi
-    }{}
-  }{
-    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
-    {Second argument is width. Third argument is height. ^^J%
-     Height must be greater than width.}
-  }
-}
-%%
-
+\RequirePackage{Novelette-Settings} % Defines \purpose, \template, etc.
 
 \RequirePackage{silence}
 \WarningFilter{hyperref}{Draft mode on} % Always on, just within hyperref.
@@ -231,12 +128,12 @@
 % because most values are not set until \AtEndPreamble.
 %% This normalsize is temporary, so that packages can load without complaint.
 %% It will be modified later, during layout calculations.
-%% Actual default font size will be 11pt-12pt, with 11.4pt average.
+%% Actual default font size will be 11.5pt-12pt, with 11.7pt average.
 %% The small temporary size is to ensure that overly-large struts and skips
 %%   are not created prior to page layout calculation.
 \gdef\@TentativeEmN{10}
 \gdef\@TentativeBLSkipN{13}
-\renewcommand\normalsize{%
+\renewcommand\normalsize{% Where \@setfontsize is a built-in LaTeX command.
   \@setfontsize\normalsize{\@TentativeEmN}{\@TentativeBLSkipN}%
 }
 \normalsize
@@ -310,6 +207,7 @@
   \if@templateset\else\template{3}{Digest}\fi % Default.
   \let\RequirePackage\gimmedat
   \@ActivateFonts % In file Novelette-Fonts.sty. 
+  \RequirePackage{Novelette-Templates}
   \RequirePackage{Novelette-CalculateLayout}
   % Hyperref options for PDF/X with LuaLaTeX:
   \def\pdfx@pdfX@opts@luatex{%
@@ -324,7 +222,6 @@
 
 %% \AtBeginDocument finishes the setup
 %% ----------------------------------------------------------------------------
-%
 \AtBeginDocument{ %
   \@ActivateTextLengths % In file Novelette-TextMacros.sty.
   \@ActivateChapterScene % In file Novelette-ChapterScene.sty.
@@ -337,8 +234,6 @@
   \@DisableChapterSceneSettings % In file Novelette-ChapterScene.sty.
   \@RedefineBreakpos % In file Novelette-ChapterScene.sty.
   \@DisableHeaderSettings % In file Novelette-HeaderStyles.sty.
-  \@GatherGoodImages % In file Novelette-Images.sty.
-%%%%%  \if@markupcopy\@AddMarkupLabel\fi % In file Novelette-CalculateLayout.sty.
   % Cover has no content other than background image. End input now.
   % Then the log file will say that there was an unfinished if. Indeed! 
   \if@coverart\thispagestyle{empty}\null\end{document}\fi
@@ -351,7 +246,6 @@
 \AtEndDocument{%
   \if@coverart\else%
     \immediate\write\@auxout{%
-      \string\xdef\string\@AllGoodImages{\@AllGoodImages}^^J%
       \string\xdef\string\@UnknownImages{\@UnknownImages}^^J%
     }%
     \cleartoend % Adds 1 or 2 blank pages, for final verso blank.

@@ -28,14 +28,6 @@
 
 
 
-
-
-
-
-
-
-
-
 \gdef\@HeaderStyle{1} % Default. Has header. Note: Never has footer.
 \gdef\@VersoEmblem{} % No default emblem.
 \gdef\@RectoEmblem{} % No default emblem.
@@ -89,8 +81,8 @@
 %
 % See docs for what these emblems do, if used:
 \newcommand\SetEmblems[2]{ % verso, recto
-  \gdef\@VersoEmblem{{\headfont #1}}
-  \gdef\@RectoEmblem{{\headfont #2}}
+  \gdef\@VersoEmblem{{\headerfont #1}}
+  \gdef\@RectoEmblem{{\headerfont #2}}
 }
 \let\SetEmblem\SetEmblems% for convenience
 % If you want something fancier than \thepage:
@@ -143,8 +135,8 @@
 } % end \thispagestyle.
 
 %%
-\gdef\@lshftext{\headfont\addfontfeature{LetterSpace=\@loosehead}}
-\gdef\@lspagenum{\headfont\addfontfeature{LetterSpace=\@looseheadN}}
+\gdef\@lshftext{\headerfont\addfontfeature{LetterSpace=\@loosehead}}
+\gdef\@lspagenum{\headerfont\addfontfeature{LetterSpace=\@looseheadN}}
 %%
 
 % Content of header text (if present) can be changed at any time within

@@ -66,15 +66,15 @@
 %% Code slightly modified from package `etextools' by Florent Chervet.
 %% Other parts of `etextools' generate warnings
 %% that do not apply in Novelette. This keeps things simple.
-\newcount\nov@ettl@fter
-\newrobustcmd\nov@AfterGroup{%
-  \@ifstar{\nov@ettl@AfterGroup\@firstofone}{\nov@ettl@AfterGroup\unexpanded}%
+\newcount\my@ettl@fter
+\newrobustcmd\my@AfterGroup{%
+  \@ifstar{\my@ettl@AfterGroup\@firstofone}{\my@ettl@AfterGroup\unexpanded}%
 }
-\newrobustcmd\nov@ettl@AfterGroup[2]{%
-\csxdef{nov@ettl@fterGroup\number\numexpr\the\nov@ettl@fter+1}%
-{\global\csundef{nov@ettl@fterGroup\number\numexpr\the\nov@ettl@fter+1}#1{#2}}%
-\global\advance\nov@ettl@fter\@ne%
-\expandafter\aftergroup\csname nov@ettl@fterGroup\the\nov@ettl@fter\endcsname%
+\newrobustcmd\my@ettl@AfterGroup[2]{%
+\csxdef{my@ettl@fterGroup\number\numexpr\the\my@ettl@fter+1}%
+{\global\csundef{my@ettl@fterGroup\number\numexpr\the\my@ettl@fter+1}#1{#2}}%
+\global\advance\my@ettl@fter\@ne%
+\expandafter\aftergroup\csname my@ettl@fterGroup\the\my@ettl@fter\endcsname%
 }
 %% End code from `etextools`.
 
@@ -134,12 +134,12 @@
         \ClassWarning{Novelette}{Change \string\scenebreak\space top ^^J%
          of page ##2 to \string\sceneline\space or \string\scenestars.}%
       \fi%
-      \ifnum\@BreakLines=\@LinesPerPage%
+      \ifnum\@BreakLines=\my@lpp%
         \ClassWarning{Novelette}{Change \string\scenebreak\space at bottom ^^J%
          of page ##2 to \string\sceneline\space or \string\scenestars.}%
       \fi%
     }{}%
-    \FPsub{\@nearthebottom}{\@LinesPerPage}{1}%
+    \FPsub{\@nearthebottom}{\my@lpp}{1}%
     \ifnum\@BreakLines=2%
       \ClassWarning{Novelette}{\string\ ##3 too close to top of page ##2.}%
     \fi%
@@ -152,7 +152,7 @@
 
 
 %% Repair \FirstLine{} command from `magaz' package.
-% Problem: Conflict with \noindent\nov@AfterGroup as used in ChapterStart.
+% Problem: Conflict with \noindent\my@AfterGroup as used in ChapterStart.
 %   The \noindent is carried past \FirstLine to the following paragraph.
 % Solution: After FirstLine completes, back up one line vertically, then insert
 %   and empty line to restore grid and absorb the noindent.
@@ -238,15 +238,11 @@
   \global\@WithinChapterStartfalse%
   \vspace{0.1pt plus 0pt minus 0.2pt}%
   \gsetlength\parindent{\normalparindent}%
-  \nov@AfterGroup\NoIndentAfterThis%
+  \my@AfterGroup\NoIndentAfterThis%
 }
 %% End ChapterStart environment.
 
-
 %%
-\LetLtxMacro\ChapterDisplay\ChapterStart\relax % deprecated
-\LetLtxMacro\endChapterDisplay\endChapterStart\relax % deprecated
-%
 \newcommand\ChapterTitle[2][c]{% optional alignment l, c, r
   \ignorespaces%
   \vspace{0.5\nbs}\addtocounter{@linequarter}{2}%
@@ -259,7 +255,7 @@
     {On page \thepage you wrote a Chapter command with alignment ^^J%
      other than the allowed l, c, or r.}%
   \fi%
-  {\@csalign\stake\smash{{\chapterfont{}#2}}\par}%
+  {\@csalign\stake\smash{{\titlingfont #2}}\par}%
 }
 %
 \newcommand\ChapterSubtitle[2][c]{% optional alignment l, c, r
@@ -273,7 +269,7 @@
     {On page \thepage you wrote a Chapter command with alignment ^^J%
      other than the allowed l, c, or r.}%
   \fi%
-  {\@csalign{\stake\smash{\subchfont #2}}\par}%
+  {\@csalign{\stake\smash{\titlingfont #2}}\par}%
 }
 % In ChapterDeco, a trick is used. Instead of two optional arguments, and
 % instead of using expl3 syntax to create different argument delimiters,

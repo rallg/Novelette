@@ -1,0 +1,119 @@
+%%
+%% This is file Novelette-Settings.sty,
+%% part of Novelette document class.
+%% Copyright 2022 Robert Allgeyer.
+%%
+%% It may be used, distributed, and/or modified under the
+%% conditions of the MIT License. See:
+%% https://opensource.org/licenses/MIT
+%%
+%%
+\ProvidesFile{Novelette-Settings.sty}%
+[2022/06/22 v0.0.1 LuaLaTeX file (layout settings)]
+%%
+
+
+%% Define \purpose{book,markup,cover}:
+\newif \if@book
+\newif \if@coverart
+\newif \if@markupcopy
+\newcommand\purpose[1]{
+  \@tempTFfalse
+  \ifthenelse{\equal{#1}{book}}{\@booktrue \@tempTFtrue}{}
+  \ifthenelse{\equal{#1}{cover}}{\@coverarttrue \@tempTFtrue}{}
+  \ifthenelse{\equal{#1}{markup}}{\@markupcopytrue \@tempTFtrue}{}
+  \if@tempTF\else
+    \ClassError{Novelette}{Bad choice in \string\purpose{choice}}%
+    {Available choices:  book  markup  cover }
+  \fi
+}
+\purpose{book} % Default.
+
+%% Define \template{number}{name}:
+\newif \if@templateset
+\newcommand\template[2]{%
+  \gdef\my@template{#1}
+  \gdef\my@trimname{#2}
+  \IfSubStr{1 2 3}{\my@template}{}{%
+    \ClassError{Novelette}{Incorrect choice of template number}%
+    {In \string\template{number}{name} number must be 1, 2, or 3.}%
+  }
+  \IfSubStr{Novella B Memoir Demy Digest Trade Royal}{\my@trimname}{}{%
+    \ClassError{Novelette}{Incorrect choice of size name}%
+    {In \string\template{number}{name} name must be one of: ^^J%
+     Novella B Memoir Demy Digest Trade Royal ^^J%
+     The name is case-sensitive.}%
+  }
+  \@templatesettrue
+}
+%%
+
+%% Define \upshift{number} Tweak: Moves bottom of text up 0 to 2 lines.
+\newcommand\upshift[1]{ %  Number 0-2. May be decimal.
+  \@tempTFtrue
+  \FPiflt{#1}{0}\@tempTFfalse\fi
+  \FPifgt{#1}{2}\@tempTFfalse\fi
+  \if@tempTF
+    \gdef\my@upshift{#1}
+  \else
+    \ClassError{Novelette}{Bad value in \string\upshift{}}*
+    {Value 0 - 2. May be decimal.}%
+  \fi
+}
+\upshift{0} % Default.
+%%
+
+%% Define \media{book,markup}{width}{height}
+\newif \if@MediaSize % When trim size is floated in larger PDF page size.
+\newcommand\media[3]{
+  \@tempTFfalse
+  \ifthenelse{\equal{#1}{book}}{\@tempTFtrue}{}
+  \ifthenelse{\equal{#1}{markup}}{\@tempTFtrue}{}
+  \if@tempTF\else
+    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
+    {First argument:  book  markup}%
+  \fi
+  \@tempTFfalse
+  \IfEndWith{#2}{in}{\@tempTFtrue}{}
+  \IfEndWith{#2}{mm}{\@tempTFtrue}{}
+  \IfEndWith{#2}{cm}{\@tempTFtrue}{}
+  \if@tempTF\else
+    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
+    {Second argument must be width. Units: mm cm in}%
+  \fi
+  \@tempTFfalse
+  \IfEndWith{#3}{in}{\@tempTFtrue}{}
+  \IfEndWith{#3}{mm}{\@tempTFtrue}{}
+  \IfEndWith{#3}{cm}{\@tempTFtrue}{}
+  \if@tempTF\else
+    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
+    {Third argument must be height. Units: mm cm in}%
+  \fi
+  \ifthenelse{\dimtest{#2}{<}{#3}}{
+    \ifthenelse{\equal{#1}{book}}{
+      \if@book
+        \@MediaSizetrue
+        \gsetlength\paperwidth{#2}
+        \gsetlength\paperheight{#3}
+      \fi
+    }{}
+    \ifthenelse{\equal{#1}{markup}}{
+      \if@markupcopy
+        \@MediaSizetrue
+        \gsetlength\paperwidth{#2}
+        \gsetlength\paperheight{#3}
+      \fi
+    }{}
+  }{
+    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
+    {Second argument is width. Third argument is height. ^^J%
+     Height must be greater than width.}
+  }
+}
+%%
+
+
+%%
+\endinput
+%%
+%% End of file Novelette-CalculateLayout.sty.
