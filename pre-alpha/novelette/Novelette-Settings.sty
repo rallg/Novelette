@@ -63,9 +63,9 @@
 \upshift{0} % Default.
 %%
 
-%% Define \media{book,markup}{width}{height}
+%% Define \media{book,markup}{width}{height} :
 \newif \if@MediaSize % When trim size is floated in larger PDF page size.
-\newcommand\media[3]{
+\DeclareDocumentCommand\media { m m m O{none} } {
   \@tempTFfalse
   \ifthenelse{\equal{#1}{book}}{\@tempTFtrue}{}
   \ifthenelse{\equal{#1}{markup}}{\@tempTFtrue}{}
@@ -109,8 +109,40 @@
     {Second argument is width. Third argument is height. ^^J%
      Height must be greater than width.}
   }
+  \@tempTFfalse
+  \gdef\my@markupgrid{none}
+  \if@markupcopy
+    \ifthenelse{\equal{#4}{none}}{\@tempTFtrue}{}
+    \ifthenelse{\equal{#4}{in}}{\@tempTFtrue}{}
+    \ifthenelse{\equal{#4}{mm}}{\@tempTFtrue}{}
+    \if@tempTF
+      \gdef\my@markupgrid{#4}
+    \else
+      \gdef\my@markupgrid{none}
+      \ClassWarning{Novelette}{Bad value for media grid. Ignored. ^^J%
+       \string\media\space argument 4 is optional. Only applies to markup. ^^J%
+       Possible values: none in mm (or do not use).}
+    \fi
+  \fi
 }
 %%
+
+%% Define \markupgrid{none,mm,in} Default: none.
+\newcommand\markupgrid[1]{
+  \@tempTFfalse
+  \ifthenelse{\equal{#1}{none}}{\@tempTFtrue}{}
+  \ifthenelse{\equal{#1}{mm}}{\@tempTFtrue}{}
+  \ifthenelse{\equal{#1}{in}}{\@tempTFtrue}{}
+  \if@tempTF
+    \gdef\my@markupgrid{#1}
+  \else
+    \ClassWarning{Novelette}{Bad value for \string\markupgrid{} ignored}
+  \fi
+  \if@markupcopy\else\gdef\my@markupgrid{none}\fi
+}
+\markupgrid{none}
+%%
+
 
 
 %%
