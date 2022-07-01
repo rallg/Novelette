@@ -206,7 +206,7 @@
   \FPround{\@thiscsheight}{\@thiscsheight}{0}%
   \FPiflt{\@thiscsheight}{4}%
     \def\@smcserr{%
-      \ClassError{Novelette}{ChapterStart height insufficient for thispagestyle}%
+      \ClassError{Novelette}{ChapterStart height insufficient}%
        {With your choice for thispagestyle, the height must be at least 4.}%
     }%
     \IfStrEq{\@thiscsstyle}{plain}{\@smcserr}{}%
@@ -251,7 +251,7 @@
   \ifthenelse{\equal{#1}{c}}{\let\@csalign\centering\relax\@tempTFtrue}{}%
   \ifthenelse{\equal{#1}{r}}{\let\@csalign\hfill\relax\@tempTFtrue}{}%
   \if@tempTF\else%
-    \ClassError{Novelette}{Chapter Title, Deco, Subtitle align must be l, c, or r}%
+    \ClassError{Novelette}{Chapter Title, Deco, Subtitle align l, c, or r}%
     {On page \thepage you wrote a Chapter command with alignment ^^J%
      other than the allowed l, c, or r.}%
   \fi%
@@ -265,7 +265,7 @@
   \ifthenelse{\equal{#1}{c}}{\let\@csalign\centering\relax\@tempTFtrue}{}
   \ifthenelse{\equal{#1}{r}}{\let\@csalign\hfill\relax\@tempTFtrue}{}
   \if@tempTF\else%
-    \ClassError{Novelette}{Chapter Title, Deco, Subtitle align must be l, c, or r}%
+    \ClassError{Novelette}{Chapter Title, Deco, Subtitle align l, c, or r}%
     {On page \thepage you wrote a Chapter command with alignment ^^J%
      other than the allowed l, c, or r.}%
   \fi%
@@ -350,7 +350,7 @@
 
 
 %% Neutralize settings commands:
-\gdef\@DisableChapterSceneSettings{% called by `Novelette.cls' \AtBeginDocument
+\gdef\@DisableChapterSceneSettings{% Called \AtBeginDocument,
   \LetLtxMacro\SetHeaderStyle\relax
   \LetLtxMacro\IndentAfterScenebreak\relax
   \LetLtxMacro\SetScenebreakIndent\relax

@@ -91,7 +91,7 @@
   }{}
   \setlength\@tempLength{\paperheight-\my@trimheight}
   \ifthenelse{\dimtest{\@tempLength}{<}{5.83mm}}{% allows for pixel rounding
-    \ClassWarning{Novelette}{^^JBIG BAD WARNING! Insufficient bleed height ?^^J%
+    \ClassWarning{Novelette}{^^JBIG BAD WARNING! Insufficient bleed height?^^J%
     Commercial printers generally require 0.125in (3mm) bleed,^^J%
     on all four sides of the Trim. But your dimensions do not provide this.^^J%
     Perhaps you need to increase the MediaSize ?^^J}
@@ -128,11 +128,10 @@
 %   to the top of whatever comes first (header or textblock). May be negative.
 % For consistency, the topmost baseline (header or main text) will be
 %   positioned at 1em below the margin.
-
-  \gsetlength\topmargin{\my@topclear+0.5\paperheight-0.5\my@trimheight-72.27pt}
-  \if@HasHeader\else
-    \gsetlength\topmargin{\topmargin-\baselineskip+\my@fontsize}
-  \fi
+\gsetlength\topmargin{\my@topclear+0.5\paperheight-0.5\my@trimheight-72.27pt}
+\if@HasHeader\else
+  \gsetlength\topmargin{\topmargin-\baselineskip+\my@fontsize}
+\fi
 
 % It seems that, unless specified by user, TeX may place the top text baseline
 %   in a vertical position that depends on the height of text in that line.
@@ -178,7 +177,7 @@
 
 %% POST-LAYOUT
 %% ----------------------------------------------------------------------------
-%% Adds cropmarks and label to markup copy.
+%% Adds label, and possibly cropmarks, to markup copy.
 
 \if@markupcopy
   \ifthenelse{\equal{\my@markupgrid}{none}}{
@@ -189,72 +188,14 @@
         \raisebox{-\Trim@Bottom - \nfs}{\textcolor{gray}{~MARKUP COPY}}%
       }%
     }%
-  }{}
+  }{
+    \my@developer@grid % Developer only. Not part of Novelette release.
+  }
 \fi
-\ifthenelse{\equal{\my@markupgrid}{in}}{
-  \AddToShipoutPictureBG{%
-    \@getPageXY%
-    \AtPageUpperLeft{%
-      \hspace{\dimexpr\Trim@Left}%
-      \raisebox{-\Trim@Bottom - 2in}{\my@inclgr[natwidth,natheight]{Novelette-gridinTL.png}}%
-    }%
-  }%
-  \AddToShipoutPictureBG{%
-    \@getPageXY%
-    \AtPageUpperLeft{%
-      \hspace{\dimexpr\Trim@Left + \my@trimwidth - 2in}%
-      \raisebox{-\Trim@Bottom - 2in}{\my@inclgr[natwidth,natheight]{Novelette-gridinTR.png}}%
-    }%
-  }%
-  \AddToShipoutPictureBG{%
-    \@getPageXY%
-    \AtPageUpperLeft{%
-      \hspace{\dimexpr\Trim@Left + \my@trimwidth - 2in}%
-      \raisebox{-\Trim@Bottom - \my@trimheight}{\my@inclgr[natwidth,natheight]{Novelette-gridinBR.png}}%
-    }%
-  }%
-  \AddToShipoutPictureBG{%
-    \@getPageXY%
-    \AtPageUpperLeft{%
-      \hspace{\dimexpr\Trim@Left}%
-      \raisebox{-\Trim@Bottom - \my@trimheight}{\my@inclgr[natwidth,natheight]{Novelette-gridinBL.png}}%
-    }%
-  }%
-}{}
-\ifthenelse{\equal{\my@markupgrid}{mm}}{
-  \AddToShipoutPictureBG{%
-    \@getPageXY%
-    \AtPageUpperLeft{%
-      \hspace{\dimexpr\Trim@Left}%
-      \raisebox{-\Trim@Bottom - 2in}{\my@inclgr[natwidth,natheight]{Novelette-gridmmTL.png}}%
-    }%
-  }%
-  \AddToShipoutPictureBG{%
-    \@getPageXY%
-    \AtPageUpperLeft{%
-      \hspace{\dimexpr\Trim@Left + \my@trimwidth - 2in}%
-      \raisebox{-\Trim@Bottom - 2in}{\my@inclgr[natwidth,natheight]{Novelette-gridmmTR.png}}%
-    }%
-  }%
-  \AddToShipoutPictureBG{%
-    \@getPageXY%
-    \AtPageUpperLeft{%
-      \hspace{\dimexpr\Trim@Left + \my@trimwidth - 2in}%
-      \raisebox{-\Trim@Bottom - \my@trimheight}{\my@inclgr[natwidth,natheight]{Novelette-gridmmBR.png}}%
-    }%
-  }%
-  \AddToShipoutPictureBG{%
-    \@getPageXY%
-    \AtPageUpperLeft{%
-      \hspace{\dimexpr\Trim@Left}%
-      \raisebox{-\Trim@Bottom - \my@trimheight}{\my@inclgr[natwidth,natheight]{Novelette-gridmmBL.png}}%
-    }%
-  }%
-}{}
 %%
 
 
-%% The "cropmarks"  are really "trim marks" because they indicate the TrimBox.
+%% The "cropmarks" are really "trim marks" because they indicate the TrimBox.
 %% P.O.D. Services request that your PDF does not have cropmarks,
 %% so Novelette does not provide them in the print-ready book file.
 %% But when \purpose{markup} and \media{markup}{width}{height} are both used,

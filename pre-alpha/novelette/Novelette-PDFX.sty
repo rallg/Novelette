@@ -164,8 +164,9 @@
   \fi%
 }
 %
-\begingroup\edef\next{%
-\endgroup\pdfpageattr{\Novelette@CropBox^^J\Novelette@BleedBox^^J\Novelette@TrimBox}}\next
+\begingroup\edef\next{\endgroup
+\pdfpageattr{\Novelette@CropBox^^J\Novelette@BleedBox^^J\Novelette@TrimBox}%
+}\next
 %
 %% End calculate and specify TrimBox.
 

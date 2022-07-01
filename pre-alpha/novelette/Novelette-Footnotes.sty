@@ -317,7 +317,7 @@
 %   `ancestry of Yada' for later use. The argument is a self-memo, so that you
 %   remember why you want an endnote there, when you look at the source.
 % Following \endnote or \endnotetext with [ will produce an error.
-%   Reason: Confuses Novelette's commands with those from banned `endnote' package.
+%   It confuses Novelette's commands with those from banned `endnote' package.
 % Whenever \endnote is used, the marker number and page is added to a list,
 %   and the list is typed into the log file after the document ends. That way,
 %   you can hunt down where the endnotes markers were placed.
@@ -336,7 +336,7 @@
 \def\@nendnote#1{\@addendnote}
 \def\@nenspace{\@addendnote\space}
 \def\@nenerror{%
-  \ClassError{Novelette}{\string\endnote\space cannot be followed by [ character}%
+  \ClassError{Novelette}{\string\endnote\space cannot be followed by [ }%
    {To avoid possible confusion with similar command from other packages, ^^J%
     you may not follow \string\endnote\space with [ character. ^^J%
     However, you may do \string\endnote\string{\string}[ if desired.}%
@@ -351,7 +351,7 @@
 %   the method for continuing a prior endnote to a new paragraph. The text
 %   may begin with \forceindent, according to your needs.
 \def\@nentexterror{%
-  \ClassError{Novelette}{\string\endnotetext\space cannot be followed by [ character}%
+  \ClassError{Novelette}{\string\endnotetext\space cannot be followed by [ }%
    {To avoid possible confusion with similar command from other packages, ^^J%
     you may not follow \string\endnotetext\space with [ character. ^^J%
     This command takes two mandatory arguments. No optional argument.}%
@@ -417,7 +417,7 @@
   %
   \iftoggle{@placedfootnotenumber}{%
     \iftoggle{@gotendnotes}{%
-      \ClassWarning{Novelette}{^^JBIG BAD WARNING! You used numbered footnotes ^^J%
+      \ClassWarning{Novelette}{^^JBIG BAD WARNING! Numbered footnotes ^^J%
         and numbered endnotes. Better change to symbolic footnotes! ^^J}%
     }{}
   }{}%
