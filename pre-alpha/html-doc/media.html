@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Novelette - Media</title>
+<style type="text/css">
+tr {margin:0; padding:0;}
+td {margin:0; padding:0;}
+h4 {margin:0; margin-top:1em;}
+h5 {margin:0;}
+img {margin:0; padding:0;}
+p {margin:0; text-indent:1em;}
+#master {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left;
+}
+#openbook {
+	margin-left:auto; margin-right:auto; margin-top:2em; margin-bottom:2em;
+	font-family:monospace; font-size:1em; text-align:center;
+}
+#sizes {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#sizes th, td {padding: .2em 1em .2em 1em;}
+#choices {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#choices th, td {padding: .2em 1em .2em 1em;}
+td.t {border-top:1px solid #000000;}
+td.b {border-bottom:1px solid #000000;}
+td.l {border-left:1px solid #000000;}
+td.r {border-right:1px solid #000000;}
+td.c {background-color:#ffcccc;}
+td.p {background-color:#faf9f0; text-align:left;}
+</style>
+</head>
+<body>
+<div id="master">
+<h3>Media</h3>
+
+<p>The technical name for the PDF dimensions is <i>media size</i>,
+also called <i>PDF page size</i>. In most cases, the <i>media size</i> is the
+same as the book or markup trim size, so you do not need these commands.</p>
+<p>There are two <code>media</code> settings. One of them applies only
+when the <a href="purpose.html">purpose</a> is <code>book</code>.
+The other applies only when the <a href="purpose.html">purpose</a>
+is <code>markup</code>. You may use one or the other setting,
+or both of them, or neither. They are independent. Both are ignored
+when the <a href="purpose.html">purpose</a> is <code>cover</code>.</p>
+
+
+<h4>\media{markup}{width}{height}</h4>
+<p>Width and height must have units of mm, cm, or in. The dimensions cannot be
+less than the book trim size.</p>
+<p>If you are printing a <a href="markup.html">markup copy</a> on a home or
+office printer, then you might find it useful to set the media size at the
+printer's paper size (usually USletter=8.5x11 inches, or A4=*****).
+Then the printed pages will appear centered on the paper, horizontally and
+vertically.</p>
+<p>If you do not set the media size, then the printer may need
+further instructions from you. Or, it may guess.</p>
+<p>Further discussion is on the <a href="markup.html">markup</a> page.</p>
+
+
+<h4>\media{book}{width}{height}</h4>
+
+<p>Normally, your P.O.D. Service will request that the media size be
+exactly the same as the book trim size. Then, do not use this command
+for the book.</p>
+<p>But in a few cases, the P.O.D. Service will request that
+you center the trim size, horizontally and vertically, on a larger
+media size. Then you can use this command. The actual placement of your
+book trim is automatically written in Metadata, known as the TrimBox.</p>
+<p>This does NOT print crop marks or other alignment marks.</p>
+
+
+
+</div><!-- end master -->
+</body>
+</html>

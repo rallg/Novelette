@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Novelette - Cover Artwork</title>
+<style type="text/css">
+tr {margin:0; padding:0;}
+td {margin:0; padding:0;}
+h4 {margin:0; margin-top:1em;}
+h5 {margin:0;}
+img {margin:0; padding:0;}
+p {margin:0; text-indent:1em;}
+#master {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left;
+}
+#openbook {
+	margin-left:auto; margin-right:auto; margin-top:2em; margin-bottom:2em;
+	font-family:monospace; font-size:1em; text-align:center;
+}
+#sizes {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#sizes th, td {padding: .2em 1em .2em 1em;}
+#choices {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#choices th, td {padding: .2em 1em .2em 1em;}
+td.t {border-top:1px solid #000000;}
+td.b {border-bottom:1px solid #000000;}
+td.l {border-left:1px solid #000000;}
+td.r {border-right:1px solid #000000;}
+td.c {background-color:#ffcccc;}
+td.p {background-color:#faf9f0; text-align:left;}
+</style>
+</head>
+<body>
+<div id="master">
+<h3>Cover Artwork</h3>
+
+<h4><code>
+\template{number}{name} % SAME AS WHEN YOU WROTE THE BOOK.
+\purpose{cover}<br>
+\spine{width}<br>
+\bleed{width}<br>
+\coverimage{filename}</code></h4>
+<p>Before you begin: Cover artwork requires a real computer.
+The file size is large, and the amount of computation is heavy.
+If you are tying to do it on a portable device with only solid-state
+storage (no hard drive) and limited memory, you will fail. You do not
+need fancy technology; an ordinary home or office computer can do it.</p>
+<p>Novelette is not an image editor or graphic arts program. But if you
+have the cover artwork as an image file, it can do these:</p>
+<ul>
+<li>Pre-process the image using shell scripts (BASH or Windows CMD).
+The result will be a preliminary PDF file, with the image separated into
+CMYK channels, and ink limit common to many P.O.D. Services.</li>
+<li>Convert the preliminary PDF into a PDF/X conforming file</p>
+</ul>
+
+<p>The use of the scripts is explained on a different page. That work
+occurs outside the scope of LuaLaTeX.</p>
+<p>When your book is finished, you will tell the P.O.D. Service its page
+count, and they will reply with a spine width. Or, they may provide
+a do-it-yourself calculator. Enter it as <code>\spine{width}</code>
+with units of <code>mm</code>, <code>cm</code>, or <code>in</code>.</p>
+<p>The P.O.D. Service will also require a minimum bleed width, typically
+0.125in or 3mm. Enter it, with units, as <code>\bleed{width}</code>.
+It is applied on all sides of the image.</p>
+<p>The cover image <code>filename</code> must show its file extension.
+It must be in the same folder as the LuaLaTeX document, or as
+<i>subfolder/filename</i>.<p>
+<p>When the image is pre-processed by Novelette scripts, an internal label
+is added, which says the image is OK. If the document does not see that label,
+it will refuse to convert the image.</p>
+<p>The document will also measure the image size, with its required 300ppi
+resolution, and compare it to the dimensions provided.
+If the calculation is correct, the image is converted. But if the numbers
+do not add up, error.</p>
+<p>The document body must be <i>entirely empty</i>. That is, there must be
+nothing (except maybe a blank line) between <code>\begin{document}</code>
+and <code>\end{document}</code>. In other words, you cannot use LuaLaTeX
+to add text onto the image. All text must be built into the image
+(rasterized). This is not the most advanced way to do things, but the
+more advanced ways requires professional knowledge. If you had that
+knowledge, you would be using a professional graphic arts program!</p>
+<p>Things you need to know:</p>
+<ul>
+<li>Mid-value colors, and pastels, will appear about as good as you
+would get using professional methods, with the same P.O.D. technology.</li>
+<li>Dark colors will not appear as dark as you might like. This is because
+P.O.D. Services limit the amount of ink (total area coverage, TAC)
+and the kind of ink (no spot colors). Mass-produced books, with those
+dramatic cover colors, are printed using a different technology.</li>
+<li>Text will be adequately sharp, if it is not too thin or too tiny.
+If you are using light text on a dark background, then use text that is
+a bit heavier or larger than usual. Handling text in CMYK is one of
+those things that separates the pros from anyone else.</li>
+<li>You are not using a color-profiled monitor with color-calibrated
+software in a controlled environment, to be printed on a machine
+with known color response. In fact, you may not even know what those
+terms mean. Bottom line: The printed colors will be OK, but do not
+expect them to be exactly what you saw on your computer.</li>
+</ul>
+
+</div><!-- end master -->
+</body>
+</html>

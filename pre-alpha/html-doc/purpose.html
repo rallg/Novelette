@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Novelette - Purpose</title>
+<style type="text/css">
+tr {margin:0; padding:0;}
+td {margin:0; padding:0;}
+h4 {margin:0; margin-top:1em;}
+h5 {margin:0;}
+img {margin:0; padding:0;}
+p {margin:0; text-indent:1em;}
+#master {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left;
+}
+#openbook {
+	margin-left:auto; margin-right:auto; margin-top:2em; margin-bottom:2em;
+	font-family:monospace; font-size:1em; text-align:center;
+}
+#sizes {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#sizes th, td {padding: .2em 1em .2em 1em;}
+#choices {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#choices th, td {padding: .2em 1em .2em 1em;}
+td.t {border-top:1px solid #000000;}
+td.b {border-bottom:1px solid #000000;}
+td.l {border-left:1px solid #000000;}
+td.r {border-right:1px solid #000000;}
+td.c {background-color:#ffcccc;}
+td.p {background-color:#faf9f0; text-align:left;}
+</style>
+</head>
+<body>
+<div id="master">
+<h3>Purpose</h3>
+
+<h4><code>\purpose{choice}</code></h4>
+<p>Every document must have a <i>purpose</i>. There are three choices:</p>
+<ul>
+<li><code>book</code> is the interior book block.</li>
+<li><code>markup</code> is the interior book block, for editing.</li>
+<li><code>cover</code> is for processing cover artwork.</li>
+</ul>
+
+<p>Use <code>book</code> for the entire contents of the book. This prepares
+print-ready files in PDF/X format.</p>
+
+<p>If <code>markup</code>, then the label MARKUP COPY is added to the
+top left corder of each page, along with lines 1in and 1cm long.
+Also, the PDF Metadata has MARKUP COPY added to the title. This is a
+convenient way to provide copies for editing, without confusing them
+with the finished product.</p>
+
+<p>If <code>cover</code>, then the document can only be used for preparing
+the cover artwork as a PDF/X file. It is always a single page, with
+the entire cover and bleed.</p>
+
+<p>In a typical workflow, use <code>markup</code> until you are satisfied
+with the entire book. Then, change <code>markup</code> to <code>book</code>
+and process the result.</p>
+
+<p>Once you know the page count, your P.O.D. Service will provide the
+spine width. Then you are ready to work on the cover artwork.</p>
+
+</div><!-- end master -->
+</body>
+</html>

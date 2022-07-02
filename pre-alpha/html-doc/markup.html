@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Novelette - Markup Copy</title>
+<style type="text/css">
+tr {margin:0; padding:0;}
+td {margin:0; padding:0;}
+h4 {margin:0; margin-top:1em;}
+h5 {margin:0;}
+img {margin:0; padding:0;}
+p {margin:0; text-indent:1em;}
+#master {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left;
+}
+#openbook {
+	margin-left:auto; margin-right:auto; margin-top:2em; margin-bottom:2em;
+	font-family:monospace; font-size:1em; text-align:center;
+}
+#sizes {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#sizes th, td {padding: .2em 1em .2em 1em;}
+#choices {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#choices th, td {padding: .2em 1em .2em 1em;}
+td.t {border-top:1px solid #000000;}
+td.b {border-bottom:1px solid #000000;}
+td.l {border-left:1px solid #000000;}
+td.r {border-right:1px solid #000000;}
+td.c {background-color:#ffcccc;}
+td.p {background-color:#faf9f0; text-align:left;}
+</style>
+</head>
+<body>
+<div id="master">
+<h3>Markup Copy</h3>
+
+<p>When your <a href="purpose.html">purpose</a> is <code>markup</code>,
+the generated PDF file will have "MARKUP COPY" in small gray letters,
+at the upper left (in the clearance area) of each page.</p>
+<p>Also, the internal PDF Metadata title will have "MARKUP COPY" added to
+the end of the real title.</p>
+<p>The markup copy can be annotated in a PDF reader, or printed at your
+home or office. It is not for transfer to your P.O.D. Service.</p>
+<p>These settings apply <i>only</i> when your purpose is markup.
+They are ignored when your purpose is book or cover, so they can remain
+in the Preamble without harm.</p>
+<p>The two commands on this page are independent. You may use one, both,
+or neither.</p>
+
+<h4>\media{markup}{width}{height}</h4>
+<p>This command is optional. Width and height must have units of
+mm, cm, or in. If you do not use this command, then the markup copy
+will have the same dimensions as the book trim size.</p>
+<p>The <code>media</code> refers to the size of paper on which the document
+will be printed (before trimming), not the size of the book (after trimming).
+In nearly all cases, your book trim size is smaller than the size of paper
+that you feed into into the printer. Some printers automatically know
+what to do about this. Others will ask you what to do. But if you set
+the media, then the printer has its instructions built into the file.</p>
+<p>When you set <code>media</code>, the book trim size will be centered
+horizontally and vertically in the media size. Note that the texts will
+appear to shift slightly from right to left, for odd and even pages.
+This is due to the extra width of the inside clearance (glue area).</p>
+<p>When you use this command, crop marks will be added beyond the four
+corners of the book trim area, so you know how much of the media is
+actually occupied by the book pages.</p>
+<p>There is another media setting, when the purpose is book. It does not
+interact with this command.</p>
+
+<h4>\markupgrid{choice}</h4>
+<p>This command is optional. If you use it, the <code>choice</code>
+must be one of <code>mm</code> or <code>in</code>. Or, you can
+turn it off with <code>none</code>.</p>
+<p>If the choice is <code>mm</code>, then a grid with 2mm spacing will
+appear in the background at each corner of the trim size. If the choice
+is <code>in</code>, then a grid with 0.125in spacing will appear in the
+background at each corner of the trim size. The grids are labeled,
+so you know which one you selected.</p>
+<p>Each grid has its outermost square darkened, so you can readily find
+the four corners of the trim size.</p>
+<p>The grids are independently positioned, aligned with their four corners.</p>
+<p>If you use this command, but do not see the grids, perhaps the necessary
+grid images could not be found. Or perhaps you mis-spelled the choice.
+Either way, your file will be processed with warning, not error.</p>
+
+</div><!-- end master -->
+</body>
+</html>

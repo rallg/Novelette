@@ -12,39 +12,50 @@
 [2022/06/22 v0.0.1 LuaLaTeX file (PDF Metadata settings)]
 %% 
 
+%% This page only discusses user settings that are not automatically
+%% calculated from templates, PDF/X, etc..
+
 %% PDF Metadata is non-printing identifying information in the PDF file.
 %% Some or all of it can be read by PDF reader software.
+%% Examples are: Title, Author.
+
 %% There are many more kinds PDF Metadata, such as subject and keywords.
-%% They are  used for database search of electronic documents, not paper print.
-%% Thus, Novelette does not incorporate that additional PDF Metadata.
+%% They are used for database search of electronic documents, not paper print.
+%% So, Novelette does not provide for that kind of PDF Metadata.
 %% When you sign up with a P.O.D. Service, you will provide subject, keywords,
 %% and description directly to their database, rather than in the PDF.
+
 %% The print ISBN is not PDF Metadata, because you are not selling PDF copies.
-%% Believe it or not, the Copyright is undefined in PDF Metadata.
+%% Your P.O.D. Service may request that ISBN be part of the PDF file name,
+%% or they may re-name your file by its ISBN. That makes it easy to locate.
+%% From the manufacturing point of view, your book is its ISBN, with cover
+%% associated to that ISBN.
+
+%% Believe it or not, the Copyright is undefined in Novelette PDF Metadata.
 %% This is because the PDF is privately transferred between yourself
 %% and the P.O.D. Service (and Editor, if you use one). It is not published.
 %% Actual book Copyright notice is printed on its Copyright page.
 %% Particularly note that your P.O.D. Service is NOT the publisher: YOU are!
 
-% \title{Title of Book} % Part of PDF Metadata.
+% \title{Title of Book} % Essential in PDF Metadata.
 \gdef\title#1{\gdef\@title{#1}}
 \gdef\thetitle{\@title} % For convenience.
 \gdef\theTitle{\@title}
 \title{} % Required. If left empty: Fake title provided, warning issued.
 
-% \author{Author Name} % Part of PDF Metadata.
+% \author{Author Name} % Normally in PDF Metadata.
 \gdef\author#1{\gdef\@author{#1}}
 \gdef\theauthor{\@author} % For convenience.
 \gdef\theAuthor{\@author}
 \author{} % May be left empty, but that is not best.
 
-% \subtitle{This Is Optional} % Not part of PDF Metadata.
+% \subtitle{This Is Optional} % Not in PDF Metadata! For your convenience.
 \gdef\subtitle#1{\gdef\@subtitle{#1}}
 \gdef\thesubtitle{\@subtitle} % Compatibility.
 \gdef\theSubtitle{\@subtitle}
 \subtitle{} % May be left empty. Not required.
 
-% \formatPDF{conformance}{intent} 
+% \formatPDF{conformance}{intent}
 % If not used, default \formatPDF{X-1a:2001}{SWOP} set \AtEndPreamble.
 \gdef\my@conformance{}
 \gdef\my@intent{}
@@ -65,7 +76,7 @@
   }{}
 } % End \formatPDF.
 
-% Disable the above Metadata commands, called \AtBeginDocument:
+% Metadata commands cannot be used after Preamble. Called \AtBeginDocument:
 \gdef\@DisableMetadataCommands{
   \let\title\relax
   \let\author\relax

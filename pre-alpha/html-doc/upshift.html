@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Novelette - Upshift</title>
+<style type="text/css">
+tr {margin:0; padding:0;}
+td {margin:0; padding:0;}
+h4 {margin:0; margin-top:1em;}
+h5 {margin:0;}
+img {margin:0; padding:0;}
+p {margin:0; text-indent:1em;}
+#master {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left;
+}
+#openbook {
+	margin-left:auto; margin-right:auto; margin-top:2em; margin-bottom:2em;
+	font-family:monospace; font-size:1em; text-align:center;
+}
+#sizes {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#sizes th, td {padding: .2em 1em .2em 1em;}
+#choices {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#choices th, td {padding: .2em 1em .2em 1em;}
+td.t {border-top:1px solid #000000;}
+td.b {border-bottom:1px solid #000000;}
+td.l {border-left:1px solid #000000;}
+td.r {border-right:1px solid #000000;}
+td.c {background-color:#ffcccc;}
+td.p {background-color:#faf9f0; text-align:left;}
+</style>
+</head>
+<body>
+<div id="master">
+<h3>Upshift</h3>
+
+<h4><code>\upshift{value}</code></h4>
+<p>Use of this command is optional. Most documents will not need it.
+Cover artwork ignores it. If used, <code>value</code> is from 0 to 2.
+Decimal values allowed.</p>
+<p>When you choose a template, Novelette automatically selects clearances,
+font size, and lines per page. The top of the header text will be about
+as far from the top edge of the page, as the bottom of them main body text
+is from the bottom of the page.</p>
+<p>If you decide that the pages look like they should be shifted up a bit,
+then use this command. The <code>value</code> is multiple of line height.</p>
+<p>The top of the printable area does not move. Instead, line-to-line
+spacing shrinks, thereby raising the bottom of the printable area.</p>
+<p>Upshift does not change the line breaks, or the number of lines per page.
+So if you change the book trim size, you can also change upshift,
+as long as the new template keeps the same group number.</p>
+
+<h4>Note</h4>
+<p>Your P.O.D. Service may require space above the header, equal to space
+below the main body text. This is the default upshift 0. Or, you may be
+allowed to allocate space as you please, as long as clearance is enough.</p>
+<p>Value <code>2</code> shifts the bottom of text up by 2 lines. That places
+the bottom of main text as far from the bottom of the page, as the top of
+main text (ignoring header) is from the top of the page.</p>
+
+
+
+</div><!-- end master -->
+</body>
+</html>

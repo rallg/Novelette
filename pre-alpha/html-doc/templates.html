@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Novelette - Templates</title>
+<style type="text/css">
+tr {margin:0; padding:0;}
+td {margin:0; padding:0;}
+h4 {margin:0; margin-top:1em;}
+h5 {margin:0;}
+img {margin:0; padding:0;}
+p {margin:0; text-indent:1em;}
+#master {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left;
+}
+#openbook {
+	margin-left:auto; margin-right:auto; margin-top:2em; margin-bottom:2em;
+	font-family:monospace; font-size:1em; text-align:center;
+}
+#sizes {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#sizes th, td {padding: .2em 1em .2em 1em;}
+#choices {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#choices th, td {padding: .2em 1em .2em 1em;}
+td.t {border-top:1px solid #000000;}
+td.b {border-bottom:1px solid #000000;}
+td.l {border-left:1px solid #000000;}
+td.r {border-right:1px solid #000000;}
+td.c {background-color:#ffcccc;}
+td.p {background-color:#faf9f0; text-align:left;}
+</style>
+</head>
+<body>
+<div id="master">
+<h3>Templates</h3>
+
+<p>Novelette provides templates for several popular US and UK book sizes.
+The processed PDF is acceptable by nearly all P.O.D. Services.</p>
+
+<p>Novelette cannot use word processor templates (such as those designed
+for MS Word). It cannot export your document to a word processor format.</p>
+<p>Some P.O.D. Services provide MS Word templates, for the convenience
+of writers who use a word processor. That is not a problem, as long as
+you can ignore the MS Word template, and submit a finished PDF file.</p>
+
+<p>If you employ an Editor who requests an MS Word document for editing,
+that may or may not be a problem. If the edited text is returned to you for
+final changes, you can export the Word document to UTF-8 plain text (no BOM)
+then markup the text according to Novelette requirements. The risk is that
+you will fumble the markup! But if you are using an Editor who accepts PDF,
+and returns an annotated PDF to you, then you can use Novelette directly.</p> 
+
+<p>If your P.O.D. Service does not accept PDF, consider using another Service.
+It seems to be that case some P.O.D. Services are really in the business of
+E-books, with print-to-paper as a nuisance sideline.</p>
+
+
+<h4>Available Trim Sizes</h4>
+<p>Novelette understands only a few sizes, which are among the most popular
+industry standards offered by P.O.D. Services.</p>
+<p>Note that the small Pocket and A-Format sizes are not available.
+This is because P.O.D. often requires clearances that are unusually large
+for these formats, leaving an undesirably small printable area.
+Besides, the modern equivalent is a smartphone with E-book reader!</p>
+<p>Size names "Novella" and "Memoir" are nicknames used by some Services;
+no particular content is implied. The other names are industry standards.</p>
+<p>Sizes are listed in order of increasing width. Note that some services
+list sizes with height shown first. Height always exceeds width.</p>
+<p>P.O.D. Services usually require clearance (margin) of at least 0.5in
+or 13mm on all sides of the printable area, with an additional 0.125in
+or 3mm at the inside (spine) edge, where pages are glued. These values
+are built into the templates. You do not need to set them. However, you may
+visually balance top/bottom clearances, using the optional
+<a href="upshift.html">upshift</a> setting.</p>
+<p>You do not set font point size, or lines per page. These are automatically
+set by the template.</p>
+
+<table id="sizes">
+<caption>Available Trim Sizes</caption>
+<thead>
+<tr><th>Name</th><th>US/UK</th><th>Width</th><th>Height</th></tr>
+</thead>
+<tbody>
+<tr><td>Novella</td><td>US</td><td>5 in</td><td>8 in</td></tr>
+<tr><td>B-Format</td><td>UK</td><td>129 mm</td><td>198 mm</td></tr>
+<tr><td>Memoir</td><td>US</td><td>5.25 in</td><td>8 in</td></tr>
+<tr><td>Demy</td><td>UK</td><td>135 mm</td><td>216 mm</td></tr>
+<tr><td>Digest</td><td>US</td><td>5.5 in</td><td>8.5 in</td></tr>
+<tr><td>US-Trade</td><td>US</td><td>6 in</td><td>9 in</td></tr>
+<tr><td>Royal</td><td>UK</td><td>156 mm</td><td>234 mm</td></tr>
+</tbody>
+</table>
+
+<h4>Available Templates</h4>
+<h5><code>\template{group number}{named size}</code></h5>
+<p>Templates are grouped as number 1, 2, 3. Each group number is
+compatible with several named sizes. Y9ou must choose both a number and
+a named size. Most named sizes are available in more than one group number.</p>
+<p>Within a group, you may change the named size, without affecting line
+breaks or page numbering. So if you are not sure whether your book will
+be printed as Novella or B-Format, choose group 1. But if you are not sure
+whether your books will be printed as Digest or B-Format, choose group 2.</p>
+<p>Note: A name change <i>should</i> always work, but possibly may result in
+different line breaks and pagination. If it does, minor edits may fix it.</p>
+
+<table id="choices">
+<caption>Templates Numbers and Available Sizes</caption>
+<thead>
+<tr><th>Group Number</th><th>Size Names</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Novella B-Format Memoir</td></tr>
+<tr><td>2</td><td>B-Format Memoir Demy Digest</td></tr>
+<tr><td>3</td><td>Demy Digest US-Trade Royal</td></tr>
+</tbody>
+</table>
+
+
+</div><!-- end master -->
+</body>
+</html>

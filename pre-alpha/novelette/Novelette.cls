@@ -101,8 +101,7 @@
 \RequirePackage{calc} % For length expression calculations.
 \RequirePackage{atbegshi} % In oberdiek bundle. For one-page header changes.
 \RequirePackage{letltxmacro} % In oberdiek bundle. For re-defining some macros.
-\RequirePackage{xparse} % For writing cool-looking commands. *****
-
+\RequirePackage{xparse} % For writing cool-looking commands.
 
 \RequirePackage{noindentafter} % For unindented chapter and scene starts.
 \RequirePackage{changepage} % Provides block indents, etc. Do not use strict!

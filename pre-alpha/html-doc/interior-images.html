@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Novelette - Interior Images</title>
+<style type="text/css">
+tr {margin:0; padding:0;}
+td {margin:0; padding:0;}
+h4 {margin:0; margin-top:1em;}
+h5 {margin:0;}
+img {margin:0; padding:0;}
+p {margin:0; text-indent:1em;}
+#master {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left;
+}
+#openbook {
+	margin-left:auto; margin-right:auto; margin-top:2em; margin-bottom:2em;
+	font-family:monospace; font-size:1em; text-align:center;
+}
+#sizes {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#sizes th, td {padding: .2em 1em .2em 1em;}
+#choices {
+	max-width:40em; margin-left:auto; margin-right:auto;
+	text-align:left; margin-top:1em ; margin-bottom:1em;
+}
+#choices th, td {padding: .2em 1em .2em 1em;}
+td.t {border-top:1px solid #000000;}
+td.b {border-bottom:1px solid #000000;}
+td.l {border-left:1px solid #000000;}
+td.r {border-right:1px solid #000000;}
+td.c {background-color:#ffcccc;}
+td.p {background-color:#faf9f0; text-align:left;}
+</style>
+</head>
+<body>
+<div id="master">
+<h3>Interior Images</h3>
+
+<p>Your book interior may have images. There are several rules:</p>
+<ul>
+<li>No color. Period.</li>
+<li>Line art (black/white only, no gray or anit-aliasing) must be 1-bit
+per pixel. Standard resolution is 600 pixels per inch (ppi). If your image
+has lower resolution, then it is better to use grayscale.</li>
+<li>Grayscale images must be single-channel shades of black ink.
+That is, 8-bits per pixel. Only 300ppi resolution is allowed.</li>
+<li>Do not convert images into "print screen" dots.
+That will be done by the P.O.D. Service, if necessary.</li>
+<li>Image metadata <i>must</i> state resolution, <i>must not</i> name or
+include a color profile, <i>must not</i> contain EXIF or similar data.</li>
+</ul>
+
+<p>To ensure that all of the above specifications are met, Novelette
+comes with several scripts. These are run in command-line terminal
+(Windows Command, Linux BASH). Each image must be processed by the
+appropriate script. The processed image will have an internal marker,
+informing Novelette that the image can be used.</p>
+<p>When you place an image, Novelette inspects its raw digital data,
+and looks for the scripted marker. If not there, the image is rejected.</p>
+<p>Why do this? PDF/X-1a:2001 places tight restrictions on images.
+This ensures compliance. Without the restrictions, images would still
+print well on a home or office printer, because your own printer will
+guess what you mean. But files with non-compliant images might be rejected
+by some P.O.D. Services, because they are not in the business of guessing.</p>
+
+
+<h4>Maximum Image Dimensions</h4>
+<p>Novelette does not scale or crop images to fit. Your images must be at
+the exact resolution (pixels per inch) and number of pixels (width, height)
+that they will be used.</p>
+<p>Each <a href="template.html">template</a> has maximum image dimensions.
+If you place an image that exceeds those values, Novelette throws an error.</p>
+
+<table id="maximage">
+<caption>Maximum Image Sizes (Pixels)</caption>
+<thead>
+<tr>
+<th>Template</th>
+<th colspan="2" style="border-bottom:2px solid black;">Grayscale@300ppi</th>
+<th colspan="2" style="border-bottom:2px solid black">Line Art@600ppi</th>
+</tr>
+<tr>
+<th>Group #</th><th>Width</th><th>Height</th><th>Width</th><th>Height</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>yada</td><td>yada</td><td>yada</td><td>yada</td></tr>
+
+</tbody>
+</table>
+
+
+<h4>\image[placement]{filename}</h4>
+<p>The <code>placement</code> is optional. Default is <code>h</code>.
+Allowable placement is one of:</p>
+<ul>
+<li><code>h</code> &nbsp; Place it "here" if possible, immediately after the
+current paragraph finishes.  But if it does not fit, then place it at the top
+of the following page.</li>
+<li><code>t</code> &nbsp; Place it at the "top" of the following page. But you
+cannot place it on the same page, above where the code is written.</li>
+<li><code>b</code> &nbsp; Place it at the "bottom" of the current page, if
+possible. But if it does not fit, place it at the bottom of the following
+page.</li>
+</ul>
+
+<p>The <code>filename</code> must include its file extension. The extension
+must be <i>png</i>, <i>jpg</i>, <i>jpeg</i>, or their capitalized forms.
+Paths such as <i>images/filename</i> are allowed. No spaces anywhere.
+Case-sensitive.</p>
+<p>The image will be placed as a block element, horizontally centered in the
+printable area. If you need to shift it left or right, re-work the image
+in your graphics program, then re-process the image with script.</p>
+<p>No border is added. If it needs a border, make it part of the image.
+No caption is added. If it needs a caption, make it part of the image.</p>
+<p>Novelette will add a variable amount of space, above and below the image.
+This automatically increases the occupied area to an integral number
+of text lines.</p>
+
+
+</div><!-- end master -->
+</body>
+</html>

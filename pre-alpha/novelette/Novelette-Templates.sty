@@ -12,8 +12,35 @@
 [2022/06/22 v0.0.1 LuaLaTeX file (templates)]
 %%
 
-
 %% This file is loaded \AtEndPreamble.
+
+
+%% Novelette offers a pre-defined choice of templates, at the sizes most often
+%% used for print-on-demand fiction and popular nonfiction.
+%% The templates have clearances (sometimes called margins) pre-set
+%% to at least the minimum value required by major P.O.D. Services.
+%% Templates are organized into group numbers 1, 2, 3.
+%% In each group are several templates, named by trim size.
+%% Within each group, the named templates have closely-related layout values.
+%% Then it is possible to change name (at same number), and keep the flow
+%% of paragraphs and pagination. However, if the group number is changed
+%% (even with same name), then paragraphs and pagination will differ.
+%% This enables the author to issue at book at US (inches) or UK (metric)
+%% trim size, within the same group.
+%% The differences within a group are absorbed by clearances, by inter-line
+%% space, or by scaling font size in proportion to text width.
+
+%% To allow for image placement without the need to re-scale, each group has
+%% a maximum image width and height, related to the narrowest and shortest
+%% member of the group. Except for emblems, images are placed with top and
+%% bottom padding, which change to absorb differences in inter-line spacing.
+%% Image width is limted by \textwidth.
+%% Calculation: \my@lpp includes header and gap, so subtract 2.
+%% Subtract another 2 to allow for possible \upshift. Subtract 1 to allow
+%% at least 0.5 line height padding at top and bottom. This the maximum
+%% image height is (\my@lpp-5)/(\my@lpp) times the least printable height. 
+
+%% Emblem images are height-restricted according to font point size.
 
 
 \newlength\my@trimwidth
@@ -45,11 +72,18 @@
 
 % Outside clearance is not directly set. It is calculated:
 % Subtract \textwidth and \m@inclear from \my@trimwidth.
+% Doing it this way, instead of calculating \textwidth from clearances,
+% ensures that \textwidth is set exactly. This is critical.
 
+%% Group 1:
 \ifthenelse{\equal{\my@template}{1}}{
   \gdef\my@lpp{29}
+  \gdef\my@maximagewidth{1154} % Pixels at 300ppi.
+  \gdef\my@maximageheight{1680} % Pixels at 300ppi.
+  \gdef\my@maxemblemheight{48} % Pixels at 1em.
+  %%
   \ifthenelse{\equal{\my@trimname}{Novella}}{
-    \gsetlength\textwidth{3.8514in}
+    \gsetlength\textwidth{3.8514in} % Least in group.
     \gsetlength\my@fontsize{11.5pt}
     \gsetlength\my@trimwidth{5in}
     \gsetlength\my@trimheight{8in}
@@ -59,6 +93,7 @@
     % Calculated outside clearance .5118in.
     % Calculated printable height 6.9764in.
   }{}
+  %%
   \ifthenelse{\equal{\my@trimname}{B}}{
     \gsetlength\textwidth{3.9301in}
     \gsetlength\my@fontsize{11.735pt}
@@ -68,10 +103,9 @@
     \gsetlength\my@botclear{13mm} % 0.5118in
     \gsetlength\my@inclear{.6368in}
     % Calculated outside clearance 0.5118in
-    % Calculated printable height 6.7717in.
-    % Calculated baselineskip 0.2184in = 15.7868pt = 1.345em.
-    % Calculated skip with upshift 2, 0.2054in = 14.8454pt = 1.265em.
+    % Calculated printable height 6.7717in. Least in group.
   }{}
+  %%
   \ifthenelse{\equal{\my@trimname}{Memoir}}{
     \gsetlength\textwidth{3.9301in}
     \gsetlength\my@fontsize{11.735pt}
@@ -84,82 +118,106 @@
     % Calculated printable height 6.9764in
   }{}
 }{}
-%
+%% End group 1.
+
+%% Group 2:
 \ifthenelse{\equal{\my@template}{2}}{
   \gdef\my@lpp{32}
-  \gsetlength\textwidth{3.937in}
-  \gsetlength\my@fontsize{11.7pt}
+  \gsetlength\textwidth{3.937in} % Same for all in this group.
+  \gsetlength\my@fontsize{11.7pt} % Same for all in this group.
+  \gdef\my@maximagewidth{} % Pixels at 300ppi.
+  \gdef\my@maximageheight{} % Pixels at 300ppi.
+  \gdef\my@maxemblemheight{48} % Pixels at 1em.
+  %%
   \ifthenelse{\equal{\my@trimname}{B}}{
     \gsetlength\my@trimwidth{129mm} % 5.079in
     \gsetlength\my@trimheight{198mm} % 7.795in
     \gsetlength\my@topclear{.512in}
     \gsetlength\my@botclear{.512in}
     \gsetlength\my@inclear{.630in}
+    % Calculated outside clearance 
+    % Calculated printable height 
   }{}
+  %%
   \ifthenelse{\equal{\my@trimname}{Memoir}}{
     \gsetlength\my@trimwidth{5.25in}
     \gsetlength\my@trimheight{8in}
     \gsetlength\my@topclear{.594in}
     \gsetlength\my@botclear{.594in}
     \gsetlength\my@inclear{.719in}
+    % Calculated outside clearance 
+    % Calculated printable height 
   }{}
+  %%
   \ifthenelse{\equal{\my@trimname}{Demy}}{
     \gsetlength\my@trimwidth{135mm} % 5.315in
     \gsetlength\my@trimheight{216mm} % 8.504in
     \gsetlength\my@topclear{.630in}
     \gsetlength\my@botclear{.630in}
     \gsetlength\my@inclear{.748in}
+    % Calculated outside clearance 
+    % Calculated printable height 
   }{}
+  %%
   \ifthenelse{\equal{\my@trimname}{Digest}}{
     \gsetlength\my@trimwidth{5.5in}
     \gsetlength\my@trimheight{8.5in}
     \gsetlength\my@topclear{.719in}
     \gsetlength\my@botclear{.719in}
     \gsetlength\my@inclear{.844in}
+    % Calculated outside clearance 
+    % Calculated printable height 
   }{}
 }{}
-%
+%% End group 2.
+
+%% Group 3:
 \ifthenelse{\equal{\my@template}{3}}{
   \gdef\my@lpp{34}
+  \gdef\my@maximagewidth{} % Pixels at 300ppi.
+  \gdef\my@maximageheight{} % Pixels at 300ppi.
+  \gdef\my@maxemblemheight{} % Pixels at 1em.
   \ifthenelse{\equal{\my@trimname}{Demy}}{
+    \gsetlength\textwidth{4.173in}
+    \gsetlength\my@fontsize{11.4459pt} % Scaled from Digest 12pt.
     \gsetlength\my@trimwidth{135mm} % 5.315in
     \gsetlength\my@trimheight{216mm} % 8.504in
     \gsetlength\my@topclear{.512in}
     \gsetlength\my@botclear{.512in}
     \gsetlength\my@inclear{.630in}
-    \gsetlength\textwidth{4.173in} % 5.315-.512-.630
-    \gsetlength\my@fontsize{11.4459pt} % Scaled from Digest 12pt.
   }{}
+  %%
   \ifthenelse{\equal{\my@trimname}{Digest}}{
+    \gsetlength\textwidth{4.375in}
+    \gsetlength\my@fontsize{12pt}
     \gsetlength\my@trimwidth{5.5in}
     \gsetlength\my@trimheight{8.5in}
     \gsetlength\my@topclear{.5in}
     \gsetlength\my@botclear{.5in}
     \gsetlength\my@inclear{.625in}
+  }{}
+  %%
+  \ifthenelse{\equal{\my@trimname}{Trade}}{
     \gsetlength\textwidth{4.375in}
     \gsetlength\my@fontsize{12pt}
-  }{}
-  \ifthenelse{\equal{\my@trimname}{Trade}}{
     \gsetlength\my@trimwidth{6in}
     \gsetlength\my@trimheight{9in}
     \gsetlength\my@topclear{.750in}
     \gsetlength\my@botclear{.750in}
     \gsetlength\my@inclear{.875in}
+  }{}
+  %%
+  \ifthenelse{\equal{\my@trimname}{Royal}}{
     \gsetlength\textwidth{4.375in}
     \gsetlength\my@fontsize{12pt}
-
-  }{}
-  \ifthenelse{\equal{\my@trimname}{Royal}}{
     \gsetlength\my@trimwidth{156mm} % 6.142in
     \gsetlength\my@trimheight{234mm} % 9.213in
     \gsetlength\my@topclear{.821in}
     \gsetlength\my@botclear{.821in}
     \gsetlength\my@inclear{.947in}
-    \gsetlength\textwidth{4.375in}
-    \gsetlength\my@fontsize{12pt}
   }{}
 }{}
-%%
+%% End group 3.
 
 
 %%
