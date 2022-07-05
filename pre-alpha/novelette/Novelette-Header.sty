@@ -1,0 +1,72 @@
+%%
+%% This is file Novelette-Header.sty,
+%% part of Novelette document class.
+%% Copyright 2022 Robert Allgeyer.
+%%
+%% It may be used, distributed, and/or modified under the
+%% conditions of the MIT License. See:
+%% https://opensource.org/licenses/MIT
+%% 
+%%
+\ProvidesFile{Novelette-Header.sty}%
+[2022/06/22 v0.0.1 LuaLaTeX file (header layouts and styles)]
+%% 
+
+
+%% Uses `fancyhdr' syntax.
+
+% Novelette does not allow images in header. This informs the \image command.
+\newtoggle{@inheader} % True within header.
+\LetLtxMacro{\my@fancyhead}{\fancyhead}
+\renewcommand\fancyhead[2][]{%
+  \my@fancyhead[#1]{\toggletrue{@inheader}{\normalsize #2}}% Not global.
+}
+%%
+
+%% First, blank everything that might be pre-set in package `fancyhdr'.
+\renewcommand\headrulewidth{0pt}
+\renewcommand\footrulewidth{0pt}
+\fancyhead[LO,RE,LE,RO,CE,CO]{}
+\fancyfoot[LO,RE,LE,RO,CE,CO]{}
+%%
+
+%% Re-define \thispagestyle so that only fancy and empty can be used.
+\LetLtxMacro{\my@thispagestyle}{\thispagestyle}
+\gdef\thispagestyle#1{%
+  \ifthenelse{\equal{#1}{empty}}{
+    \my@thispagestyle{empty}
+  }{
+    \my@thispagestyle{fancy}
+  }
+}
+%%
+
+%% Like it or not, Swainson and SwainsonNote are used in the header.
+%% Then the style, size, and position can be easily calculated.
+\newfontfamily\headerfont{SwainsonNote}[Scale=.88,LetterSpace=2]
+\newfontfamily\headernum{Swainson}[Numbers=Lining,LetterSpace=2]
+%%
+
+%%
+\gdef\@ActivateHeader{ % Called \AtBeginDocument.
+  \ifthenelse{\equal{\my@versoheader}{placeholder}}{
+    \gdef\my@versoheader{\theauthor}
+  }{}
+  \ifthenelse{\equal{\my@rectoheader}{placeholder}}{
+    \gdef\my@rectoheader{\thetitle}
+  }{}
+  \fancyhead[LE]{\headernum\thepage~\my@versoemblem}
+  \fancyhead[RO]{\headernum\my@rectoemblem~\thepage}
+  \fancyhead[CE]{\headerfont\my@versoheader}
+  \fancyhead[CO]{\headerfont\my@rectoheader}
+  \pagestyle{fancy} % Except where over-ridden by \thispagestyle{empty}.
+} % End \@ActivateHeader.
+%%
+
+
+%%
+\endinput
+%%
+%% End of file Novelette-Header.sty.
+
+

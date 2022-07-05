@@ -13,18 +13,6 @@
 %%
 
 
-%% INITIALIZATION
-%% ----------------------------------------------------------------------------
-% Novelette uses the `fontspec' package for sophisticated font choices.
-% Fonts are not activated until \AtEndPreamble. Until then, the basic TeX fonts
-% are temporarily specified, so that packages can load without complaint.
-% These are Latin Modern fonts, which are Open Type and will work, but are not
-% stylistically suitable for works of fiction. The only reason they are
-% used here, is because just about every TeX installation has them.
-\gdef\rmdefault{lmr} % Latin Modern Roman
-\gdef\sfdefault{lmss} % Latin Modern Sans
-\gdef\ttdefault{lmtt} % Latin Modern Mono
-
 % The following might become unnecessary if fontspec adds the capability to
 % disable keys. For now: Color and Opacity cannot be used as font features,
 % for a black/white printed book. Alas, fontspec over-rules xcolor.
@@ -44,138 +32,23 @@
   \fi%
 } % End \@CheckFontspecFeatures.
 
-% Default font features (will be changed later):
+% Default font features (may be changed later):
 \defaultfontfeatures{} % Reset.
-\defaultfontfeatures{SmallCapsFeatures={Renderer=Basic},Ligatures=TeX,} % All.
-\defaultfontfeatures[\sffamily]{Kerning=On} % Sans font only uses kerning.
+\defaultfontfeatures{%
+  SmallCapsFeatures={Renderer=Basic},Ligatures=TeX,Kerning=On%
+} % All.
 
 
-
-%% Font classes.
-% \setfont{which}{family name}[features]
-% Where 'which' is one of:  main header footnote title subtitle delegate deco
-% {main} is the main body text. Default: Swainson.
-% {header} is used in page headers. Default: Swainson, scaled 0.88.
-% {footnote} is used in footnotes. Default: SwainsonNote, scaled 0.88
-% {title} is used in chapter titles. Default: SwainsonTitling, scaled 1.6.
-% {subtitle} is used in chapter subtitles. Default: Swainson, scaled 1.25.
-% {delegate} provides substitute characters for above fonts (but not deco).
-% Default delegate: Libertinus Serif. Not pre-installed; you may never need it.
-% {deco} used for decorative text, such as title, on book title page.
-% Default deco is Swainson, scaled 2.5. Better if you choose something stylish.
-
-% When you \setfont{main}, then your choice will also become the header,
-% footnote, title, subtitle, and deco fonts, with appropriate scale.
-% If you need other fonts, you must set each one, possibly with its features.
-
-
-\newcommand\my@nosuchfont{%
-  \ClassError{Novelette}{\string\setfont\space requested font not installed}%
-  {The second argument of \string\setfont\space requests a font family. ^^J%
-   But that font was not found. Install it. Or, try this: ^^J%
-   Refresh file database (command: mktexlsr). ^^J%
-   Clear LuaTeX font cache (command: luaotfload-tool --cache=erase).}%
+\setmainfont{Swainson}[Numbers=OldStyle,Ligatures=Common]
+\newfontfamily\mainfont{Swainson}[Numbers=OldStyle,Ligatures=Common]
+\newfontface\titlefont{SwainsonTitling}[Numbers=Lining,Scale=1.6]
+\newfontfamily\subtitlefont{Swainson}[Numbers=Lining,Scale=1.25]
+\IfFontExistsTF{Libertinus Serif}{
+  \newfontfamily\delegate{Libertinus Serif}[Scale=MatchLowercase]
+}{
+  \let\delegate\relax
 }
-
-\DeclareDocumentCommand\setfont { m m O{} } {
-  \@tempTFfalse
-  \ifthenelse{\equal{#1}{main}}{
-    \@tempTFtrue
-    \IfFontExistsTF{#2}{
-      \setmainfont{#2}[#3]
-      \newfontfamily\mainfont{#2}[#3]
-      \gdef\my@mainfontname{#2}
-    }{
-      \my@nosuchfont
-    }
-  }{}
-  \ifthenelse{\equal{#1}{header}}{
-    \@tempTFtrue
-    \IfFontExistsTF{#2}{
-      \newfontfamily\headerfont{#2}[#3]
-    }{
-      \newfontfamily\headerfont{\my@mainfontname}[Scale=0.88]
-      \ClassWarning{Novelette}{Did not find requested header font. ^^J%
-       Using default Swainson instead, scale 0.88.}
-    }
-  }{}
-  \ifthenelse{\equal{#1}{footnote}}{
-    \@tempTFtrue
-    \IfFontExistsTF{#2}{
-      \newfontfamily\footnotefont{#2}[#3]
-    }{
-      \newfontfamily\footnotefont{\my@mainfontname}[Scale=0.88]
-      \ClassWarning{Novelette}{Did not find requested footnote font. ^^J%
-       Using main font instead, at scale 0.88.}
-    }
-  }{}
-  \ifthenelse{\equal{#1}{title}}{
-    \@tempTFtrue
-    \IfFontExistsTF{#2}{
-      \newfontfamily\titlefont{#2}[#3]
-    }{
-      \newfontfamily\titlefont{\my@mainfontname}[Scale=1.6]
-      \ClassWarning{Novelette}{Did not find requested title font. ^^J%
-       Using main font instead, at scale 1.6.}
-    }
-  }{}
-  \ifthenelse{\equal{#1}{subtitle}}{
-    \@tempTFtrue
-    \IfFontExistsTF{#2}{
-      \newfontfamily\subtitlefont{#2}[#3]
-    }{
-      \newfontfamily\subtitlefont{\my@mainfontname}[Scale=1.25]
-      \ClassWarning{Novelette}{Did not find requested subtitle font. ^^J%
-       Using main font instead, at scale 1.25.}
-    }
-  }{}
-  \ifthenelse{\equal{#1}{deco}}{
-    \@tempTFtrue
-    \IfFontExistsTF{#2}{
-      \newfontfamily\decofont{#2}[#3]
-    }{
-      \newfontfamily\decofont{\my@mainfontname}[Scale=2.5]
-      \ClassWarning{Novelette}{Did not find requested deco font. ^^J%
-       Using main font instead, at scale 2.5.}
-    }
-  }{}
-  \ifthenelse{\equal{#1}{delegate}}{ % Usually not requested.
-    \@tempTFtrue
-    \IfFontExistsTF{#2}{
-      \newfontfamily\delegate{#2}[#3]
-    }{
-      \IfFontExistsTF{Libertinus Serif}{
-        \newfontfamily\delegate{Libertinus Serif}[Scale=0.94]
-        \ClassWarning{Novelette}{Did not find requested delegate font. ^^J%
-         But found Libertinus Serif. Using it instead, scale 0.94.}
-      }{
-        \ClassWarning{Novelette}{Did not find requested delegate font. ^^J%
-         Also did not find default delegate, Libertinus Serif. ^^J%
-         No delegate. Using ordinary font.}
-      }
-    }
-  }{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad font class in \string\setfont}%
-     {First argument is:  main header footer title subtitle delegate deco}
-  \fi
-} % End \setfont.
-%% Defaults:
-\setfont{main}{Swainson}
-\setfont{header}{Swainson}[Scale=0.88]
-\setfont{footnote}{SwainsonNote}[Scale=0.88]
-\setfont{title}{SwainsonTitling}[Scale=1.6]
-\setfont{subtitle}{Swainson}[Scale=1.25]
-\setfont{deco}{Swainson}[Scale=2.5]
-%%
-
-
-%% ACTIVATE FONTS \AtEndPreamble
-%% ----------------------------------------------------------------------------
-\gdef\@ActivateFonts{% Called \AtEndPreamble.
-  %%%%% Nothing.
-} % end \@ActivateFonts, called by `Novelette.cls' \AtEndPreamble.
-%%
+%%% \newfontfamily\decofont{#2}[#3] %%% Swainson 2.5 ?
 
 
 %%

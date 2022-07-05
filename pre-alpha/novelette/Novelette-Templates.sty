@@ -32,15 +32,13 @@
 
 %% To allow for image placement without the need to re-scale, each group has
 %% a maximum image width and height, related to the narrowest and shortest
-%% member of the group. Except for emblems, images are placed with top and
-%% bottom padding, which change to absorb differences in inter-line spacing.
+%% member of the group. Images are placed with top and bottom padding,
+%% which automatically change to absorb differences in inter-line spacing.
 %% Image width is limted by \textwidth.
 %% Calculation: \my@lpp includes header and gap, so subtract 2.
 %% Subtract another 2 to allow for possible \upshift. Subtract 1 to allow
 %% at least 0.5 line height padding at top and bottom. This the maximum
 %% image height is (\my@lpp-5)/(\my@lpp) times the least printable height. 
-
-%% Emblem images are height-restricted according to font point size.
 
 
 \newlength\my@trimwidth
@@ -80,7 +78,6 @@
   \gdef\my@lpp{29}
   \gdef\my@maximagewidth{1154} % Pixels at 300ppi.
   \gdef\my@maximageheight{1680} % Pixels at 300ppi.
-  \gdef\my@maxemblemheight{48} % Pixels at 1em.
   %%
   \ifthenelse{\equal{\my@trimname}{Novella}}{
     \gsetlength\textwidth{3.8514in} % Least in group.
@@ -127,7 +124,6 @@
   \gsetlength\my@fontsize{11.7pt} % Same for all in this group.
   \gdef\my@maximagewidth{} % Pixels at 300ppi.
   \gdef\my@maximageheight{} % Pixels at 300ppi.
-  \gdef\my@maxemblemheight{48} % Pixels at 1em.
   %%
   \ifthenelse{\equal{\my@trimname}{B}}{
     \gsetlength\my@trimwidth{129mm} % 5.079in
@@ -176,7 +172,6 @@
   \gdef\my@lpp{34}
   \gdef\my@maximagewidth{} % Pixels at 300ppi.
   \gdef\my@maximageheight{} % Pixels at 300ppi.
-  \gdef\my@maxemblemheight{} % Pixels at 1em.
   \ifthenelse{\equal{\my@trimname}{Demy}}{
     \gsetlength\textwidth{4.173in}
     \gsetlength\my@fontsize{11.4459pt} % Scaled from Digest 12pt.

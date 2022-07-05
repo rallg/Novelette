@@ -1,18 +1,35 @@
 Novelette, a simplified LuaLaTeX document class for fiction writers.
-Copyright 2022 by Robert Allgeyer [Aptos, California USA]
+Copyright 2022 by Robert Allgeyer [Aptos, California USA].
 MIT License.
 
-Portions of the Novelette code have been copied or modified from code
-distributed by CTAN under license LPPL v1.3. Identification and attributions
-are written directly into the Novelette code files, and re-licensed as MIT,
-as permitted by LPPL v.1.3.
-
-Some code is the response to questions the Novelette author asked at web sites
-such as stackexchange.com. Answers are attributed in Novelette code.
-
-Large portions of the Novelette code are copied or modified from the
-`novel' document class, by the same author as Novelette. That code is
-re-licensed in Novelette using the MIT License.
+Novelette largely includes code from the `novel' document class,
+by the same author, which has been included in TeXlive for several years.
+The included code is released in Novelette under the MIT License.
 
 Any Open Type font(s) included with Novelette are licensed under the
 SIL Open Font License, v1.1.
+
+Portions of Novelette code have been shamelessly derived from
+code written by others, Copyrighted by them, and released by them under
+terms of the LaTeX Project Public License, version 1.3 or later (LPPL).
+This license is available at:
+http://www.latex-project.org/lppl.txt
+
+The derived code is identified and attributed where used in Novelette code.
+Usage in Novelette complies with the relevant terms of the LPPL, and is
+released within Novelette under the MIT License.
+
+Why not simply \RequirePackage instead of derived code?
+Much current work in LaTeX (especially in LuaLaTeX) is for digital documents,
+rather than paper prints. The needs of digital documents and paper prints are
+very different, and often in conflict.
+
+There are also some code snippets based on answers to questions posed in
+online forums, where the terms of the forum permit free usage.
+The snippets are identified and attributed, where used in Novelette.
+
+Particular attributions:
+  Luacode, in Novelette-Images.sty:
+    Marcel Krüger, via response at stackexchange.com.
+  PDF/X conformance, in Novelette-PDFX.sty:
+    pdfx.sty, by CV Radhakrishnan, Han The Thanh, Ross Moore, Peter Selinger.

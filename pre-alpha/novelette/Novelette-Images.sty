@@ -160,9 +160,7 @@ end
 }
 %%
 
-
-
-% Pertains to images:
+%% Pertains to images:
 \newlength\imagewidth
 \newlength\imageheight
 \newlength\imagehoffset
@@ -175,12 +173,12 @@ end
 %%
 \setkeys{Gin}{draft=false} % Always shows the image, not a box outline.
 \LetLtxMacro\my@inclgr\includegraphics\relax
-\if@coverart\else % Need to allow it, for possible use by \includepdf in cover.
-  \renewcommand\includegraphics[2][]{%
-    \ClassError{Novelette}{Use of \string\includegraphics\space forbidden}%
-     {Only place images using commands specific to Novelette class.}%
-  }
-\fi
+%%%\if@coverart\else % Need to allow it, for possible use by \includepdf in cover.
+%%%  \renewcommand\includegraphics[2][]{%
+%%%    \ClassError{Novelette}{Use of \string\includegraphics\space forbidden}%
+%%%     {Only place images using commands specific to Novelette class.}%
+%%%  }
+%%%\fi
 %
 \newcommand\@TestImageExtension[1]{%
   \@tempTFfalse%
@@ -379,7 +377,6 @@ end
 }
 %%
 
-
 %% Called \AfterEndDocument:
 \long\gdef\@WarnUnknownImages{%
   \@tempTFfalse%
@@ -394,7 +391,6 @@ end
   \fi%
 }
 %%
-
 
 
 %%

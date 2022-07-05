@@ -31,8 +31,8 @@
 % do it for you, as it goes along. On Linux (maybe Mac) you will need to
 % use the 'tlmgr' command-line to install packages yourself.
 % These are the ones most likely to be needed, beyond the minimal:
-%   fp xifthen xstring euenc fontspec tipa xunicode adjustbox eso-pic
-%   lipsum makecmds polyglossia microtype xcolor xkeyval changepage magaz
+%   fp xifthen xstring euenc fontspec tipa xunicode adjustbox eso-pic lipsum
+%   makecmds polyglossia microtype xcolor xkeyval changepage magaz
 %   noindentafter pdfpages ifmtarg xpatch collectbox pgf pdflscape
 
 %% DESCRIPTION:
@@ -69,6 +69,8 @@
    {Use lualatex only. Not luatex, pdftex, dvips, or xetex. ^^J%
     Can also use `luahbtex --fmt=lualatex' as equivalent.}
 \fi
+\title{IMPORTANT : Provide book title}
+\author{}
 \pdfimageresolution=300 % Default dpi if image does not say.
 \pdfminorversion=3 % Might be reset later, depending on settings.
 \gdef\thepdfminorversion{\pdfminorversion} % Compatibility with older software.
@@ -100,9 +102,8 @@
 \RequirePackage[relative]{textpos} % For inserting images.
 \RequirePackage{calc} % For length expression calculations.
 \RequirePackage{atbegshi} % In oberdiek bundle. For one-page header changes.
-\RequirePackage{letltxmacro} % In oberdiek bundle. For re-defining some macros.
+\RequirePackage{letltxmacro} % For re-defining some commands.
 \RequirePackage{xparse} % For writing cool-looking commands.
-
 \RequirePackage{noindentafter} % For unindented chapter and scene starts.
 \RequirePackage{changepage} % Provides block indents, etc. Do not use strict!
 \RequirePackage{magaz} % Special treatment of first lines.
@@ -130,8 +131,8 @@
 %% Actual default font size will be 11.5pt-12pt, with 11.7pt average.
 %% The small temporary size is to ensure that overly-large struts and skips
 %%   are not created prior to page layout calculation.
-\gdef\@TentativeEmN{10}
-\gdef\@TentativeBLSkipN{13}
+\gdef\@TentativeEmN{12}
+\gdef\@TentativeBLSkipN{15}
 \renewcommand\normalsize{% Where \@setfontsize is a built-in LaTeX command.
   \@setfontsize\normalsize{\@TentativeEmN}{\@TentativeBLSkipN}%
 }
@@ -169,9 +170,8 @@
 \RequirePackage{Novelette-TextMacros}
 % Standard header styles, based on `fancyhdr':
 % Each pre-configured style will set these booleans true or false:
-\newif\if@HasHeader
 \RequirePackage{fancyhdr}
-\RequirePackage{Novelette-HeaderStyles}
+\RequirePackage{Novelette-Header}
 % Chapter and Scene styles:
 \RequirePackage{Novelette-ChapterScene}
 % Image placement:
@@ -205,7 +205,6 @@
 \AtEndPreamble{
   \if@templateset\else\template{3}{Digest}\fi % Default.
   \let\RequirePackage\gimmedat
-  \@ActivateFonts % In file Novelette-Fonts.sty. 
   \RequirePackage{Novelette-Templates}
   \RequirePackage{Novelette-CalculateLayout}
   % Hyperref options for PDF/X with LuaLaTeX:
@@ -224,7 +223,7 @@
 \AtBeginDocument{ %
   \@ActivateTextLengths % In file Novelette-TextMacros.sty.
   \@ActivateChapterScene % In file Novelette-ChapterScene.sty.
-  \@ActivateHeaderStyles % In file Novelette-HeaderStyles.sty.
+  \@ActivateHeader % In file Novelette-Header.sty.
   \@ActivatePDFInfo % In file Novelette-PDFX.sty.
   \@ActivateTextMacros % In file Novelette-TextMacros.sty.
   \@ActivateFootnotes % In file Novelette-Footnotes.sty.
@@ -232,7 +231,6 @@
   \@DisableMetadataCommands % In file Novelette-Metadata.sty.
   \@DisableChapterSceneSettings % In file Novelette-ChapterScene.sty.
   \@RedefineBreakpos % In file Novelette-ChapterScene.sty.
-  \@DisableHeaderSettings % In file Novelette-HeaderStyles.sty.
   % Cover has no content other than background image. End input now.
   % Then the log file will say that there was an unfinished if. Indeed! 
   \if@coverart\thispagestyle{empty}\null\end{document}\fi

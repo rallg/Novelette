@@ -24,10 +24,13 @@
 % is absorbed in \my@outclear, where it least matters:
 \gsetlength\my@outclear{\my@trimwidth-\my@inclear-\textwidth}
 
-% TeX allows more room than needed above the header. Remove it.
-% The 0.3 is approx font room above accented characters, at headfontsize.
-\gsetlength\my@topclear{\my@topclear-.3\my@fontsize}
+% TeX may not provide enough room above the header text. Add it.
+% The 0.25 is approx font room above accented characters.
+\gsetlength\my@topclear{\my@topclear+0.25\my@fontsize}
 
+% TeX does not allow for descenders at the bottom clearance. Add it.
+% The 0.3 is enough for any known font in this category. 
+\gsetlength\my@botclear{\my@botclear+0.3\my@fontsize}
 
 % The "available height" is the trim height minus the top and bottom margins:
 \newlength\my@availheight
@@ -35,12 +38,12 @@
 
 % The available height includes all of these:
 % Lines in the main body text, counted as \my@lpp, specified in templates.
-% One line gap between main body text and header:
-\FPadd{\my@totlpp}{\my@lpp}{1} % Number \my@lpp is defined in template.
-% One line for the header, plus its descenders:
+% One line for the header, plus 0.3 for its descenders:
 \gsetlength\headheight{1.3\my@fontsize}
-\gsetlength\headsep{0.3\my@fontsize} % Looks better.
-\FPadd{\my@totlpp}{\my@totlpp}{1}
+\FPadd{\my@totlpp}{\my@lpp}{0.3}
+% One and a half line gap between main body text and header (looks good):
+\FPadd{\my@totlpp}{\my@totlpp}{1.5} % Number \my@lpp is defined in template.
+\gsetlength\headsep{0.5\my@fontsize} % Relates to the above.
 % 0.3 line below baseline of body text, to allow for descenders:
 \FPadd{\my@totlpp}{\my@totlpp}{0.3}
 % Like it or not, TeX adds a one-line footer. Get rid of it:
@@ -123,15 +126,11 @@
   \my@outclear+0.5\paperwidth-0.5\my@trimwidth-72.27pt%
 }
 
-%
 % \topmargin is measured from 1in (72.27pt) below the top of the MediaBox,
 %   to the top of whatever comes first (header or textblock). May be negative.
 % For consistency, the topmost baseline (header or main text) will be
 %   positioned at 1em below the margin.
 \gsetlength\topmargin{\my@topclear+0.5\paperheight-0.5\my@trimheight-72.27pt}
-\if@HasHeader\else
-  \gsetlength\topmargin{\topmargin-\baselineskip+\my@fontsize}
-\fi
 
 % It seems that, unless specified by user, TeX may place the top text baseline
 %   in a vertical position that depends on the height of text in that line.

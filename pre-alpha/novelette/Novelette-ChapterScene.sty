@@ -13,20 +13,8 @@
 %%
 
 
-% Each new chapter generally has its own header style. This allows a
-% default setting when chapters begin with ChapterStart environment:
-\gdef\SetChapterStartStyle#1{%
-  \@tempTFfalse%
-  \ifthenelse{\equal{#1}{fancy}}{\@tempTFtrue}{}%
-  \ifthenelse{\equal{#1}{empty}}{\@tempTFtrue}{}%
-  \if@tempTF%
-    \gdef\@setchapterstart{#1}%
-  \else%
-    \ClassError{Novelette}{Invalid choice for \string\SetChapterStartStyle}%
-     {Choose: fancy, empty}%
-  \fi%
-}
-\SetChapterStartStyle{empty} % default
+\gdef\@setchapterstart{empty}
+
 \gdef\SetChapterStartHeight#1{%
   \FPifint{#1}\else%
     \ClassError{Novelette}{\string\SetChapterStartHeight\space integer >= 4}%
@@ -187,11 +175,8 @@
 % The argument is the number of normal baselineskips high.
 \newif\if@WithinChapterStart
 \DeclareDocumentEnvironment {ChapterStart} %
-{ O{\@setchapterstartheight} O{\@setchapterstart} }{%
-  \if@ThisPageStyle\else%
-    \gdef\@thiscsstyle{#2}%
-    \thispagestyle{\@thiscsstyle}%
-  \fi%
+{ O{\@setchapterstartheight} }{%
+  \my@thispagestyle{empty}
   \global\@WithinChapterStarttrue%
   \suppressfloats[t]% ensures that a floated image does not go on top
   \gsetlength\parindent{0pt}% within environment
@@ -204,14 +189,6 @@
   \FPsub{\@fixlines}{\@thiscsheight}{2}%
   \FPsub{\@fixlines}{\@fixlines}{0.001}% fudge to avoid rounding problems
   \FPround{\@thiscsheight}{\@thiscsheight}{0}%
-  \FPiflt{\@thiscsheight}{4}%
-    \def\@smcserr{%
-      \ClassError{Novelette}{ChapterStart height insufficient}%
-       {With your choice for thispagestyle, the height must be at least 4.}%
-    }%
-    \IfStrEq{\@thiscsstyle}{plain}{\@smcserr}{}%
-    \IfStrEq{\@thiscsstyle}{fancyplain}{\@smcserr}{}%
-  \else\fi%
   \FPiflt{\@thiscsheight}{3}%
     \ClassError{Novelette}{ChapterStart height must be at least 3}%
       {Anything less, looks bad.}%

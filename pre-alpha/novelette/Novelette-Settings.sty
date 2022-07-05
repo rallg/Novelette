@@ -112,6 +112,67 @@
 }
 %%
 
+%% \header{verso or recto}{header text}
+%% Except on certain pages (such as chapter start, Copyright, etc.),
+%% all pages of running text have a visible header. This defines its text.
+%% Header text is at Scale=0.88 and loose tracking, relative to main body text.
+%% Page number and emblem are added automatically.
+%% You may change header text as the book proceeds.
+\newcommand\header[2]{
+  \@tempTFfalse
+  \ifthenelse{\equal{#1}{verso}}{
+    \@tempTFtrue
+    \gdef\my@versoheader{#2}
+  }{}
+  \ifthenelse{\equal{#1}{recto}}{
+    \@tempTFtrue
+    \gdef\my@rectoheader{#2}
+  }{}
+  \if@tempTF\else
+    \ClassError{Novelette}{Bad first argument for \string\header}%
+    {For first argument, choose:  verso recto}
+  \fi
+}
+\header{verso}{placeholder} % Changed later.
+\header{recto}{placeholder} % Changed later.
+%%
+
+%% Emblem is placed next to page number. Choices: none slash bar curve
+%%   none, or empty \emblem{} : no emblem.
+%%   slash : symmetrical slash (verso) and backslash (recto). Default.
+%%   bar : vertical bar
+%%   curve : like parentheses, symmetrical verso-recto.
+%% These names refer to special characters in Swainson. No other choices.
+\newcommand\emblem[1]{ % First argument, verso recto. Second argument, content.
+  \@tempTFfalse
+  \ifthenelse{\equal{#1}{none} \OR \equal{#1}{}}{
+    \@tempTFtrue
+    \gdef\my@versoemblem{~}
+    \gdef\my@rectoemblem{~}
+  }{}
+  \ifthenelse{\equal{#1}{slash}}{
+    \@tempTFtrue
+    \gdef\my@versoemblem{\addfontfeature{StylisticSet=48}/}
+    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=48}\textbackslash}
+  }{}
+  \ifthenelse{\equal{#1}{bar}}{
+    \@tempTFtrue
+    \gdef\my@versoemblem{\addfontfeature{StylisticSet=48}|}
+    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=48}|}
+  }{}
+  \ifthenelse{\equal{#1}{curve}}{
+    \@tempTFtrue
+    \gdef\my@versoemblem{\addfontfeature{StylisticSet=48})}
+    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=48}(}
+  }{}
+  \if@tempTF\else
+    \ClassError{Novelette}{Bad choice for \string\emblem}%
+     {Choices:  none  slash  bar  curve}
+  \fi
+}
+\emblem{slash} % Default.
+%%
+
 %% This is used only by developer. Not part of release:
 \newcommand\markupgrid[1]{}
 \gdef\my@developer@grid{}
