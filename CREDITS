@@ -6,8 +6,19 @@ Novelette largely includes code from the `novel' document class,
 by the same author, which has been included in TeXlive for several years.
 The included code is released in Novelette under the MIT License.
 
-Any Open Type font(s) included with Novelette are licensed under the
-SIL Open Font License, v1.1.
+All Open Type font(s) included with Novelette are licensed under the
+SIL Open Font License, v1.1. This license is available with a FAQ at:
+http://scripts.sil.org/OFL
+
+The Swainson fonts are original designs. When in doubt, the designer
+looked at font Libertinus Serif for guidance. Libertinus fonts,
+Copyright 2012-2021 The Libertinus Project Authors,
+and released by them under the SIL Open Font License, version 1.1.
+
+Font OzzieL is an altered subset of font Oswald-Light,
+Copyright 2016 The Oswald Project Authors,
+and licensed by them under the SIL Open Font License, version 1.1.
+
 
 Portions of Novelette code have been shamelessly derived from
 code written by others, Copyrighted by them, and released by them under

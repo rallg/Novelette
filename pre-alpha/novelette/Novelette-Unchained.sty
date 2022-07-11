@@ -86,9 +86,8 @@
 \DeclareOldFontCommand{\sl}{\normalfont\slshape}{\normalfont\slshape}
 \DeclareOldFontCommand{\sc}{\normalfont\scshape}{\normalfont\scshape}
 %
-\pagestyle{empty} % will be over-ridden by fancyhead in separate file
-\pagenumbering{arabic} % may be over-ridden in document
-\flushbottom % best for continuous text
+\pagenumbering{arabic} % May be over-ridden in document.
+\flushbottom % Best for continuous text.
 %
 %% End miscellaneous settings.
 
@@ -142,33 +141,10 @@
 %
 %%%%%\gdef\null{\hbox{\strut}} % May be important!
 %
-% Standard LaTeX font sizes are ineffective:
-\gdef\@noSizeCommand#1{\ClassWarning{Novelette}{%
-  Standard LaTeX font sizes are ineffective in Novelette. ^^J%
-  Your use of command `#1' was ignored. ^^J}%
-}
-\gdef\@DisableFontSizes{% called by `Novelette.cls' \AtBeginDocument
-  \gdef\HUGE{\@noSizeCommand{HUGE}}
-  \gdef\Huge{\@noSizeCommand{Huge}}
-  \gdef\huge{\@noSizeCommand{huge}}
-  \gdef\LARGE{\@noSizeCommand{LARGE}}
-  \gdef\Large{\@noSizeCommand{Large}}
-  \gdef\large{\@noSizeCommand{large}}
-  \gdef\small{\@noSizeCommand{small}}
-  \gdef\footnotesize{\@noSizeCommand{footnotesize}}
-  \gdef\scriptsize{\@noSizeCommand{scriptsize}}
-  \gdef\tiny{\@noSizeCommand{tiny}}
-} %
+
+
+
 % In Novelette there is no academic organization.
-% All these do is echo the argument, if any:
-\long\gdef\part#1{#1}
-\long\gdef\chapter#1{#1}
-\long\gdef\section#1{#1}
-\long\gdef\subsection#1{#1}
-\long\gdef\subsubsection#1{#1}
-\long\gdef\paragraph#1{#1}
-\long\gdef\subparagraph#1{#1}
-\long\gdef\appendix#1{#1}
 % In some situations, the use will be interrupted:
 \DeclareDocumentCommand\@nodocommand { O{} +m } {%
   \ClassError{Novelette}{No command or environment `#1' in this class}%

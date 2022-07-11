@@ -24,13 +24,14 @@
 % is absorbed in \my@outclear, where it least matters:
 \gsetlength\my@outclear{\my@trimwidth-\my@inclear-\textwidth}
 
-% TeX may not provide enough room above the header text. Add it.
-% The 0.25 is approx font room above accented characters.
-\gsetlength\my@topclear{\my@topclear+0.25\my@fontsize}
+% Novelette built-in header fonts do not rise more than 0.8em above
+% baseline, even with accented capitals. Adjust:
+\gsetlength\my@topclear{\my@topclear-0.2\my@fontsize}
 
 % TeX does not allow for descenders at the bottom clearance. Add it.
 % The 0.3 is enough for any known font in this category. 
 \gsetlength\my@botclear{\my@botclear+0.3\my@fontsize}
+%%% \footjump ? Extra line for hidden footer?
 
 % The "available height" is the trim height minus the top and bottom margins:
 \newlength\my@availheight
@@ -44,18 +45,17 @@
 % One and a half line gap between main body text and header (looks good):
 \FPadd{\my@totlpp}{\my@totlpp}{1.5} % Number \my@lpp is defined in template.
 \gsetlength\headsep{0.5\my@fontsize} % Relates to the above.
-% 0.3 line below baseline of body text, to allow for descenders:
-\FPadd{\my@totlpp}{\my@totlpp}{0.3}
-% Like it or not, TeX adds a one-line footer. Get rid of it:
-\FPsub{\my@totlpp}{\my@totlpp}{1}
+% Below the main text, TeX adds a virtual footer. Adjust to remove its space,
+% yet leave enough for descenders on the final line of text:
+\FPsub{\my@totlpp}{\my@totlpp}{0.3}
 
 % The \upshift command may move the base of body text upwards, up to 2 lines:
 \FPadd{\my@totlpp}{\my@totlpp}{\my@upshift}
 
 % Those lines must fit within \my@availheight.
 % Calculate line-to-line spacing, known as \baselineskip:
-\FPdiv{\@tempBLS}{\strip@pt\my@availheight}{\my@totlpp}
-\setlength\baselineskip{\@tempBLS pt}
+\FPdiv{\@BLS}{\strip@pt\my@availheight}{\my@totlpp}
+\setlength\baselineskip{\@BLS pt}
 
 % The baskelineskip cannot be too tight, in relation to font size.
 % And, it will look ugly, if too loose.

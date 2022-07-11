@@ -55,33 +55,11 @@
 \gdef\theSubtitle{\@subtitle}
 \subtitle{} % May be left empty. Not required.
 
-% \formatPDF{conformance}{intent}
-% If not used, default \formatPDF{X-1a:2001}{SWOP} set \AtEndPreamble.
-\gdef\my@conformance{}
-\gdef\my@intent{}
-\newcommand\formatPDF[2]{
-  \ifthenelse{\equal{#1}{X-1a:2001}}{\gdef\my@conformance{#1}}{}
-  \ifthenelse{\equal{#1}{X-3:2002}}{\gdef\my@conformance{#1}}{}
-  \ifthenelse{\equal{#2}{SWOP}}{\gdef\my@intent{#2}}{}
-  \ifthenelse{\equal{#2}{FOGRA39}}{\gdef\my@intent{#2}}{}
-  \ifthenelse{\equal{#2}{JC200103}}{\gdef\my@intent{#2}}{}
-  \ifthenelse{\equal{#2}{CUSTOM}}{\gdef\my@intent{#2}}{}
-  \ifthenelse{\equal{\my@conformance}{} \OR \equal{\my@intent}{}}{
-    \ClassError{Novelette}{Bad \string\formatPDF\string argument}%
-    {\string\setPDF{conformance}{intent} arguments are case-sensitive. ^^J%
-     One of these conformances:  X-1a:2001  X-3:2002 ^^J%
-     One of these intents:  SWOP  FOGRA39  JC200103 CUSTOM ^^J%
-     Do not use CUSTOM unless you are knowledgeable! ^^J%
-     Default:  \string\formatPDF{X-1a:2001}{SWOP} }
-  }{}
-} % End \formatPDF.
-
 % Metadata commands cannot be used after Preamble. Called \AtBeginDocument:
 \gdef\@DisableMetadataCommands{
   \let\title\relax
   \let\author\relax
   \let\subtitle\relax
-  \LetLtxMacro\formatPDF\relax
 } % End \@DisableMetadataCommands.
 
 

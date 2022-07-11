@@ -31,9 +31,7 @@
   \ClassWarning{Novelette}{^^JBIG BAD WARNING. Your book needs a title! ^^J}
 }{}
 
-%% Activate settings from \formatPDFX, or set defaults:
-\ifthenelse{\equal{\my@conformance}{}}{\gdef\my@conformance{X-1a:2001}}{}
-\ifthenelse{\equal{\my@intent}{}}{\gdef\my@intent{SWOP}}{}
+%% Activate settings from \format :
 \ifthenelse{\equal{\my@conformance}{X-1a:2001}}{
   \gdef\@PDFversion{PDF/X-1}
   \gdef\@PDFXversion{PDF/X-1a:2001}

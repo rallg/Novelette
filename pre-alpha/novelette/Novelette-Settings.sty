@@ -65,55 +65,48 @@
 
 %% Define \media{book,markup}{width}{height} :
 \newif \if@MediaSize % When trim size is floated in larger PDF page size.
-\DeclareDocumentCommand\media { m m m O{none} } {
+\DeclareDocumentCommand\media { m m m } {
   \@tempTFfalse
   \ifthenelse{\equal{#1}{book}}{\@tempTFtrue}{}
   \ifthenelse{\equal{#1}{markup}}{\@tempTFtrue}{}
   \if@tempTF\else
-    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
-    {First argument:  book  markup}%
+    \ClassError{Novelette}{Bad first argument for \string\media}
+    {First argument must be one of:  book  markup}
   \fi
-  \@tempTFfalse
-  \IfEndWith{#2}{in}{\@tempTFtrue}{}
-  \IfEndWith{#2}{mm}{\@tempTFtrue}{}
-  \IfEndWith{#2}{cm}{\@tempTFtrue}{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
-    {Second argument must be width. Units: mm cm in}%
-  \fi
-  \@tempTFfalse
-  \IfEndWith{#3}{in}{\@tempTFtrue}{}
-  \IfEndWith{#3}{mm}{\@tempTFtrue}{}
-  \IfEndWith{#3}{cm}{\@tempTFtrue}{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
-    {Third argument must be height. Units: mm cm in}%
-  \fi
-  \ifthenelse{\dimtest{#2}{<}{#3}}{
-    \ifthenelse{\equal{#1}{book}}{
-      \if@book
-        \@MediaSizetrue
-        \gsetlength\paperwidth{#2}
-        \gsetlength\paperheight{#3}
-      \fi
-    }{}
-    \ifthenelse{\equal{#1}{markup}}{
-      \if@markupcopy
-        \@MediaSizetrue
-        \gsetlength\paperwidth{#2}
-        \gsetlength\paperheight{#3}
-      \fi
-    }{}
-  }{
-    \ClassError{Novelette}{Bad choice for \string\media{}{}{}}%
-    {Second argument is width. Third argument is height. ^^J%
-     Height must be greater than width.}
+  \ifthenelse{\equal{#2}{} \AND \equal{#3}{}}{}{ % Do nothing. Else:
+    \@tempTFfalse
+    \IfEndWith{#1}{in}{\@tempTFtrue}{}
+    \IfEndWith{#1}{mm}{\@tempTFtrue}{}
+    \IfEndWith{#1}{cm}{\@tempTFtrue}{}
+    \if@tempTF\else
+      \ClassError{Novelette}{Bad second argument for \string\media}%
+      {Second argument must be width. Units: mm cm in ^^J
+       Or. second and third arguments both empty}%
+    \fi
+    \@tempTFfalse
+    \IfEndWith{#2}{in}{\@tempTFtrue}{}
+    \IfEndWith{#2}{mm}{\@tempTFtrue}{}
+    \IfEndWith{#2}{cm}{\@tempTFtrue}{}
+    \if@tempTF\else
+      \ClassError{Novelette}{Bad third argument for \string\media{}}%
+      {Third argument must be height. Units: mm cm in
+       Or, second and third arguments both empty.}%
+    \fi
+    \ifthenelse{\dimtest{#2}{<}{#3}}{
+      \@MediaSizetrue
+      \gsetlength\paperwidth{#2}
+      \gsetlength\paperheight{#3}
+    }{
+      \ClassError{Novelette}{Bad second or third choice for \string\media}%
+      {Second argument is width. Third argument is height. ^^J%
+       Height must be greater than width.}
+    }
   }
 }
 %%
 
 %% \header{verso or recto}{header text}
-%% Except on certain pages (such as chapter start, Copyright, etc.),
+%% Except on certain pages (such as section starts),
 %% all pages of running text have a visible header. This defines its text.
 %% Header text is at Scale=0.88 and loose tracking, relative to main body text.
 %% Page number and emblem are added automatically.
@@ -152,18 +145,18 @@
   }{}
   \ifthenelse{\equal{#1}{slash}}{
     \@tempTFtrue
-    \gdef\my@versoemblem{\addfontfeature{StylisticSet=48}/}
-    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=48}\textbackslash}
+    \gdef\my@versoemblem{\addfontfeature{StylisticSet=18}/}
+    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=18}\textbackslash}
   }{}
   \ifthenelse{\equal{#1}{bar}}{
     \@tempTFtrue
-    \gdef\my@versoemblem{\addfontfeature{StylisticSet=48}|}
-    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=48}|}
+    \gdef\my@versoemblem{\addfontfeature{StylisticSet=18}|}
+    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=18}|}
   }{}
   \ifthenelse{\equal{#1}{curve}}{
     \@tempTFtrue
-    \gdef\my@versoemblem{\addfontfeature{StylisticSet=48})}
-    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=48}(}
+    \gdef\my@versoemblem{\addfontfeature{StylisticSet=18})}
+    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=18}(}
   }{}
   \if@tempTF\else
     \ClassError{Novelette}{Bad choice for \string\emblem}%
@@ -172,6 +165,37 @@
 }
 \emblem{slash} % Default.
 %%
+
+\DeclareDocumentCommand\PDF { m m } { % Conformance, output intent.
+  \StrDel{#1}{/}[\my@pdfc] % Slash is not needed here.
+  \@tempTFfalse
+  \ifthenelse{\equal{\my@pdfc}{X-1a:2001}}{\@tempTFtrue}{}
+  \ifthenelse{\equal{\my@pdfc}{X-3:2002}}{\@tempTFtrue}{}
+  \if@tempTF\else
+    \ClassError{Novelette}{Bad first argument for \string\PDF}%
+      {Case-sensitive choices:  X-1a:2001  X-3:2002}
+  \fi
+  \ifthenelse{\equal{\my@pdfc}{X-1a:2001} \OR \equal{#1}{X-3:2002}}{
+    \gdef\my@conformance{\my@pdfc}
+    \@tempTFfalse
+    \ifthenelse{\equal{#2}{SWOP}}{\@tempTFtrue}{}
+    \ifthenelse{\equal{#2}{FOGRA39}}{\@tempTFtrue}{}
+    \ifthenelse{\equal{#2}{JC200103}}{\@tempTFtrue}{}
+    \ifthenelse{\equal{#2}{CUSTOM}}{\@tempTFtrue}{}
+    \if@tempTF
+      \gdef\my@intent{#2}
+    \else
+      \ClassError{Novelette}{Bad second argument for \string\PDF}%
+      {Must be one of:  SWOP  FOGRA39  JC200103  CUSTOM ^^J%
+       Caution: See docs before using CUSTOM. Requires expertise.}
+    \fi
+  }{}
+}
+\PDF{X-1a:2001}{SWOP} % Default.
+\let\pdf\PDF\relax % Make it case-insensitive.
+
+
+
 
 %% This is used only by developer. Not part of release:
 \newcommand\markupgrid[1]{}

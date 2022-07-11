@@ -13,42 +13,66 @@
 %%
 
 
-% The following might become unnecessary if fontspec adds the capability to
-% disable keys. For now: Color and Opacity cannot be used as font features,
-% for a black/white printed book. Alas, fontspec over-rules xcolor.
-% So, this code over-rules fontspec:
-\gdef\@CheckFontspecFeatures#1{%
+%% Default font features (may be changed later):
+\defaultfontfeatures{} % Reset.
+\defaultfontfeatures{%
+  SmallCapsFeatures={Renderer=Basic},Ligatures=TeX,Kerning=On%
+}
+%%
+
+\newfontface\headerface{OzzieL}
+
+%% Font definitions:
+\setmainfont{Swainson}[Numbers=OldStyle,Ligatures=Common]
+\newfontfamily\main{Swainson}[Numbers=OldStyle,Ligatures=Common]
+\newfontface\huge{SwainsonTitling}[Numbers=Lining,Scale=1.6]
+\let\Huge\huge\relax
+\let\HUGE\huge\relax
+\newfontfamily\large{SwainsonTitling}[Numbers=Lining,Scale=1.25]
+\let\Large\large\relax
+\let\LARGE\large\relax
+\providecommand\small[1]{}
+\renewcommand\small[1]{\textbf{\addfontfeature{Scale=0.88}#1}}
+\let\footnotesize\small\relax
+\let\scriptsize\small\relax
+\let\tiny\small\relax
+\IfFontExistsTF{Libertinus Serif}{
+  \newfontfamily\delegate{Libertinus Serif}[Scale=MatchLowercase]
+}{
+  \let\delegate\relax
+  \ClassWarning{Novelette}{BIG BAD WARNING. Did not find Libertinus fonts. ^^J%
+   You used command \string\delegate\. This calls characters from the ^^J%
+   Libertinus Serif fonts. But Novelette could not find that font family. ^^J%
+   Solution: Use your TeX package manager to install 'libertinus-fonts'. ^^J%
+   Neither Novelette nor MikTeX can do that automatically. Do it yourself. ^^J%
+   Then try again. Until 'libertinus-fonts' package is installed, you will ^^J%
+   see the missing character symbol, instead of delegate characters.}
+}
+%%
+
+%% Optional decofont:
+\newif \if@decofont
+\DeclareDocumentCommand\setdecofont { m O{} } {
   \@tempTFfalse%
-  \IfSubStr{#1}{Color}{\@tempTFtrue}{}%
-  \IfSubStr{#1}{Colour}{\@tempTFtrue}{}%
-  \IfSubStr{#1}{color}{\@tempTFtrue}{}%
-  \IfSubStr{#1}{colour}{\@tempTFtrue}{}%
-  \IfSubStr{#1}{Opacity}{\@tempTFtrue}{}%
-  \IfSubStr{#1}{opacity}{\@tempTFtrue}{}%
+  \IfSubStr{#2}{Color}{\@tempTFtrue}{}%
+  \IfSubStr{#2}{Colour}{\@tempTFtrue}{}%
+  \IfSubStr{#2}{color}{\@tempTFtrue}{}%
+  \IfSubStr{#2}{colour}{\@tempTFtrue}{}%
+  \IfSubStr{#2}{Opacity}{\@tempTFtrue}{}%
+  \IfSubStr{#2}{opacity}{\@tempTFtrue}{}%
   \if@tempTF%
     \ClassError{Novelette}{Color and Opacity forbidden as font features}%
     {You defined a font, or added a font feature, with Color or Opacity. ^^J%
      That is disallowed in Novelette.}%
   \fi%
-} % End \@CheckFontspecFeatures.
-
-% Default font features (may be changed later):
-\defaultfontfeatures{} % Reset.
-\defaultfontfeatures{%
-  SmallCapsFeatures={Renderer=Basic},Ligatures=TeX,Kerning=On%
-} % All.
-
-
-\setmainfont{Swainson}[Numbers=OldStyle,Ligatures=Common]
-\newfontfamily\mainfont{Swainson}[Numbers=OldStyle,Ligatures=Common]
-\newfontface\titlefont{SwainsonTitling}[Numbers=Lining,Scale=1.6]
-\newfontfamily\subtitlefont{Swainson}[Numbers=Lining,Scale=1.25]
-\IfFontExistsTF{Libertinus Serif}{
-  \newfontfamily\delegate{Libertinus Serif}[Scale=MatchLowercase]
-}{
-  \let\delegate\relax
+  \newfontfamily\decofont{#1}[#2]
+  \@decofonttrue
 }
-%%% \newfontfamily\decofont{#2}[#3] %%% Swainson 2.5 ?
+\newcommand\@DecoFont{ % Called \AtBeginDocument.
+  \if@decofont\else\setdecofont{Swainson}[Scale=2]\fi
+  \let\setdecofont\relax
+}
+%%
 
 
 %%

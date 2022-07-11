@@ -1,0 +1,193 @@
+%%
+%% This is file Novelette-Sections.sty,
+%% part of Novelette document class.
+%% Copyright 2022 Robert Allgeyer.
+%%
+%% It may be used, distributed, and/or modified under the
+%% conditions of the MIT License. See:
+%% https://opensource.org/licenses/MIT
+%% 
+%%
+\ProvidesFile{Novelette-Sections.sty}%
+[2022/06/22 v0.0.1 LuaLaTeX file (section and scene macros)]
+%%
+
+
+%% Novelette does not use the standard TeX commands such as \part, \section,
+%% \subsection, and so forth. Those are inappropriate for fiction, and would
+%% mightily disturb the line grid. All these do is echo the argument, if any:
+\long\gdef\part#1{#1}
+\long\gdef\chapter#1{#1}
+\long\gdef\subsection#1{#1}
+\long\gdef\subsubsection#1{#1}
+\long\gdef\paragraph#1{#1}
+\long\gdef\subparagraph#1{#1}
+\long\gdef\appendix#1{#1}
+%%
+
+%% Instead, Novelette provides a generic method for starting new chapters,
+%% and chapter-like sections such as a long Introduction, using \opening
+%% and \content commands. It also provides a choice of methods for
+%% scene breaks within a chapter, or you can do it your own way.
+
+%% Command \opening{name}{subname} creates a 12-line area at the section start,
+%% containing only the name (chapter title) and subname (chapter subtitle).
+\newif\if@inopening % Maybe need to know this, later.
+\newcommand\opening[2]{%
+  \newpage%
+  \thispagestyle{empty}%
+  \global\@inopeningtrue%
+  \suppressfloats[t]% ensures that a floated image does not go on top
+  \gsetlength\parindent{0pt}% within environment
+  \ResetFootnoteSymbol% resets symbolic markers, but not numerical markers
+  \null\null\null\null\null % Name is written on line 6, may smash up.
+  \ignorespaces{\centering{\stake\smash{\huge #1}}\par}%
+  \null%
+  {\centering{\stake\smash{\large #2}}\par}%
+  \null\null\null\null
+}
+%% Command \content indicates that the \opening has finished.
+%% It begins the text without indent.
+%% Optional argument bumps up (positive) or down (negative) integer lines.
+\newcommand\content[1][0]{
+  \IfInteger{#1}{
+    \vspace{-#1\nbs}
+  }{
+    \ClassWarning{Novelette}{Bad optional value for \string\content. ^^J%
+     Must be integer. Argument ignored.}%
+  }
+  \global\@inopeningfalse
+  \gsetlength\parindent{\normalparindent}
+}
+%%
+\NoIndentAfterCmd{\content}
+%%
+
+%% Repair \FirstLine{} command from `magaz' package.
+%% Problem: Conflict with \NoIndentAfterCmd{\content}.
+%% Without fix, \noindent is carried past \FirstLine to the next paragraph.
+\let\my@FirstLine\FirstLine
+\def\FirstLine#1{%
+  \vspace{-\nbs}% Bump up, to allow space for the following line.
+  \strut\par% This absorbs the \NoIndentAfter{\content}.
+  \gsetlength\parindent{0pt}% \noindent would not work, so do this.
+  \my@FirstLine{#1}%
+  \gsetlength\parindent{\normalparindent}% Back to normal.
+}
+%%
+
+%% Scene changes within a chapter: \scenebreak   \sceneline   \scenestars
+%% \scenebreak skips a line, and leaves the gap empty.
+%% \sceneline skips a line, puts a centered line, ~1/3 textwidth, in the gap.
+%% \scenestars skips a line, puts three widely-spaced asterisks, centered.
+%% Following paragraph is not indented.
+\newcommand\scenebreak{%
+  \leavevmode\getBreakpos{scenebreak}~\par
+}
+%%
+\newcommand\sceneline{%
+  \noindent\getBreakpos{sceneline}\hfil%
+  \raisebox{0.2em}{\rule{0.35\textwidth}{.4pt}}\hfil\par%
+}
+%%
+\newcommand\scenestars{%
+  \noindent\getBreakpos{scenestars}\hfil%
+  \raisebox{-.3em}{*\quad\quad*\quad\quad*}\hfil\par%
+}
+%%
+\NoIndentAfterCmd{\scenebreak}
+\NoIndentAfterCmd{\sceneline}
+\NoIndentAfterCmd{\scenestars}
+%%
+
+%% Scene breaks with empty line are not obvious at top or bottom of page.
+%% This finds such lines, and issues warnings.
+%% It also warns if any scene change is very near top or bottom of page,
+%% because that would look bad in print.
+\gdef\getBreakpos#1{%
+  \begingroup%
+    \savepos%
+    \protected@write\@auxout{}{%
+      \protect\@getBreakpos{\noexpand\number\lastypos}{\thepage}{#1}%
+    }%
+  \endgroup%
+}
+%%
+\newlength\CurrentBreakpos
+\gdef\@getBreakpos#1#2#3{} % Nothing, when reading aux at beginning.
+\gdef\@RedefineBreakpos{ % Called \AtBeginDocument.
+  \gdef\@getBreakpos##1##2##3{% Numerical position sp, page, break type.
+    \gsetlength\CurrentBreakpos{##1sp}% Measured up from very bottom of page.
+    \FPsub{\@BreakLines}{\strip@pt\TotalYpos}{\strip@pt\CurrentBreakpos}
+    \FPdiv{\@BreakLines}{\@BreakLines}{\strip@pt\nbs}%
+    \FPround{\@BreakLines}{\@BreakLines}{0}% Integer lines from text top.
+    \ifthenelse{\equal{##3}{scenebreak}}{%
+    \xdef\thisline{\@BreakLines}%
+      \ifnum\@BreakLines=1%
+        \ClassWarning{Novelette}{Change \string\scenebreak\space top ^^J%
+         of page ##2 to \string\sceneline\space or \string\scenestars.}%
+      \fi%
+      \ifnum\@BreakLines=\my@lpp%
+        \ClassWarning{Novelette}{Change \string\scenebreak\space at bottom ^^J%
+         of page ##2 to \string\sceneline\space or \string\scenestars.}%
+      \fi%
+    }{}%
+    \FPsub{\@nearthebottom}{\my@lpp}{1}%
+    \ifnum\@BreakLines=2%
+      \ClassWarning{Novelette}{\string\ ##3 too close to top of page ##2.}%
+    \fi%
+    \ifnum\@BreakLines=\@nearthebottom%
+      \ClassWarning{Novelette}{\string\ ##3 too close to bottom of page ##2.}%
+    \fi%
+  }%
+} % End \@RedefineBreakpos.
+%%
+
+%% \cleartorecto works same as \clearpage when next page is recto.
+%% If next page would be verso, a blank verso is inserted,
+%% so that the following material is recto.
+%% \cleartoend is used at very end of book.
+%% It adds a blank page. If the blank is verso, end of book.
+%% But if that blank is recto, it adds a second blank page, end of book.
+%% So, the book always ends with a blank verso.
+\gdef\cleartorecto{
+  \clearpage
+  \ifodd\c@page
+  \else
+    \thispagestyle{empty}
+    \null
+    \clearpage
+  \fi
+}
+%%
+\newif \if@cleartoend
+\gdef\cleartoend{
+  \if@cleartoend\else
+    \clearpage
+    \ifodd\c@page
+      \thispagestyle{empty}
+      \null
+      \clearpage
+    \fi
+    \thispagestyle{empty}
+    \null
+    \clearpage
+  \fi
+  \global\@cleartoendtrue
+}
+%%
+
+%% Neutralize settings commands:
+\gdef\@DisableSceneSettings{% Called \AtBeginDocument,
+  \LetLtxMacro\SetHeaderStyle\relax
+}% end \@DisableSceneSettings
+%%
+
+
+
+%%
+\endinput
+%%
+%% End of file Novelette-Sections.sty.
+
+

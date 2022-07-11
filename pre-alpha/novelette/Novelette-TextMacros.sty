@@ -18,10 +18,11 @@
 \gdef\straightdblquote{{\addfontfeature{Ligatures=ResetAll}"}}
 %%
 
-
+%% Easier to remember than the usual TeX code. For a percent-free document.
+\gdef\percent{\%}
 %%
 
-%% \memo{} does not print or save its argument.
+%% \memo{} does not print or save its argument. For a percent-free document.
 % Useful when you wish to put a note to yourself in the *.tex document.
 % Not the same as % comment, because anything after the braces will print.
 \long\gdef\memo#1{}
@@ -35,10 +36,13 @@
 \DeclareDocumentCommand \smcp { +m } {% lowercase to small caps
   {\addfontfeature{Letters=SmallCaps}#1}%
 }
+\DeclareDocumentCommand \pcap { +m } {% lowercase to petite caps
+  {\addfontfeature{Letters=PetiteCaps}#1}%
+}
 \ExplSyntaxOn
 \DeclareDocumentCommand \allsmcp { +m } {% lowercase+uppercase to small caps
   \fontspec_if_feature:nTF {c2sc}{%
-   {\addfontfeatures{Letters=UppercaseSmallCaps, Letters=SmallCaps}#1}%
+   {\addfontfeature{Letters=UppercaseSmallCaps,Letters=SmallCaps}#1}%
   }{%
    {\addfontfeature{Letters=SmallCaps}\MakeLowercase{#1}}%
   }%
@@ -47,8 +51,8 @@
 \let\textsc\smcp\relax % unified
 \let\oldscshape\scshape\relax % in case needed later
 \let\scshape\smcp\relax % unified
-\providecommand\FirstLineFont{\smcp} % package `magaz'
-\renewcommand\FirstLineFont{\smcp}
+\providecommand\FirstLineFont{\pcap} % package `magaz'
+\renewcommand\FirstLineFont{\pcap}
 %%
 
 %% Novelette normally allows only black or grayscale text on white paper.
@@ -56,7 +60,7 @@
 \ProvideDocumentCommand\@declaredcolor { m } {}
 \ProvideDocumentCommand\@undeclaredcolor { o m } {}
 % For convenience:
-\definecolor[named]{gray1}{gray}{0.15} % ten percent gray, etc.
+\definecolor[named]{gray1}{gray}{0.15} % lightest
 \definecolor[named]{gray2}{gray}{0.25}
 \definecolor[named]{gray3}{gray}{0.33}
 \definecolor[named]{gray4}{gray}{0.4}
@@ -64,7 +68,7 @@
 \definecolor[named]{gray6}{gray}{0.6}
 \definecolor[named]{gray7}{gray}{0.68}
 \definecolor[named]{gray8}{gray}{0.75}
-\definecolor[named]{gray9}{gray}{0.87}
+\definecolor[named]{gray9}{gray}{0.87} % darkest
 %%
 
 

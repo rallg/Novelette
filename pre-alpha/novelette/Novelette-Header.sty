@@ -30,9 +30,11 @@
 \fancyfoot[LO,RE,LE,RO,CE,CO]{}
 %%
 
+\pagestyle{empty} % Will be re-defined, below.
+
 %% Re-define \thispagestyle so that only fancy and empty can be used.
-\LetLtxMacro{\my@thispagestyle}{\thispagestyle}
-\gdef\thispagestyle#1{%
+\let\my@thispagestyle\thispagestyle
+\renewcommand\thispagestyle[1]{%
   \ifthenelse{\equal{#1}{empty}}{
     \my@thispagestyle{empty}
   }{
@@ -41,10 +43,15 @@
 }
 %%
 
-%% Like it or not, Swainson and SwainsonNote are used in the header.
+%% Like it or not, Swainson is used in the header.
 %% Then the style, size, and position can be easily calculated.
-\newfontfamily\headerfont{SwainsonNote}[Scale=.88,LetterSpace=2]
-\newfontfamily\headernum{Swainson}[Numbers=Lining,LetterSpace=2]
+\newcommand\headerfont[1]{%
+%%%  {\textbf{\addfontfeature{Scale=0.88,LetterSpace=2}#1}}%
+  {\headerface #1}
+}
+\newcommand\headernum[1]{%
+  {\addfontfeature{Numbers=Lining,LetterSpace=2}#1}%
+}
 %%
 
 %%
@@ -55,10 +62,10 @@
   \ifthenelse{\equal{\my@rectoheader}{placeholder}}{
     \gdef\my@rectoheader{\thetitle}
   }{}
-  \fancyhead[LE]{\headernum\thepage~\my@versoemblem}
-  \fancyhead[RO]{\headernum\my@rectoemblem~\thepage}
-  \fancyhead[CE]{\headerfont\my@versoheader}
-  \fancyhead[CO]{\headerfont\my@rectoheader}
+  \fancyhead[LE]{\headernum{\thepage}~\my@versoemblem}
+  \fancyhead[RO]{\my@rectoemblem~\headernum{\thepage}}
+  \fancyhead[CE]{\headerfont{\my@versoheader}}
+  \fancyhead[CO]{\headerfont{\my@rectoheader}}
   \pagestyle{fancy} % Except where over-ridden by \thispagestyle{empty}.
 } % End \@ActivateHeader.
 %%

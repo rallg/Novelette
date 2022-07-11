@@ -86,6 +86,7 @@
 }% End \gsetlength.
 \newlength\@tempLength % Scratch length for local calculations.
 \newif \if@tempTF % Scratch boolean for local tests.
+
 \RequirePackage{etoolbox} % General good stuff.
 \RequirePackage{xstring} % Parses strings.
 \RequirePackage{xifthen} % Improved \ifthenelse handling.
@@ -104,7 +105,7 @@
 \RequirePackage{atbegshi} % In oberdiek bundle. For one-page header changes.
 \RequirePackage{letltxmacro} % For re-defining some commands.
 \RequirePackage{xparse} % For writing cool-looking commands.
-\RequirePackage{noindentafter} % For unindented chapter and scene starts.
+\RequirePackage{noindentafter} % For unindented section and scene starts.
 \RequirePackage{changepage} % Provides block indents, etc. Do not use strict!
 \RequirePackage{magaz} % Special treatment of first lines.
 
@@ -123,22 +124,20 @@
 
 %% Temporary normal font size, baselineskip, and fontspec
 %% ----------------------------------------------------------------------------
-% Some packages, especially older ones, expect that your document class
-% pre-set some values, by class options. But Novelette does not do it that way,
-% because most values are not set until \AtEndPreamble.
+%% Some packages, especially older ones, expect that your document class
+%% pre-set some values, by class options. But Novelette does not do that,
+%% because most values are not set until \AtEndPreamble.
 %% This normalsize is temporary, so that packages can load without complaint.
 %% It will be modified later, during layout calculations.
 %% Actual default font size will be 11.5pt-12pt, with 11.7pt average.
 %% The small temporary size is to ensure that overly-large struts and skips
 %%   are not created prior to page layout calculation.
-\gdef\@TentativeEmN{12}
-\gdef\@TentativeBLSkipN{15}
-\renewcommand\normalsize{% Where \@setfontsize is a built-in LaTeX command.
-  \@setfontsize\normalsize{\@TentativeEmN}{\@TentativeBLSkipN}%
-}
+\gdef\@tempPS{12}
+\gdef\@tempBLS{15}
+\renewcommand\normalsize{\@setfontsize\normalsize{\@tempPS}{\@tempBLS}}
 \normalsize
 \RequirePackage[no-math]{fontspec} % For LuaLaTeX. NOT package `fontenc'.
-%% end temporary normal point size, baselineskip, and fontspec.
+%% End temporary normal point size, baselineskip, and fontspec.
 
 % This loads file Novelette-Microtype.cfg:
 \gdef\@mymicrotypeset{config=Novelette-Microtype,final,stretch=20,shrink=20}
@@ -172,8 +171,8 @@
 % Each pre-configured style will set these booleans true or false:
 \RequirePackage{fancyhdr}
 \RequirePackage{Novelette-Header}
-% Chapter and Scene styles:
-\RequirePackage{Novelette-ChapterScene}
+% Section and Scene styles:
+\RequirePackage{Novelette-Sections}
 % Image placement:
 \RequirePackage{luacode}
 \RequirePackage{Novelette-Images}
@@ -221,21 +220,26 @@
 %% \AtBeginDocument finishes the setup
 %% ----------------------------------------------------------------------------
 \AtBeginDocument{ %
+  \@DecoFont % In file Novelette-Fonts.sty
   \@ActivateTextLengths % In file Novelette-TextMacros.sty.
-  \@ActivateChapterScene % In file Novelette-ChapterScene.sty.
   \@ActivateHeader % In file Novelette-Header.sty.
   \@ActivatePDFInfo % In file Novelette-PDFX.sty.
   \@ActivateTextMacros % In file Novelette-TextMacros.sty.
   \@ActivateFootnotes % In file Novelette-Footnotes.sty.
-  \@DisableFontSizes % In file Novelette-Unchained.sty.
   \@DisableMetadataCommands % In file Novelette-Metadata.sty.
-  \@DisableChapterSceneSettings % In file Novelette-ChapterScene.sty.
-  \@RedefineBreakpos % In file Novelette-ChapterScene.sty.
+  \@DisableSceneSettings % In file Novelette-Sections.sty.
+  \@RedefineBreakpos % In file Novelette-Sections.sty.
   % Cover has no content other than background image. End input now.
   % Then the log file will say that there was an unfinished if. Indeed! 
   \if@coverart\thispagestyle{empty}\null\end{document}\fi
-}% end \AtBeginDocument
-%%
+  \catcode`\@=12
+  \catcode`\#=12
+  \catcode`\$=12
+  \catcode`\^=12
+  \catcode`\&=12
+  \catcode`\_=12
+}
+%% End \AtBeginDocument.
 
 
 %% AtEndDocument adds one or two blank pages, required by printers.
