@@ -74,7 +74,7 @@
   \gdef\@OIinfo{Japan Color 2001 Coated}
   \gdef\@OIregistry{http://www.color.org}
 }{}
-\ifthenelse{\equal{\my@intent}{OTHER}}{ % Provide values for these:
+\ifthenelse{\equal{\my@intent}{CUSTOM}}{ % Provide values for these:
   \gdef\@OIidentifier{}
   \gdef\@OIcondition{}
   \gdef\@OIinfo{}
@@ -85,14 +85,7 @@
 \ifthenelse{\equal{\@OIcondition}{}}{\@tempTFtrue}{}
 \ifthenelse{\equal{\@OIinfo}{}}{\@tempTFtrue}{}
 \ifthenelse{\equal{\@OIregistry}{}}{\@tempTFtrue}{}
-\if@tempTF
-  \ClassError{Novelette}{PDF intent CUSTOM requires user-set values}%
-  {You wrote CUSTOM for second argument of \string\setPDF. ^^J%
-   That requires you to manually edit file Novelette-PDFX.sty. ^^J%
-   You must provide the required data for your intent. ^^J%
-   Follow the instructions in that file: Output Intent Definitions. ^^J%
-   Are you really sure that you need a CUSTOM intent?}
-\fi
+\if@tempTF\my@Epdfi\fi
 %% End Output Intent Definitions.
 
 \hypersetup{pdfencoding=auto}
@@ -157,7 +150,7 @@
 %
 % BleedBox, only for cover art. Same size as MediaBox.
 \newcommand\Novelette@BleedBox{%
-  \if@coverart%
+  \if@cover%
     /BleedBox[0\space0\space\@myMWN\space\@myMHN]%
   \fi%
 }
@@ -214,7 +207,7 @@
   \pad@viii</rdf:Alt>^^J
   \pad@vi</dc:title>^^J
 }
-\if@markupcopy
+\if@markup
   \gdef\@titleString{
     \pad@vi<dc:title>^^J
     \pad@viii<rdf:Alt>^^J
@@ -364,7 +357,7 @@
   \fi
 }
 % Now, massage the metadata:
-\if@markupcopy
+\if@markup
   \@infotopdfstring{\@infotitle}{\@title\space - MARKUP COPY}
 \else
   \@infotopdfstring{\@infotitle}{\@title}

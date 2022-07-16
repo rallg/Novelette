@@ -71,13 +71,13 @@
 
 %% FINISH LAYOUT
 %% ----------------------------------------------------------------------------
-% Default Media Size is same as Trim Size, unless \SetMediaSize used:
-\if@MediaSize\else
+% Media Size same as Trim Size, unless \format{media} or \format{markup} used:
+\if@media\else
     \gsetlength\paperwidth{\my@trimwidth}
     \gsetlength\paperheight{\my@trimheight}
 \fi
 % Sanity check for cover art, which needs bleed:
-\if@coverart
+\if@cover
   \setlength\@tempLength{\paperwidth-\my@trimwidth}
   \ifthenelse{\dimtest{\@tempLength}{<}{6mm}}{%
     \ClassWarning{Novelette}{^^JBIG BAD WARNING! Insufficient bleed width ?^^J%
@@ -147,10 +147,8 @@
   \dimtest{\my@trimwidth}{>}{\paperwidth} %
   \OR \dimtest{\my@trimheight}{>}{\paperheight}%
 }{%
-  \ClassError{Novelette}{Media Size too small for TrimSize}%
-  {You wrote \string\SetMediaSize\space with length(s) too small ^^J%
-   for the default Trim Size or your values in \string\SetTrimSize.}%
-}{} %
+  \my@Emsts
+}{}
 % end sanity check
 %% end finish layout.
 
@@ -178,7 +176,7 @@
 %% ----------------------------------------------------------------------------
 %% Adds label, and possibly cropmarks, to markup copy.
 
-\if@markupcopy
+\if@markup
   \ifthenelse{\equal{\my@markupgrid}{none}}{
     \AddToShipoutPictureBG{%
       \@getPageXY%
@@ -200,7 +198,7 @@
 %% But when \purpose{markup} and \media{markup}{width}{height} are both used,
 %% cropmarks are added to the markup copy, for your convenience.
 \newif \if@cropmarks
-\if@markupcopy\global\@cropmarkstrue\fi
+\if@markup\global\@cropmarkstrue\fi
 \ifthenelse{% Not using \media{markup}{}{}.
   \dimtest{\my@trimwidth}{=}{\paperwidth} %
   \AND \dimtest{\my@trimheight}{=}{\paperheight}%

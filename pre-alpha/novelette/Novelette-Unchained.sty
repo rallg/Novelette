@@ -103,30 +103,22 @@
 \newif \ifWithinFrontmatter % true within frontmatter
 \newif \ifWithinMainmatter % true within mainmatter
 \def\frontmatter{ % starts page count and frontmatter count at 1.
-  \ifWithinFrontmatter
-    \ClassError{Novelette}{\string\frontmatter\ used more than once}%
-    {You issued \string\frontmatter\ more than once.}%
-  \fi
-  \ifWithinMainmatter
-   \ClassError{Novelette}{\string\frontmatter\ cannot follow \mainmatter}%
-   {In order: \string\frontmatter\ \string\mainmatter ^^J%
-    but you do not need both of them.}%
-  \fi
+  \ifWithinFrontmatter\my@Edblfm\fi
+  \ifWithinMainmatter\my@Emmfm\fi
   \global\WithinFrontmattertrue\global\WithinMainmatterfalse
   \clearpage
   \pagenumbering{roman}
   \setcounter{page}{1}
 }
 %
-\def\mainmatter{ % restarts page to 1, arabic numbers; freeze frontpagecount
-  \ifWithinMainmatter
-    \ClassError{Novelette}{\string\mainmatter\ used more than once}%
-    {You issued \string\mainmatter\ more than once.}%
-  \fi
+\def\mainmatter{ % Restarts page to 1, arabic numbers, default headers.
+  \ifWithinMainmatter\my@Edblmm\fi
   \cleartorecto
   \global\WithinFrontmatterfalse\global\WithinMainmattertrue
   \pagenumbering{arabic}
   \setcounter{page}{1}
+  \ifthenelse{\equal{\my@versoheader}{}}{\gdef\my@versoheader{\theauthor}}{}
+  \ifthenelse{\equal{\my@versoheader}{}}{\gdef\my@versoheader{\thetitle}}{}
 }
 % In Novelette, backmatter continues ordinary mainmatter page numbering.
 \def\backmatter{\cleartorecto}
@@ -146,28 +138,24 @@
 
 % In Novelette there is no academic organization.
 % In some situations, the use will be interrupted:
-\DeclareDocumentCommand\@nodocommand { O{} +m } {%
-  \ClassError{Novelette}{No command or environment `#1' in this class}%
-   {Many academic layout commands or environments are disabled in Novelette.}%
-}
 % Here is the interruption list:
-\long\gdef\maketitle{\@nodocommand{maketitle}}
-\long\gdef\makeindex{\@nodocommand{makeindex}}
-\long\gdef\tableofcontents{\@nodocommand{tableofcontents}}
-\long\gdef\listoftables{\@nodocommand{listoftables}}
-\long\gdef\listoffigures{\@nodocommand{listoffigures}}
-\long\gdef\thebibliography{\@nodocommand{thebibliography}}
-\long\gdef\theindex{\@nodocommand{theindex}}
-\long\gdef\abstract{\@nodocommand{abstract}}
+\long\gdef\maketitle{\my@Emkt{maketitle}}
+\long\gdef\makeindex{\my@Emkt{makeindex}}
+\long\gdef\tableofcontents{\my@Emkt{tableofcontents}}
+\long\gdef\listoftables{\my@Emkt{listoftables}}
+\long\gdef\listoffigures{\my@Emkt{listoffigures}}
+\long\gdef\thebibliography{\my@Emkt{thebibliography}}
+\long\gdef\theindex{\my@Emkt{theindex}}
+\long\gdef\abstract{\my@Emkt{abstract}}
 
-\long\gdef\caption{\@nodocommand{caption}}
-\long\gdef\tabular{\@nodocommand{tabular}}
-\long\gdef\table{\@nodocommand{table}}
-\long\gdef\figure{\@nodocommand{figure}}
-\long\gdef\itemize{\@nodocommand{itemize}}
-\long\gdef\enumerate{\@nodocommand{enumerate}}
-\long\gdef\description{\@nodocommand{description}}
-\long\gdef\labeling{\@nodocommand{labeling}}
+\long\gdef\caption{\my@Emkt{caption}}
+\long\gdef\tabular{\my@Emkt{tabular}}
+\long\gdef\table{\my@Emkt{table}}
+\long\gdef\figure{\my@Emkt{figure}}
+\long\gdef\itemize{\my@Emkt{itemize}}
+\long\gdef\enumerate{\my@Emkt{enumerate}}
+\long\gdef\description{\my@Emkt{description}}
+\long\gdef\labeling{\my@Emkt{labeling}}
 %
 \newif \if@OnTitlePage % not really useful
 \DeclareDocumentEnvironment{titlepage}{s}{%

@@ -13,9 +13,15 @@
 %%
 
 
-%% Novelette does not use the standard TeX commands such as \part, \section,
+%% Novelette does not use the standard LaTeX commands such as \part, \section,
 %% \subsection, and so forth. Those are inappropriate for fiction, and would
-%% mightily disturb the line grid. All these do is echo the argument, if any:
+%% mightily disturb the line grid.
+%% Instead, Novelette provides a generic method for starting new chapters,
+%% and chapter-like sections such as a long Introduction, using \opening
+%% and \content commands. It also provides a choice of methods for
+%% scene breaks within a chapter, or you can do it your own way.
+
+%% These LaTeX commands are re-defined to merely echo the argument, if any:
 \long\gdef\part#1{#1}
 \long\gdef\chapter#1{#1}
 \long\gdef\subsection#1{#1}
@@ -25,54 +31,89 @@
 \long\gdef\appendix#1{#1}
 %%
 
-%% Instead, Novelette provides a generic method for starting new chapters,
-%% and chapter-like sections such as a long Introduction, using \opening
-%% and \content commands. It also provides a choice of methods for
-%% scene breaks within a chapter, or you can do it your own way.
+%% Between \opening and \content, these may be useful:
+\newcommand\name[1]{%
+  \gdef\my@name{%
+    {\csname\my@namefont\endcsname\addfontfeature{Scale=\my@namescale}#1}%
+  }%
+}
+\newcommand\subname[1]{%
+  \gdef\my@subname{%
+   {\csname\my@subnamefont\endcsname\addfontfeature{Scale=\my@subnamescale}#1}%
+  }%
+}
+\newcommand\deco[1]{%
+  \ifthenelse{\equal{#1}{}}{%
+    \gdef\my@deco{}%
+  }{%
+    \gdef\my@deco{\image{#1}}%
+  }%
+}
+%%
 
-%% Command \opening{name}{subname} creates a 12-line area at the section start,
-%% containing only the name (chapter title) and subname (chapter subtitle).
-\newif\if@inopening % Maybe need to know this, later.
-\newcommand\opening[2]{%
-  \newpage%
-  \thispagestyle{empty}%
+%% Command \opening has its alignment and padding set by \format{opening}.
+%% Alignment is {left} or {center}. Applied to name, subname, deco.
+%% Top padding in integer number of blank lines above name.
+%% Bottom padding is integer number of blank lines below the lowest of
+%% name, subname, deco (depending on usage).
+\newif\if@inopening
+\newcounter{my@loopme}
+\newcommand\opening{%
+  \newpage\thispagestyle{empty}%
   \global\@inopeningtrue%
-  \suppressfloats[t]% ensures that a floated image does not go on top
-  \gsetlength\parindent{0pt}% within environment
-  \ResetFootnoteSymbol% resets symbolic markers, but not numerical markers
-  \null\null\null\null\null % Name is written on line 6, may smash up.
-  \ignorespaces{\centering{\stake\smash{\huge #1}}\par}%
-  \null%
-  {\centering{\stake\smash{\large #2}}\par}%
-  \null\null\null\null
+  \suppressfloats[t]% Ensures that a floated image does not go on top.
+  \gsetlength\parindent{0pt}%
+  \gdef\my@name{}% Clear from prior opening.
+  \gdef\my@subname{}% Clear from prior opening.
+  \gdef\my@deco{}% Clear from prior opening.
+  \setcounter{my@loopme}{1}\loop\null\addtocounter{my@loopme}{1}%
+  \ifnum\value{my@loopme}<\my@otop\repeat%
 }
 %% Command \content indicates that the \opening has finished.
 %% It begins the text without indent.
-%% Optional argument bumps up (positive) or down (negative) integer lines.
-\newcommand\content[1][0]{
-  \IfInteger{#1}{
-    \vspace{-#1\nbs}
-  }{
-    \ClassWarning{Novelette}{Bad optional value for \string\content. ^^J%
-     Must be integer. Argument ignored.}%
-  }
-  \global\@inopeningfalse
-  \gsetlength\parindent{\normalparindent}
+\newcommand\content{
+  \ifthenelse{\equal{\my@name}{}}{}{%
+    \null%
+    \ifthenelse{\equal{\my@oalign}{left}}{%
+      \ignorespaces{\strut\smash{\my@name}\par}%
+    }{%
+      \ignorespaces{\centering{\strut\smash{\my@name}}\par}%
+    }%
+  }%
+  \ifthenelse{\equal{\my@subname}{}}{}{%
+    \null%
+    \ifthenelse{\equal{\my@oalign}{left}}{%
+      \ignorespaces{\strut\smash{\my@subname}\par}%
+    }{%
+      \ignorespaces{\centering{\strut\smash{\my@subname}}\par}%
+    }%
+  }%
+  \ifthenelse{\equal{\my@deco}{}}{}{%
+    \ifthenelse{\equal{\my@oalign}{left}}{%
+      \strut\my@inclgr{\my@deco}%
+    }{%
+      \ignorespaces{\centering{\strut\my@inclgr{\my@deco}}\par}%
+    }
+  }%
+  \setcounter{my@loopme}{1}\loop\null\addtocounter{my@loopme}{1}%
+  \ifnum\value{my@loopme}<\my@obot\repeat%
+  \global\@inopeningfalse%
+  \gsetlength\parindent{\normalparindent}%
 }
-%%
+%% Default empty:
+\name{}
+\subname{}
+\deco{}
 \NoIndentAfterCmd{\content}
 %%
 
-%% Repair \FirstLine{} command from `magaz' package.
-%% Problem: Conflict with \NoIndentAfterCmd{\content}.
-%% Without fix, \noindent is carried past \FirstLine to the next paragraph.
-\let\my@FirstLine\FirstLine
-\def\FirstLine#1{%
-  \vspace{-\nbs}% Bump up, to allow space for the following line.
-  \strut\par% This absorbs the \NoIndentAfter{\content}.
-  \gsetlength\parindent{0pt}% \noindent would not work, so do this.
-  \my@FirstLine{#1}%
-  \gsetlength\parindent{\normalparindent}% Back to normal.
+%% \bump{integer} moves up (positive) or down (negative) integer lines.
+%% Used for tweaking where the content begins on the page.
+\newcommand\bump[1]{
+  \IfInteger{#1}{\vspace{-#1\nbs}}{
+    \ClassWarning{Novelette}{Bad value for \string\bump. ^^J%
+     Must be integer. Argument ignored.}%
+  }
 }
 %%
 
@@ -175,12 +216,6 @@
   \fi
   \global\@cleartoendtrue
 }
-%%
-
-%% Neutralize settings commands:
-\gdef\@DisableSceneSettings{% Called \AtBeginDocument,
-  \LetLtxMacro\SetHeaderStyle\relax
-}% end \@DisableSceneSettings
 %%
 
 

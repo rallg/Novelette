@@ -51,8 +51,6 @@
 \let\textsc\smcp\relax % unified
 \let\oldscshape\scshape\relax % in case needed later
 \let\scshape\smcp\relax % unified
-\providecommand\FirstLineFont{\pcap} % package `magaz'
-\renewcommand\FirstLineFont{\pcap}
 %%
 
 %% Novelette normally allows only black or grayscale text on white paper.
@@ -78,29 +76,12 @@
 %   the rule in a \makebox of known width, or by an immediate \par.
 %   Without this limit, rule will be missing (zero width) or excessively long,
 %   or an error will result (referring to \leaders).
-% Takes a single optional argument: Comma-separated raise, line thickness.
-%   If no argument or empty, defaults to [1,1].
-%   Without comma, argument defaults to [argument,1].
-%   First number: Scales raise/down. 1 = raise of emdash in typical fonts.
-%   Second number: Scales line thickness. 1 = emdash in typical fonts.
 % NOTE: Built-in TeX PDF viewer might show the line at slightly incorrect
 %   width and height. Best seen in a "real" PDF viewer.
-\DeclareDocumentCommand \bigemdash { O{1,1} }
- {%
-  \ifthenelse{\equal{#1}{}\OR\equal{#1}{\space}}{%
-    \def\@myargsi{1,1}}{\def\@myargsi{#1}%
-  }%
-  \StrDel{\@myargsi}{\space}[\@myargs]%
-  \StrCut{\@myargs}{,}{\@myraisei}{\@mythicki}%
-  \ifthenelse{\equal{\@myraisei}{}\OR\equal{\@myraisei}{\space}}{%
-    \def\@myraise{1}}{\def\@myraise{\@myraisei}%
-  }%
-  \ifthenelse{\equal{\@mythicki}{}\OR\equal{\@mythicki}{\space}}{%
-    \def\@mythick{1}}{\def\@mythick{\@mythicki}%
-  }%
-  \FPmul{\@myraise}{\@myraise}{0.56}% ex, typical font emdash raise
-  \FPmul{\@mythick}{\@mythick}{0.049}% em, typical font emdash thickness
-  {\leaders\hbox{\rule[\@myraise ex]{1pt}{\@mythick em}}\hfill\stake}%
+\newcommand\bigemdash{%
+  % 0.56ex =  typical font emdash raise
+  % 0.049em = typical font emdash thickness
+  {\leaders\hbox{\rule[0.56ex]{1pt}{0.049em}}\hfill\stake}%
  }
 %%
 

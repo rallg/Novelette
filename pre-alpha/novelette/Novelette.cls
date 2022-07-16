@@ -5,7 +5,7 @@
 %% It may be used, distributed, and/or modified under the
 %% conditions of the MIT License. See:
 %% https://opensource.org/licenses/MIT
-%% 
+%%
 
 \ProvidesClass{Novelette}[2022/06/22 v0.0.1 LuaLaTeX document class]
 
@@ -32,7 +32,7 @@
 % use the 'tlmgr' command-line to install packages yourself.
 % These are the ones most likely to be needed, beyond the minimal:
 %   fp xifthen xstring euenc fontspec tipa xunicode adjustbox eso-pic lipsum
-%   makecmds polyglossia microtype xcolor xkeyval changepage magaz
+%   makecmds polyglossia microtype xcolor xkeyval changepage import
 %   noindentafter pdfpages ifmtarg xpatch collectbox pgf pdflscape
 
 %% DESCRIPTION:
@@ -93,7 +93,8 @@
 \RequirePackage{fp} % Used everywhere for calculations. Includes xfp.
 \FPmessagesfalse % Eliminates numerous friendly messages from the log.
 
-\RequirePackage{Novelette-Settings} % Defines \purpose, \template, etc.
+\RequirePackage{Novelette-Messages} % Errors and Warnings.
+\RequirePackage{Novelette-Settings} % Define \purpose, \template, \format, etc.
 
 \RequirePackage{silence}
 \WarningFilter{hyperref}{Draft mode on} % Always on, just within hyperref.
@@ -107,7 +108,7 @@
 \RequirePackage{xparse} % For writing cool-looking commands.
 \RequirePackage{noindentafter} % For unindented section and scene starts.
 \RequirePackage{changepage} % Provides block indents, etc. Do not use strict!
-\RequirePackage{magaz} % Special treatment of first lines.
+\RequirePackage{import} % For simpler paths to your files.
 
 %% Activate xcolor, adjustbox, and eso-pic:
 %% ----------------------------------------------------------------------------
@@ -158,13 +159,13 @@
 % Language-specific settings:
 \RequirePackage{polyglossia}
 \setdefaultlanguage[variant=american]{english} % May be changed by user.
-
+\setotherlanguage{english} % For lipsum, etc.
 
 %% Additional Macros, Loaded in Preamble.
 %% ----------------------------------------------------------------------------
-\RequirePackage{Novelette-Unchained}
-\RequirePackage{Novelette-Fonts} % font settings and defaults
-\if@coverart\else\RequirePackage{lipsum}\fi % generates dummy text for examples
+\RequirePackage{Novelette-Unchained} % Removes many inappropriate TeX values.
+\RequirePackage{Novelette-Fonts} % Font settings and defaults.
+\if@cover\else\RequirePackage[language=english]{lipsum}\fi % Dummy text.
 % Macros for use in document body:
 \RequirePackage{Novelette-TextMacros}
 % Standard header styles, based on `fancyhdr':
@@ -202,7 +203,6 @@
 % This is prior to \AtBeginDocument, and ensures that the results are available
 %   prior to any \AtBeginDocument routines from user macros or loaded packages. 
 \AtEndPreamble{
-  \if@templateset\else\template{3}{Digest}\fi % Default.
   \let\RequirePackage\gimmedat
   \RequirePackage{Novelette-Templates}
   \RequirePackage{Novelette-CalculateLayout}
@@ -227,11 +227,10 @@
   \@ActivateTextMacros % In file Novelette-TextMacros.sty.
   \@ActivateFootnotes % In file Novelette-Footnotes.sty.
   \@DisableMetadataCommands % In file Novelette-Metadata.sty.
-  \@DisableSceneSettings % In file Novelette-Sections.sty.
   \@RedefineBreakpos % In file Novelette-Sections.sty.
   % Cover has no content other than background image. End input now.
   % Then the log file will say that there was an unfinished if. Indeed! 
-  \if@coverart\thispagestyle{empty}\null\end{document}\fi
+  \if@cover\thispagestyle{empty}\null\end{document}\fi
   \catcode`\@=12
   \catcode`\#=12
   \catcode`\$=12
@@ -245,7 +244,7 @@
 %% AtEndDocument adds one or two blank pages, required by printers.
 %% Also writes list of inspected, good images to aux, for later use:
 \AtEndDocument{%
-  \if@coverart\else%
+  \if@cover\else%
     \immediate\write\@auxout{%
       \string\xdef\string\@UnknownImages{\@UnknownImages}^^J%
     }%

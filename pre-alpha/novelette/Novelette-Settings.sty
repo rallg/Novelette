@@ -13,96 +13,38 @@
 %%
 
 
-%% Define \purpose{book,markup,cover}:
 \newif \if@book
-\newif \if@coverart
-\newif \if@markupcopy
+\newif \if@cover
+\newif \if@markup
+\newif \if@manuscript
+\newif \if@media
+
+
+%% Define \purpose{book,markup,cover,manuscript}:
 \newcommand\purpose[1]{
-  \@tempTFfalse
-  \ifthenelse{\equal{#1}{book}}{\@booktrue \@tempTFtrue}{}
-  \ifthenelse{\equal{#1}{cover}}{\@coverarttrue \@tempTFtrue}{}
-  \ifthenelse{\equal{#1}{markup}}{\@markupcopytrue \@tempTFtrue}{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad choice in \string\purpose{choice}}%
-    {Available choices:  book  markup  cover }
-  \fi
+  \IfSubStr{book cover markup manuscript}{#1}{\gdef\my@purpose{#1}}{\my@Ep}
+  \ifthenelse{\equal{#1}{book}}{\@booktrue}{}
+  \ifthenelse{\equal{#1}{cover}}{\@covertrue}{}
+  \ifthenelse{\equal{#1}{markup}}{\@markuptrue}{}
+  \ifthenelse{\equal{#1}{manuscript}}{\@manuscripttrue}{}
 }
 \purpose{book} % Default.
+%%
 
-%% Define \template{number}{name}:
-\newif \if@templateset
-\newcommand\template[2]{%
+%% Command \template defines the trim size, and other vital dimensions:
+\newcommand\template[3]{ % Numbered class, named trim size, bottom upshift.
   \gdef\my@template{#1}
-  \gdef\my@trimname{#2}
-  \IfSubStr{1 2 3}{\my@template}{}{%
-    \ClassError{Novelette}{Incorrect choice of template number}%
-    {In \string\template{number}{name} number must be 1, 2, or 3.}%
-  }
-  \IfSubStr{Novella B Memoir Demy Digest Trade Royal}{\my@trimname}{}{%
-    \ClassError{Novelette}{Incorrect choice of size name}%
-    {In \string\template{number}{name} name must be one of: ^^J%
-     Novella B Memoir Demy Digest Trade Royal ^^J%
-     The name is case-sensitive.}%
-  }
-  \@templatesettrue
-}
-%%
-
-%% Define \upshift{number} Tweak: Moves bottom of text up 0 to 2 lines.
-\newcommand\upshift[1]{ %  Number 0-2. May be decimal.
-  \@tempTFtrue
-  \FPiflt{#1}{0}\@tempTFfalse\fi
-  \FPifgt{#1}{2}\@tempTFfalse\fi
-  \if@tempTF
-    \gdef\my@upshift{#1}
-  \else
-    \ClassError{Novelette}{Bad value in \string\upshift{}}*
-    {Value 0 - 2. May be decimal.}%
-  \fi
-}
-\upshift{0} % Default.
-%%
-
-%% Define \media{book,markup}{width}{height} :
-\newif \if@MediaSize % When trim size is floated in larger PDF page size.
-\DeclareDocumentCommand\media { m m m } {
+  \gdef\my@trim{#2}
+  \IfSubStr{1 2 3}{\my@template}{}{\my@Etn}
+  \IfSubStr{Novella B Memoir Demy Digest Trade Royal}{\my@trim}{}{\my@Ets}
   \@tempTFfalse
-  \ifthenelse{\equal{#1}{book}}{\@tempTFtrue}{}
-  \ifthenelse{\equal{#1}{markup}}{\@tempTFtrue}{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad first argument for \string\media}
-    {First argument must be one of:  book  markup}
-  \fi
-  \ifthenelse{\equal{#2}{} \AND \equal{#3}{}}{}{ % Do nothing. Else:
-    \@tempTFfalse
-    \IfEndWith{#1}{in}{\@tempTFtrue}{}
-    \IfEndWith{#1}{mm}{\@tempTFtrue}{}
-    \IfEndWith{#1}{cm}{\@tempTFtrue}{}
-    \if@tempTF\else
-      \ClassError{Novelette}{Bad second argument for \string\media}%
-      {Second argument must be width. Units: mm cm in ^^J
-       Or. second and third arguments both empty}%
-    \fi
-    \@tempTFfalse
-    \IfEndWith{#2}{in}{\@tempTFtrue}{}
-    \IfEndWith{#2}{mm}{\@tempTFtrue}{}
-    \IfEndWith{#2}{cm}{\@tempTFtrue}{}
-    \if@tempTF\else
-      \ClassError{Novelette}{Bad third argument for \string\media{}}%
-      {Third argument must be height. Units: mm cm in
-       Or, second and third arguments both empty.}%
-    \fi
-    \ifthenelse{\dimtest{#2}{<}{#3}}{
-      \@MediaSizetrue
-      \gsetlength\paperwidth{#2}
-      \gsetlength\paperheight{#3}
-    }{
-      \ClassError{Novelette}{Bad second or third choice for \string\media}%
-      {Second argument is width. Third argument is height. ^^J%
-       Height must be greater than width.}
-    }
-  }
+  \IfInteger{#3}{\@tempTFtrue}{}
+  \IfDecimal{#3}{\@tempTFtrue}{}
+  \FPiflt{#3}{0}\@tempTFfalse\fi
+  \FPifgt{#3}{2}\@tempTFfalse\fi
+  \if@tempTF\gdef\my@upshift{#3}\else\my@Eu\fi
 }
+\template{3}{Digest}{0} % Default.
 %%
 
 %% \header{verso or recto}{header text}
@@ -121,78 +63,134 @@
     \@tempTFtrue
     \gdef\my@rectoheader{#2}
   }{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad first argument for \string\header}%
-    {For first argument, choose:  verso recto}
-  \fi
+  \if@tempTF\else\my@Ehvr\fi
 }
-\header{verso}{placeholder} % Changed later.
-\header{recto}{placeholder} % Changed later.
+\header{verso}{} % Defaults to \theauthor at \mainmatter.
+\header{recto}{} % Defaults to \thetitle at \mainmatter.
 %%
 
-%% Emblem is placed next to page number. Choices: none slash bar curve
-%%   none, or empty \emblem{} : no emblem.
-%%   slash : symmetrical slash (verso) and backslash (recto). Default.
-%%   bar : vertical bar
-%%   curve : like parentheses, symmetrical verso-recto.
-%% These names refer to special characters in Swainson. No other choices.
-\newcommand\emblem[1]{ % First argument, verso recto. Second argument, content.
-  \@tempTFfalse
-  \ifthenelse{\equal{#1}{none} \OR \equal{#1}{}}{
-    \@tempTFtrue
-    \gdef\my@versoemblem{~}
-    \gdef\my@rectoemblem{~}
+%% \format command:
+\newcommand\format[3]{ % {what}{how}{how}
+  \def\my@formats{media markup opening name subname pdf header manuscript}
+  \IfSubStr{\my@formats}{#1}{}{\my@Eff}
+  %%
+  \ifthenelse{\equal{#1}{media} \AND \equal{\my@purpose}{book}}{
+    \ifthenelse{\equal{#2}{} \AND \equal{#3}{}}{}{ % Do nothing. Else:
+      \@tempTFfalse
+      \IfEndWith{#1}{in}{\@tempTFtrue}{}
+      \IfEndWith{#1}{mm}{\@tempTFtrue}{}
+      \IfEndWith{#1}{cm}{\@tempTFtrue}{}
+      \if@tempTF\else\my@Ems\fi
+      \@tempTFfalse
+      \IfEndWith{#2}{in}{\@tempTFtrue}{}
+      \IfEndWith{#2}{mm}{\@tempTFtrue}{}
+      \IfEndWith{#2}{cm}{\@tempTFtrue}{}
+      \if@tempTF\else\my@Emt\fi
+      \ifthenelse{\dimtest{#2}{<}{#3}}{
+        \@mediatrue
+        \gsetlength\paperwidth{#2}
+        \gsetlength\paperheight{#3}
+      }{
+        \my@Emst
+      }
+    }
   }{}
-  \ifthenelse{\equal{#1}{slash}}{
-    \@tempTFtrue
-    \gdef\my@versoemblem{\addfontfeature{StylisticSet=18}/}
-    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=18}\textbackslash}
+  %%
+  \ifthenelse{\equal{#1}{markup} \AND \equal{\my@purpose}{markup}}{
+    \ifthenelse{\equal{#2}{} \AND \equal{#3}{}}{}{ % Do nothing. Else:
+      \@tempTFfalse
+      \IfEndWith{#1}{in}{\@tempTFtrue}{}
+      \IfEndWith{#1}{mm}{\@tempTFtrue}{}
+      \IfEndWith{#1}{cm}{\@tempTFtrue}{}
+      \if@tempTF\else\my@Ems\fi
+      \@tempTFfalse
+      \IfEndWith{#2}{in}{\@tempTFtrue}{}
+      \IfEndWith{#2}{mm}{\@tempTFtrue}{}
+      \IfEndWith{#2}{cm}{\@tempTFtrue}{}
+      \if@tempTF\else\my@Emt\fi
+      \ifthenelse{\dimtest{#2}{<}{#3}}{
+        \@mediatrue
+        \gsetlength\paperwidth{#2}
+        \gsetlength\paperheight{#3}
+      }{
+        \my@Emst
+      }
+    }
   }{}
-  \ifthenelse{\equal{#1}{bar}}{
+  %%
+  \ifthenelse{\equal{#1}{opening}}{
     \@tempTFtrue
-    \gdef\my@versoemblem{\addfontfeature{StylisticSet=18}|}
-    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=18}|}
-  }{}
-  \ifthenelse{\equal{#1}{curve}}{
+    \gdef\my@oalign{#2}
+    \StrBefore{#3}{,}[\my@otop]
+    \StrBehind{#3}{,}[\my@obot]
+    \IfSubStr{left center}{\my@oalign}{}{\my@Eoa}
     \@tempTFtrue
-    \gdef\my@versoemblem{\addfontfeature{StylisticSet=18})}
-    \gdef\my@rectoemblem{\addfontfeature{StylisticSet=18}(}
+    \IfInteger{\my@otop}{}{\@tempTFfalse}
+    \IfInteger{\my@obot}{}{\@tempTFfalse}
+    \if@tempTF\else\my@Eop\fi
+    \ifthenelse{\my@otop>8}{\my@Wop}{}
+    \ifthenelse{\my@obot>8}{\my@Wop}{}
   }{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad choice for \string\emblem}%
-     {Choices:  none  slash  bar  curve}
-  \fi
-}
-\emblem{slash} % Default.
-%%
-
-\DeclareDocumentCommand\PDF { m m } { % Conformance, output intent.
-  \StrDel{#1}{/}[\my@pdfc] % Slash is not needed here.
-  \@tempTFfalse
-  \ifthenelse{\equal{\my@pdfc}{X-1a:2001}}{\@tempTFtrue}{}
-  \ifthenelse{\equal{\my@pdfc}{X-3:2002}}{\@tempTFtrue}{}
-  \if@tempTF\else
-    \ClassError{Novelette}{Bad first argument for \string\PDF}%
-      {Case-sensitive choices:  X-1a:2001  X-3:2002}
-  \fi
-  \ifthenelse{\equal{\my@pdfc}{X-1a:2001} \OR \equal{#1}{X-3:2002}}{
-    \gdef\my@conformance{\my@pdfc}
+  \ifthenelse{\equal{#1}{name}}{
+    \@tempTFtrue
+    \gdef\my@namefont{#2}
+    \gdef\my@namescale{#3}
+    \IfSubStr{normal smcp titling ozziel drama}{\my@namefont}{}{\my@Ens}
     \@tempTFfalse
-    \ifthenelse{\equal{#2}{SWOP}}{\@tempTFtrue}{}
-    \ifthenelse{\equal{#2}{FOGRA39}}{\@tempTFtrue}{}
-    \ifthenelse{\equal{#2}{JC200103}}{\@tempTFtrue}{}
-    \ifthenelse{\equal{#2}{CUSTOM}}{\@tempTFtrue}{}
-    \if@tempTF
-      \gdef\my@intent{#2}
-    \else
-      \ClassError{Novelette}{Bad second argument for \string\PDF}%
-      {Must be one of:  SWOP  FOGRA39  JC200103  CUSTOM ^^J%
-       Caution: See docs before using CUSTOM. Requires expertise.}
-    \fi
+    \IfInteger{\my@namescale}{\@tempTFtrue}{}
+    \IfDecimal{\my@namescale}{\@tempTFtrue}{}
+    \if@tempTF\else\my@Ensx\fi
+    \FPiflt{\my@namescale}{1.4}\my@Ensv\else\fi
+    \FPifgt{\my@namescale}{2}\my@Ensv\else\fi
   }{}
-}
-\PDF{X-1a:2001}{SWOP} % Default.
-\let\pdf\PDF\relax % Make it case-insensitive.
+  \ifthenelse{\equal{#1}{subname}}{
+    \@tempTFtrue
+    \gdef\my@subnamefont{#2}
+    \gdef\my@subnamescale{#3}
+    \IfSubStr{normal smcp titling ozziel iwona}{\my@subnamefont}{}{\my@Ess}
+    \@tempTFfalse
+    \IfInteger{\my@subnamescale}{\@tempTFtrue}{}
+    \IfDecimal{\my@subnamescale}{\@tempTFtrue}{}
+    \if@tempTF\else\my@Esnsx\fi
+    \FPiflt{\my@subnamescale}{1}\my@Esnsv\else\fi
+    \FPifgt{\my@subnamescale}{1.5}\my@Esnsv\else\fi
+  }{}
+  \ifthenelse{\equal{#1}{pdf}}{
+    \@tempTFtrue
+    \StrDel{#2}{/}[\my@conformance] % Slash is not needed here.
+    \gdef\my@intent{#3}
+    \IfSubStr{X-1a:2001 X-3:2002}{\my@conformance}{}{\my@Epdfc}
+    \IfSubStr{SWOP FOGRA39 JC200103 CUSTOM}{\my@intent}{}{\my@Epdfi}
+  }{}
+  \ifthenelse{\equal{#1}{header}}{
+    \gdef\my@versoemblem{}
+    \gdef\my@rectoemblem{}
+    \gdef\my@headernum{#2}
+    \IfSubStr{#2}{/}{
+      \gdef\my@versoemblem{/}
+      \gdef\my@rectoemblem{\textbackslash}
+      \StrDel{#2}{/}[\my@headernum]
+    }{}
+    \IfSubStr{#2}{|}{
+      \gdef\my@versoemblem{|}
+      \gdef\my@rectoemblem{|}
+      \StrDel{#2}{|}[\my@headernum]
+    }{}
+    \gdef\my@headerfont{#3}
+    \IfSubStr{0 1 2 3 4}{\my@headernum}{}{\my@Ehn}
+    \IfSubStr{normal smcp titling ozziel iwona}{\my@headerfont}{}{\my@Ehf}
+  }{}
+  %%
+} % End \format.
+%% Set defaults:
+\format{media}{}{}
+\format{markup}{}{}
+\format{opening}{center}{5,5}
+\format{name}{normal}{1.6}
+\format{subname}{normal}{1.2}
+\format{pdf}{X-1a:2001}{SWOP}
+\format{header}{1/}{normal}
+%%
 
 
 
@@ -208,4 +206,4 @@
 %%
 \endinput
 %%
-%% End of file Novelette-CalculateLayout.sty.
+%% End of file Novelette-Settings.sty.

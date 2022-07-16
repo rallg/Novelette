@@ -20,19 +20,18 @@
 }
 %%
 
-\newfontface\headerface{OzzieL}
 
 %% Font definitions:
 \setmainfont{Swainson}[Numbers=OldStyle,Ligatures=Common]
-\newfontfamily\main{Swainson}[Numbers=OldStyle,Ligatures=Common]
-\newfontface\huge{SwainsonTitling}[Numbers=Lining,Scale=1.6]
+\newfontface\titling{SwainsonTitling}
+\newcommand\normal[1]{\addfontfeature{Numbers=Lining}#1}
+\newcommand\huge[1]{{\titling\addfontfeature{Scale=1.6}#1}}
 \let\Huge\huge\relax
 \let\HUGE\huge\relax
-\newfontfamily\large{SwainsonTitling}[Numbers=Lining,Scale=1.25]
+\newcommand\large[1]{\addfontfeature{Scale=1.2}#1}
 \let\Large\large\relax
 \let\LARGE\large\relax
-\providecommand\small[1]{}
-\renewcommand\small[1]{\textbf{\addfontfeature{Scale=0.88}#1}}
+\newcommand\small[1]{\textbf{\addfontfeature{Scale=0.88}#1}}
 \let\footnotesize\small\relax
 \let\scriptsize\small\relax
 \let\tiny\small\relax
@@ -60,11 +59,7 @@
   \IfSubStr{#2}{colour}{\@tempTFtrue}{}%
   \IfSubStr{#2}{Opacity}{\@tempTFtrue}{}%
   \IfSubStr{#2}{opacity}{\@tempTFtrue}{}%
-  \if@tempTF%
-    \ClassError{Novelette}{Color and Opacity forbidden as font features}%
-    {You defined a font, or added a font feature, with Color or Opacity. ^^J%
-     That is disallowed in Novelette.}%
-  \fi%
+  \if@tempTF%\my@Efco\fi%
   \newfontfamily\decofont{#1}[#2]
   \@decofonttrue
 }

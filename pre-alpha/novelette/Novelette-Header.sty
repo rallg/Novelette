@@ -15,7 +15,19 @@
 
 %% Uses `fancyhdr' syntax.
 
-% Novelette does not allow images in header. This informs the \image command.
+%% Normally, TeX does not embed the space character. Instead, inter-word
+%% space is determined by positioning. But if you ever need to extract
+%% plain text from the PDF, the extraction software will do a better job
+%% if it has the space character, somewhere on every page.
+%% Novelette writes the space character \char32 in header text and normal text
+%% adjacent to the page number. On most pages without numbers, it writes
+%% the space character somewhere else.
+
+%% Novelette does not allow images in header. This informs the \image command.
+%% Why no images in header? Unfortunately, the necessary 'Form XObject' code
+%% is incompatible with the way Novelette does PDF/X. Without 'Form XObject',
+%% a repeated image (in every page header) will be repeated in the PDF file,
+%% creating a huge file size, and risking rejection by the printer.
 \newtoggle{@inheader} % True within header.
 \LetLtxMacro{\my@fancyhead}{\fancyhead}
 \renewcommand\fancyhead[2][]{%
@@ -43,29 +55,81 @@
 }
 %%
 
-%% Like it or not, Swainson is used in the header.
-%% Then the style, size, and position can be easily calculated.
-\newcommand\headerfont[1]{%
-%%%  {\textbf{\addfontfeature{Scale=0.88,LetterSpace=2}#1}}%
-  {\headerface #1}
+%% Header classes:
+\gdef\my@headerzero{ % Only page number and emblem.
+  \gdef\my@versoheader{}
+  \gdef\my@rectoheader{}
+  \fancyhead[LE]{%
+    \normal{\thepage\char32 \my@versoemblem}%
+  }
+  \fancyhead[RO]{%
+    \normal{\my@rectoemblem\char32 \thepage}%
+  }
 }
-\newcommand\headernum[1]{%
-  {\addfontfeature{Numbers=Lining,LetterSpace=2}#1}%
+%%
+\gdef\my@headerone{ % Page number and emblem outside. Text centered. Default.
+  \fancyhead[LE]{%
+    \normal{\thepage\char32 \my@versoemblem}%
+  }
+  \fancyhead[RO]{%
+    \normal{\my@rectoemblem\char32 \thepage}%
+  }
+  \fancyhead[CE]{\my@headfont{\char32 \my@versoheader \char32}}
+  \fancyhead[CO]{\my@headfont{\char32 \my@rectoheader \char32}}
+}
+%%
+\gdef\my@headertwo{ % Page number, emblem, text all centered.
+  \fancyhead[LE]{%
+    \normal{\thepage\char32 \my@versoemblem}%
+    \my@headfont{\char32 \my@versoheader}%
+  }
+  \fancyhead[RO]{%
+    \my@headfont{\my@rectoheader\char32}%
+    \normal{\my@rectoemblem\char32 \thepage}%
+  }
+}
+%%
+\gdef\my@headerthree{ % Page number, emblem, text all outside.
+  \fancyhead[LE]{%
+    \normal{\thepage\char32 \my@versoemblem}%
+    \my@headfont{\char32 \my@versoheader}%
+  }
+  \fancyhead[RO]{%
+    \my@headfont{\my@rectoheader\char32}%
+    \normal{\my@rectoemblem\char32 \thepage}%
+  }
+}
+%%
+\gdef\my@headerfour{ % Page number and emblem outside. Text inside.
+  \fancyhead[LE]{%
+    \normal{\thepage\char32 \my@versoemblem}%
+  }
+  \fancyhead[RE]{%
+    \my@headfont{\char32 \my@versoheader}%
+  }
+  \fancyhead[LO]{%
+    \my@headfont{\my@rectoheader\char32}%
+  }
+  \fancyhead[RO]{%
+    \normal{\my@rectoemblem\char32 \thepage}%
+  }
 }
 %%
 
 %%
 \gdef\@ActivateHeader{ % Called \AtBeginDocument.
-  \ifthenelse{\equal{\my@versoheader}{placeholder}}{
-    \gdef\my@versoheader{\theauthor}
-  }{}
-  \ifthenelse{\equal{\my@rectoheader}{placeholder}}{
-    \gdef\my@rectoheader{\thetitle}
-  }{}
-  \fancyhead[LE]{\headernum{\thepage}~\my@versoemblem}
-  \fancyhead[RO]{\my@rectoemblem~\headernum{\thepage}}
-  \fancyhead[CE]{\headerfont{\my@versoheader}}
-  \fancyhead[CO]{\headerfont{\my@rectoheader}}
+  \ifthenelse{\equal{\my@headerfont}{normal}}{
+    \gdef\my@headfont{\normal}
+  }{
+    \gdef\my@headfont{% Scale to same uppercase size as nornmal text.
+      \csname\my@headerfont\endcsname\addfontfeature{Scale=MatchUppercase}%
+    }
+  }
+  \ifthenelse{\equal{\my@headernum}{0}}{\my@headerzero}{}
+  \ifthenelse{\equal{\my@headernum}{1}}{\my@headerone}{}
+  \ifthenelse{\equal{\my@headernum}{2}}{\my@headertwo}{}
+  \ifthenelse{\equal{\my@headernum}{3}}{\my@headerthree}{}
+  \ifthenelse{\equal{\my@headernum}{4}}{\my@headerfour}{}
   \pagestyle{fancy} % Except where over-ridden by \thispagestyle{empty}.
 } % End \@ActivateHeader.
 %%

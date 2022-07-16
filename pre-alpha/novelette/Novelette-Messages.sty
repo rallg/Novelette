@@ -1,0 +1,126 @@
+%%
+%% This is file Novelette-Messages.sty,
+%% part of Novelette document class.
+%% Copyright 2022 Robert Allgeyer.
+%%
+%% It may be used, distributed, and/or modified under the
+%% conditions of the MIT License. See:
+%% https://opensource.org/licenses/MIT
+%%
+%%
+\ProvidesFile{Novelette-Messages.sty}%
+[2022/06/22 v0.0.1 LuaLaTeX file (error and warning messages)]
+%%
+
+\newcommand\my@E[2]{\ClassError{Novelette}{#1}{#2}}
+\newcommand\my@W[1]{\ClassWarning{Novelette}{#1}}
+
+\def\my@Ep{\my@E{Bad choice in \string\purpose}%
+{Available choices:  book  markup  cover  manuscript}}
+
+\def\my@Etn{\my@E{Bad number in \string\template}%
+{In \string\template{number}{name} number must be 1, 2, or 3.}}
+
+\def\my@Ets{\my@E{Bad size in \string\template}%
+{In \string\template{number}{name} name must be one of: ^^J%
+Novella B Memoir Demy Digest Trade Royal ^^J%
+The name is case-sensitive.}}
+
+\def\my@Eu{\my@E{Bad value in \string\upshift}%
+{Use upshift value 0 - 2. May be decimal.}}
+
+\def\my@Ems{\my@E{Bad second argument for \string\format{media}}%
+{Second argument must be width. Units: mm cm in ^^J%
+Or, second and third arguments both empty}}
+
+\def\my@Emt{\my@E{Bad third argument for \string\format{media}}%
+{Third argument must be height. Units: mm cm in ^^J%
+Or, second and third arguments both empty.}}
+
+\def\my@Emst{\my@E{Bad second or third choice for \string\format{media}}%
+{Second argument is width. Third argument is height. ^^J%
+Height must be greater than width.}}
+
+\def\my@Ehvr{\my@E{Bad first argument for \string\header}%
+{For first argument, choose:  verso recto}}
+
+\def\my@Ee{\my@E{Bad choice for \string\emblem}%
+{Emblem choices:  none  slash  bar  curve}}
+
+\def\my@Eoa{\my@E{Bad alignment argument for \string\format{opening}}
+{Alignment choices:  left  center}}
+
+\def\my@Eop{\my@E{Bad padding argument for \string\format{opening}}%
+{Padding must be two comma-separated integers >= 1.}}
+
+\def\my@Wop{\my@W{Unusually large value for padding ^^J%
+in \string\format{opening}. Normally should not exceed 8.}}
+
+\def\my@Epdfc{\my@E{Bad Conformance argument for \string\format{pdf}}%
+{The arguments are {conformance}{intent} ^^J%
+Case-sensitive conformances:  X-1a:2001  X-3:2002}}
+
+\def\my@Epdfi{\my@E{Bad Intent argument for \string\format{pdf}}%
+{The arguments are {conformance}{intent} ^^J%
+Case-sensitive intents:  SWOP  FOGRA39  JC200103  CUSTOM ^^J%
+Caution: See docs before using CUSTOM. Requires expertise.}}
+
+\def\my@pdfiv{\my@E{PDF intent CUSTOM requires user-set values}%
+{You wrote CUSTOM for second argument of \string\setPDF. ^^J%
+That requires you to manually edit file Novelette-PDFX.sty. ^^J%
+You must provide the required data for your intent. ^^J%
+Follow the instructions in that file: Output Intent Definitions. ^^J%
+Are you really sure that you need a CUSTOM intent?}}
+
+\def\my@Ens{\my@E{Bad second argument for \string\format{name}}%
+{Choose one of:  normal  smcp  titling  ozziel  drama}}
+
+\def\my@Ess{\my@E{Bad second argument for \string\format{subname}}%
+{Choose one of:  normal  smcp  titling  ozziel  drama}}
+
+\def\my@Eff{\my@E{Bad first argument for \string\format}%
+{Choose one of:  opening  name  subname  pdf}}
+
+\def\my@Efco{\my@E{Color and Opacity forbidden as font features}%
+{You defined a font, or added a font feature, with Color or Opacity. ^^J%
+That is disallowed in Novelette.}}
+
+\def\my@Emsts{\my@E{Media Size too small for TrimSize}%
+{You wrote \string\SetMediaSize\ with length(s) too small ^^J%
+for the default Trim Size or your values in \string\SetTrimSize.}}
+
+\def\my@Edblfm{\my@E{\string\frontmatter\ used more than once}%
+{You issued \string\frontmatter\ more than once.}}
+
+\def\my@Emmfm{\my@E{\string\frontmatter\ cannot follow \string\mainmatter}%
+{Correct order: \string\frontmatter\ \string\mainmatter}}
+
+\def\my@Edblmm{\my@E{\string\mainmatter\ used more than once}%
+{\string\mainmatter\ may only be used once.}}
+
+\newcommand\my@Emkt[1]{\my@E{No command or environment `##1' in Novelette}%
+{Many TeX commands or environments are disabled in Novelette.}}
+
+\def\my@Ensx{\my@E{Did not understand scale argument in \format{name}}%
+{Third argument must be integer or decimal scale 1.4 to 2.}}
+
+\def\my@Ensv{\my@E{Scale argument in \format{name} out of range}%
+{Third argument must be integer or decimal scale 1.4 to 2.}}
+
+\def\my@Esnsx{\my@E{Did not understand scale argument in \format{subname}}%
+{Third argument must be integer or decimal scale 1 to 1.5.}}
+
+\def\my@Esnsx{\my@E{Scale argument in \format{subname} out of range}%
+{Third argument must be integer or decimal scale 1 to 1.5.}}
+
+\def\my@Ehn{\my@E{Bad class number in \format{header}}%
+{Second argument must be integer 0 to 4. Default 1.}}
+
+\def\my@Ehf{\my@E{Bad choice of font in \format{header}}%}
+{Third argument is one of several pre-defined choices: ^^J%
+normal smcp titling ozziel iwona}}
+
+%%
+\endinput
+%%
+%% End of file Novelette-Messages.sty.

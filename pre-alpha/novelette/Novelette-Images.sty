@@ -142,9 +142,10 @@ end
 \newcommand\coverimage[1]{\gdef\my@coverimage{#1}}
 
 \gdef\@CoverOrNot{% Called \AtBeginDocument.
-  \if@coverart%
+  \if@cover%
     \PDFVerifyInfoFieldTF{\my@coverimage}{NSprocessed}{true}%
     {\thispagestyle{empty}\includepdf{my@coverimage}}%
+%%%%%
     {\ClassError{Novelette}{Cover image must be pre-processed by scripts}%
      {Each image processed by Novelette-scripts is marked internally. ^^J%
      Your cover artwork pdf is unmarked. Use `makecmykpdf' script.}%
@@ -173,7 +174,7 @@ end
 %%
 \setkeys{Gin}{draft=false} % Always shows the image, not a box outline.
 \LetLtxMacro\my@inclgr\includegraphics\relax
-%%%\if@coverart\else % Need to allow it, for possible use by \includepdf in cover.
+%%%\if@cover\else % Need to allow it, for possible use by \includepdf in cover.
 %%%  \renewcommand\includegraphics[2][]{%
 %%%    \ClassError{Novelette}{Use of \string\includegraphics\space forbidden}%
 %%%     {Only place images using commands specific to Novelette class.}%

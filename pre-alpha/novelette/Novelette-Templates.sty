@@ -24,23 +24,25 @@
 %% In each group are several templates, named by trim size.
 %% Within each group, the named templates have closely-related layout values.
 %% Then it is possible to change name (at same number), and keep the flow
-%% of paragraphs and pagination. However, if the group number is changed
-%% (even with same name), then paragraphs and pagination will differ.
-%% This enables the author to issue a book at US (inches) or UK (metric)
-%% trim size, within the same group.
+%% of paragraphs and pagination. This enables the author to issue a book at
+%% US (inches) or UK (metric) trim size, within the same group.
 %% The differences within a group are absorbed by clearances, by inter-line
 %% space, or by scaling font size in proportion to text width.
+%% However, if the group number is changed (even with same name), then
+%% paragraphs and pagination will differ.
 
-%% To allow for image placement without the need to re-scale, each group has
-%% a maximum image width and height, related to the narrowest and shortest
-%% member of the group. Images are placed with top and bottom padding,
+%% To allow for image placement without the need to re-scale, there is a
+%% maximum image width and height. It is the same for each template.
+%% Images are placed with top and bottom padding,
 %% which automatically change to absorb differences in inter-line spacing.
-%% Image width is limted by \textwidth.
-%% Calculation: \my@lpp includes header and gap, so subtract 2.
-%% Subtract another 2 to allow for possible \upshift. Subtract 1 to allow
-%% at least 0.5 line height padding at top and bottom. This the maximum
-%% image height is (\my@lpp-5)/(\my@lpp) times the least printable height. 
-
+%% Thus, the maximum width will fit into the narrowest text width.
+%% The maximum height will fit into the shortest body height (not including
+%% header) less two lines, to allow for possible upshift.
+%% Images placed in \opening are limited to 100 pixels height,
+%% using only 600ppi black/white line art.
+\gdef\my@maximagewidth{2300} % B/W at 600ppi. Half that, at 300ppi gray.
+\gdef\my@maximageheight{3320} % B/W at 600ppi. Half that, at 300ppi gray.
+\gdef\my@maxdecoheight{100} % B/W at 600ppi. Deco does not use grayscale.
 
 % \textwidth is a built-in TeX macro.
 \newlength\my@trimwidth
@@ -63,7 +65,7 @@
 
 % Each template number has a fixed number of body text lines per page, \my@lpp.
 % Printable area (including header) is \my@trimheight-\my@topclear-\my@botclear
-% but it can be reduced using \upshift.
+% but it can be reduced using upshift.
 % Inter-line spacing will be calculated so that the specified number of lines,
 % plus header and gap, less upshift, fits within the printable area.
 
@@ -72,21 +74,11 @@
 % and paragraphs are the same. Target is about 65 characters per line,
 % using Swainson font.
 
-% The maximum image width is very slightly less than the textwidth.
-% The maximum image height is about 3 lines less than the body text height.
-% In each template number, the width and height of the narrowest and
-% shortest templates are used. The excess vertical is to allow for
-% possible upshift.
-% When you place an image, these values are enforced.
-
-
 %% Group 1:
 \ifthenelse{\equal{\my@template}{1}}{ % fontsize(pt)/textwidth(in)=2.88
   \gdef\my@lpp{30}
-  \gdef\my@maximagewidth{1150} % Pixels at 300ppi. %%% recalculate
-  \gdef\my@maximageheight{1660} % Pixels at 300ppi. %%% recalculate
   %%
-  \ifthenelse{\equal{\my@trimname}{Novella}}{
+  \ifthenelse{\equal{\my@trim}{Novella}}{
     \gsetlength\textwidth{3.85in}
     \gsetlength\my@fontsize{11.088pt}
     \gsetlength\my@trimwidth{5in}
@@ -96,7 +88,7 @@
     \gsetlength\my@inclear{.630in}
   }{}
   %%
-  \ifthenelse{\equal{\my@trimname}{B}}{
+  \ifthenelse{\equal{\my@trim}{B}}{
     \gsetlength\textwidth{3.93in}
     \gsetlength\my@fontsize{11.3184pt}
     \gsetlength\my@trimwidth{129mm} % 5.079in
@@ -106,7 +98,7 @@
     \gsetlength\my@inclear{.630in}
   }{}
   %%
-  \ifthenelse{\equal{\my@trimname}{Memoir}}{
+  \ifthenelse{\equal{\my@trim}{Memoir}}{
     \gsetlength\textwidth{4.1in}
     \gsetlength\my@fontsize{11.808pt}
     \gsetlength\my@trimwidth{5.25in}
@@ -121,10 +113,8 @@
 %% Group 2:
 \ifthenelse{\equal{\my@template}{2}}{ % fontsize(pt)/textwidth(in)=2.84
   \gdef\my@lpp{32}
-  \gdef\my@maximagewidth{1150} % Pixels at 300ppi.
-  \gdef\my@maximageheight{1660} % Pixels at 300ppi.
   %%
-  \ifthenelse{\equal{\my@trimname}{B}}{
+  \ifthenelse{\equal{\my@trim}{B}}{
     \gsetlength\my@fontsize{11.1612pt}
     \gsetlength\textwidth{3.93in}
     \gsetlength\my@trimwidth{129mm} % 5.079in
@@ -134,7 +124,7 @@
     \gsetlength\my@inclear{.630in}
   }{}
   %%
-  \ifthenelse{\equal{\my@trimname}{Memoir}}{
+  \ifthenelse{\equal{\my@trim}{Memoir}}{
     \gsetlength\my@fontsize{11.644pt}
     \gsetlength\textwidth{4.1in}
     \gsetlength\my@trimwidth{5.25in}
@@ -144,7 +134,7 @@
     \gsetlength\my@inclear{.630in}
   }{}
   %%
-  \ifthenelse{\equal{\my@trimname}{Demy}}{
+  \ifthenelse{\equal{\my@trim}{Demy}}{
     \gsetlength\my@fontsize{11.644pt}
     \gsetlength\textwidth{4.1in}
     \gsetlength\my@trimwidth{135mm} % 5.315in
@@ -154,7 +144,7 @@
     \gsetlength\my@inclear{.662in}
   }{}
   %%
-  \ifthenelse{\equal{\my@trimname}{Digest}}{
+  \ifthenelse{\equal{\my@trim}{Digest}}{
     \gsetlength\my@fontsize{11.644pt}
     \gsetlength\textwidth{4.1in}
     \gsetlength\my@trimwidth{5.5in}
@@ -169,9 +159,8 @@
 %% Group 3:
 \ifthenelse{\equal{\my@template}{3}}{ % fontsize(pt)/textwidth(in)=2.84
   \gdef\my@lpp{34}
-  \gdef\my@maximagewidth{1150} % Pixels at 300ppi.
-  \gdef\my@maximageheight{1660} % Pixels at 300ppi.
-  \ifthenelse{\equal{\my@trimname}{Demy}}{
+  %%
+  \ifthenelse{\equal{\my@trim}{Demy}}{
     \gsetlength\my@fontsize{11.644pt}
     \gsetlength\textwidth{4.1in}
     \gsetlength\my@trimwidth{135mm} % 5.315in
@@ -181,7 +170,7 @@
     \gsetlength\my@inclear{.662in}
   }{}
   %%
-  \ifthenelse{\equal{\my@trimname}{Digest}}{
+  \ifthenelse{\equal{\my@trim}{Digest}}{
     \gsetlength\my@fontsize{12.0132pt}
     \gsetlength\textwidth{4.23in}
     \gsetlength\my@trimwidth{5.5in}
@@ -191,7 +180,7 @@
     \gsetlength\my@inclear{.694in}
   }{}
   %%
-  \ifthenelse{\equal{\my@trimname}{Trade}}{
+  \ifthenelse{\equal{\my@trim}{Trade}}{
     \gsetlength\my@fontsize{12.0132pt}
     \gsetlength\textwidth{4.23in}
     \gsetlength\my@trimwidth{6in}
@@ -201,7 +190,7 @@
     \gsetlength\my@inclear{.944in}
   }{}
   %%
-  \ifthenelse{\equal{\my@trimname}{Royal}}{
+  \ifthenelse{\equal{\my@trim}{Royal}}{
     \gsetlength\my@fontsize{12.0132pt}
     \gsetlength\textwidth{4.23in}
     \gsetlength\my@trimwidth{156mm} % 6.142in
