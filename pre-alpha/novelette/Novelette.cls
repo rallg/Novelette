@@ -137,7 +137,7 @@
 \gdef\@tempBLS{15}
 \renewcommand\normalsize{\@setfontsize\normalsize{\@tempPS}{\@tempBLS}}
 \normalsize
-\RequirePackage[no-math]{fontspec} % For LuaLaTeX. NOT package `fontenc'.
+\RequirePackage[no-math,quiet]{fontspec} % For LuaLaTeX. NOT package `fontenc'.
 %% End temporary normal point size, baselineskip, and fontspec.
 
 % This loads file Novelette-Microtype.cfg:
@@ -220,7 +220,6 @@
 %% \AtBeginDocument finishes the setup
 %% ----------------------------------------------------------------------------
 \AtBeginDocument{ %
-  \@DecoFont % In file Novelette-Fonts.sty
   \@ActivateTextLengths % In file Novelette-TextMacros.sty.
   \@ActivateHeader % In file Novelette-Header.sty.
   \@ActivatePDFInfo % In file Novelette-PDFX.sty.

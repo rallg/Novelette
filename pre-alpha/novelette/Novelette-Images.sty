@@ -218,10 +218,6 @@ end
 \floatlocation{figure}{!ht} % Here, or top of next page.
 \gdef\ftype@figure{1} % Mystery TeX code.
 \DeclareDocumentCommand \image { m } {%
-  \iftoggle{@inheader}{%
-    \ClassError{Novelette}{Cannot use \string\image\space in header}%
-      {Image is a block element. Not allowed in header.}%
-  }{}%
   \@TestImageExtension{#1}%
   \@tempTFfalse%
   \IfSubStr*{\@UnknownImages}{#1}{\@tempTFtrue}{}%

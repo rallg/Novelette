@@ -15,34 +15,12 @@
 
 %% Uses `fancyhdr' syntax.
 
-%% Normally, TeX does not embed the space character. Instead, inter-word
-%% space is determined by positioning. But if you ever need to extract
-%% plain text from the PDF, the extraction software will do a better job
-%% if it has the space character, somewhere on every page.
-%% Novelette writes the space character \char32 in header text and normal text
-%% adjacent to the page number. On most pages without numbers, it writes
-%% the space character somewhere else.
-
-%% Novelette does not allow images in header. This informs the \image command.
-%% Why no images in header? Unfortunately, the necessary 'Form XObject' code
-%% is incompatible with the way Novelette does PDF/X. Without 'Form XObject',
-%% a repeated image (in every page header) will be repeated in the PDF file,
-%% creating a huge file size, and risking rejection by the printer.
-\newtoggle{@inheader} % True within header.
-\LetLtxMacro{\my@fancyhead}{\fancyhead}
-\renewcommand\fancyhead[2][]{%
-  \my@fancyhead[#1]{\toggletrue{@inheader}{\normalsize #2}}% Not global.
-}
-%%
-
 %% First, blank everything that might be pre-set in package `fancyhdr'.
 \renewcommand\headrulewidth{0pt}
 \renewcommand\footrulewidth{0pt}
 \fancyhead[LO,RE,LE,RO,CE,CO]{}
 \fancyfoot[LO,RE,LE,RO,CE,CO]{}
 %%
-
-\pagestyle{empty} % Will be re-defined, below.
 
 %% Re-define \thispagestyle so that only fancy and empty can be used.
 \let\my@thispagestyle\thispagestyle
@@ -53,78 +31,68 @@
     \my@thispagestyle{fancy}
   }
 }
+\gdef\noheader{\my@thispagestyle{empty}} % Convenience.
 %%
 
 %% Header classes:
-\gdef\my@headerzero{ % Only page number and emblem.
-  \gdef\my@versoheader{}
-  \gdef\my@rectoheader{}
+\gdef\my@headerzero{ % Only page number and slash/backslash.
+  \fancyhead[LE]{\normal{\thepage\char32 /}}
+  \fancyhead[RO]{\normal{\textbackslash\char32 \thepage}}
+}
+%%
+\gdef\my@headerone{ % Page number outside. Text centered. Default.
+  \fancyhead[LE]{\normal{\thepage\char32 /}}
+  \fancyhead[RO]{\normal{\textbackslash\char32 \thepage}}
+  \fancyhead[CE]{\my@headfont{\my@versoheader}}
+  \fancyhead[CO]{\my@headfont{\my@rectoheader}}
+}
+%%
+\gdef\my@headertwo{ % Page number, text all outside.
   \fancyhead[LE]{%
-    \normal{\thepage\char32 \my@versoemblem}%
+    \normal{\makebox[\my@pi][l]{\thepage}}%
+    \my@headfont{\my@versoheader}%
   }
   \fancyhead[RO]{%
-    \normal{\my@rectoemblem\char32 \thepage}%
+    \my@headfont{\my@rectoheader}%
+    \normal{\makebox[\my@pi][r]{\thepage}}% 
   }
 }
 %%
-\gdef\my@headerone{ % Page number and emblem outside. Text centered. Default.
-  \fancyhead[LE]{%
-    \normal{\thepage\char32 \my@versoemblem}%
+\gdef\my@headerthree{ % Page number, text all centered.
+  \fancyhead[CE]{%
+    \normal{\thepage\char32 /\char32}%
+    \my@headfont{\my@versoheader}%
   }
-  \fancyhead[RO]{%
-    \normal{\my@rectoemblem\char32 \thepage}%
-  }
-  \fancyhead[CE]{\my@headfont{\char32 \my@versoheader \char32}}
-  \fancyhead[CO]{\my@headfont{\char32 \my@rectoheader \char32}}
-}
-%%
-\gdef\my@headertwo{ % Page number, emblem, text all centered.
-  \fancyhead[LE]{%
-    \normal{\thepage\char32 \my@versoemblem}%
-    \my@headfont{\char32 \my@versoheader}%
-  }
-  \fancyhead[RO]{%
-    \my@headfont{\my@rectoheader\char32}%
-    \normal{\my@rectoemblem\char32 \thepage}%
+  \fancyhead[CO]{%
+    \my@headfont{\my@rectoheader}%
+    \normal{\char32\textbackslash\char32 \thepage}%
   }
 }
 %%
-\gdef\my@headerthree{ % Page number, emblem, text all outside.
-  \fancyhead[LE]{%
-    \normal{\thepage\char32 \my@versoemblem}%
-    \my@headfont{\char32 \my@versoheader}%
-  }
-  \fancyhead[RO]{%
-    \my@headfont{\my@rectoheader\char32}%
-    \normal{\my@rectoemblem\char32 \thepage}%
-  }
-}
-%%
-\gdef\my@headerfour{ % Page number and emblem outside. Text inside.
-  \fancyhead[LE]{%
-    \normal{\thepage\char32 \my@versoemblem}%
-  }
-  \fancyhead[RE]{%
-    \my@headfont{\char32 \my@versoheader}%
-  }
-  \fancyhead[LO]{%
-    \my@headfont{\my@rectoheader\char32}%
-  }
-  \fancyhead[RO]{%
-    \normal{\my@rectoemblem\char32 \thepage}%
-  }
+\gdef\my@headerfour{ % Page number outside. Text inside.
+  \fancyhead[LE]{\normal{\makebox[\my@pi][l]{\thepage}/}}
+  \fancyhead[RE]{\my@headfont{\my@versoheader}}
+  \fancyhead[LO]{\my@headfont{\my@rectoheader}}
+  \fancyhead[RO]{\normal{\textbackslash\makebox[\my@pi][r]{\thepage}}}
 }
 %%
 
 %%
 \gdef\@ActivateHeader{ % Called \AtBeginDocument.
   \ifthenelse{\equal{\my@headerfont}{normal}}{
-    \gdef\my@headfont{\normal}
-  }{
-    \gdef\my@headfont{% Scale to same uppercase size as nornmal text.
-      \csname\my@headerfont\endcsname\addfontfeature{Scale=MatchUppercase}%
-    }
-  }
+    \gdef\my@headfont{\normal\addfontfeature{Scale=0.94}}
+  }{}
+  \ifthenelse{\equal{\my@headerfont}{titling}}{
+    \gdef\my@headfont{\titling\addfontfeature{Scale=0.94}}
+  }{}
+  \ifthenelse{\equal{\my@headerfont}{ozzie}}{
+    \newfontface\ozzie{OzzieL}[Scale=0.94]
+    \newcommand\my@headfont[1]{\ozzie\MakeUppercase{##1}}
+  }{}
+  \ifthenelse{\equal{\my@headerfont}{libsans}}{
+    \newfontfamily\libsans{Libertinus Sans}[Scale=0.94]
+    \gdef\my@headfont{\libsans}
+  }{}
   \ifthenelse{\equal{\my@headernum}{0}}{\my@headerzero}{}
   \ifthenelse{\equal{\my@headernum}{1}}{\my@headerone}{}
   \ifthenelse{\equal{\my@headernum}{2}}{\my@headertwo}{}

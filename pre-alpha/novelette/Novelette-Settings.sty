@@ -16,17 +16,15 @@
 \newif \if@book
 \newif \if@cover
 \newif \if@markup
-\newif \if@manuscript
 \newif \if@media
 
 
-%% Define \purpose{book,markup,cover,manuscript}:
+%% Define \purpose{book,markup,cover}:
 \newcommand\purpose[1]{
-  \IfSubStr{book cover markup manuscript}{#1}{\gdef\my@purpose{#1}}{\my@Ep}
+  \IfSubStr{book cover markup}{#1}{\gdef\my@purpose{#1}}{\my@Ep}
   \ifthenelse{\equal{#1}{book}}{\@booktrue}{}
   \ifthenelse{\equal{#1}{cover}}{\@covertrue}{}
   \ifthenelse{\equal{#1}{markup}}{\@markuptrue}{}
-  \ifthenelse{\equal{#1}{manuscript}}{\@manuscripttrue}{}
 }
 \purpose{book} % Default.
 %%
@@ -51,7 +49,7 @@
 %% Except on certain pages (such as section starts),
 %% all pages of running text have a visible header. This defines its text.
 %% Header text is at Scale=0.88 and loose tracking, relative to main body text.
-%% Page number and emblem are added automatically.
+%% Page number is  added automatically.
 %% You may change header text as the book proceeds.
 \newcommand\header[2]{
   \@tempTFfalse
@@ -71,7 +69,7 @@
 
 %% \format command:
 \newcommand\format[3]{ % {what}{how}{how}
-  \def\my@formats{media markup opening name subname pdf header manuscript}
+  \def\my@formats{media markup opening name subname pdf header}
   \IfSubStr{\my@formats}{#1}{}{\my@Eff}
   %%
   \ifthenelse{\equal{#1}{media} \AND \equal{\my@purpose}{book}}{
@@ -135,7 +133,7 @@
     \@tempTFtrue
     \gdef\my@namefont{#2}
     \gdef\my@namescale{#3}
-    \IfSubStr{normal smcp titling ozziel drama}{\my@namefont}{}{\my@Ens}
+    \IfSubStr{normal titling ozzie libsans}{\my@namefont}{}{\my@Ens}
     \@tempTFfalse
     \IfInteger{\my@namescale}{\@tempTFtrue}{}
     \IfDecimal{\my@namescale}{\@tempTFtrue}{}
@@ -147,7 +145,7 @@
     \@tempTFtrue
     \gdef\my@subnamefont{#2}
     \gdef\my@subnamescale{#3}
-    \IfSubStr{normal smcp titling ozziel iwona}{\my@subnamefont}{}{\my@Ess}
+    \IfSubStr{normal titling ozzie libsans}{\my@subnamefont}{}{\my@Ess}
     \@tempTFfalse
     \IfInteger{\my@subnamescale}{\@tempTFtrue}{}
     \IfDecimal{\my@subnamescale}{\@tempTFtrue}{}
@@ -163,22 +161,10 @@
     \IfSubStr{SWOP FOGRA39 JC200103 CUSTOM}{\my@intent}{}{\my@Epdfi}
   }{}
   \ifthenelse{\equal{#1}{header}}{
-    \gdef\my@versoemblem{}
-    \gdef\my@rectoemblem{}
     \gdef\my@headernum{#2}
-    \IfSubStr{#2}{/}{
-      \gdef\my@versoemblem{/}
-      \gdef\my@rectoemblem{\textbackslash}
-      \StrDel{#2}{/}[\my@headernum]
-    }{}
-    \IfSubStr{#2}{|}{
-      \gdef\my@versoemblem{|}
-      \gdef\my@rectoemblem{|}
-      \StrDel{#2}{|}[\my@headernum]
-    }{}
     \gdef\my@headerfont{#3}
     \IfSubStr{0 1 2 3 4}{\my@headernum}{}{\my@Ehn}
-    \IfSubStr{normal smcp titling ozziel iwona}{\my@headerfont}{}{\my@Ehf}
+    \IfSubStr{normal titling ozzie libsans}{\my@headerfont}{}{\my@Ehf}
   }{}
   %%
 } % End \format.
@@ -189,7 +175,8 @@
 \format{name}{normal}{1.6}
 \format{subname}{normal}{1.2}
 \format{pdf}{X-1a:2001}{SWOP}
-\format{header}{1/}{normal}
+\format{header}{1}{normal}
+\gdef\my@pi{1.6em} % Not user setting. Later becomes length of \parindent.
 %%
 
 

@@ -53,6 +53,17 @@
 \let\scshape\smcp\relax % unified
 %%
 
+%% superscripts and subscripts
+\let\subs\relax
+\let\sups\relax
+\let\textsubscript\relax
+%%
+\DeclareDocumentCommand \sups { m } {%
+  \ifvmode\else\unskip\fi%
+  {\addfontfeature{VerticalPosition=Superior}\smash{#1}}%
+}
+\let\textsuperscript\sups
+%%
 %% Novelette normally allows only black or grayscale text on white paper.
 %% Just in case `xcolor' re-defines its internals, to prevent code bomb:
 \ProvideDocumentCommand\@declaredcolor { m } {}
@@ -220,11 +231,24 @@
 %%
 
 
+%% \flexbox{contents of box} based on code by Werner at tex.stackexchange.com.
+%% Minimum width \parindent. Stretches, if necessary, if contents are wider.
+\newcommand\flexbox{\@ifstar\@flexboxr\@flexboxl}
+\newcommand\@flexboxr[1]{%
+  \settowidth{\@tempLength}{#1}%
+  \ifdimcomp{\@tempLength}{<}{\parindent}{\makebox[\parindent][r]{#1}}{#1}%
+}
+\newcommand\@flexboxl[1]{%
+  \settowidth{\@tempLength}{#1}%
+  \ifdimcomp{\@tempLength}{<}{\parindent}{\makebox[\parindent][l]{#1}}{#1}%
+}
+%%
+
 
 %% Some things must wait until after layout calculations:
 \gdef\@ActivateTextLengths{% called by `Novelette.cls' \AtEndPreamble
   % Store some normal values (main font) for global use in document body:
-  \gsetlength\parindent{1.5em} % may be locally changed
+  \gsetlength\parindent{\my@pi} % From Settings. May be locally changed.
   \newlength\normalparindent
     \gsetlength\normalparindent{\parindent}
   \newlength\normalxheight % height of lowercase x

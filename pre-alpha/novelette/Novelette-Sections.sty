@@ -59,9 +59,10 @@
 \newif\if@inopening
 \newcounter{my@loopme}
 \newcommand\opening{%
-  \newpage\thispagestyle{empty}%
+  \newpage\thispagestyle{empty}
   \global\@inopeningtrue%
   \suppressfloats[t]% Ensures that a floated image does not go on top.
+  \setcounter{@fncount}{1}
   \gsetlength\parindent{0pt}%
   \gdef\my@name{}% Clear from prior opening.
   \gdef\my@subname{}% Clear from prior opening.

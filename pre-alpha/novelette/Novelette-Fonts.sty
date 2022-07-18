@@ -24,17 +24,17 @@
 %% Font definitions:
 \setmainfont{Swainson}[Numbers=OldStyle,Ligatures=Common]
 \newfontface\titling{SwainsonTitling}
-\newcommand\normal[1]{\addfontfeature{Numbers=Lining}#1}
-\newcommand\huge[1]{{\titling\addfontfeature{Scale=1.6}#1}}
-\let\Huge\huge\relax
-\let\HUGE\huge\relax
-\newcommand\large[1]{\addfontfeature{Scale=1.2}#1}
-\let\Large\large\relax
-\let\LARGE\large\relax
-\newcommand\small[1]{\textbf{\addfontfeature{Scale=0.88}#1}}
-\let\footnotesize\small\relax
-\let\scriptsize\small\relax
-\let\tiny\small\relax
+\newcommand\normal[1]{\addfontfeature{Numbers=ResetAll}#1}
+\let\HUGE\relax
+\let\Huge\relax
+\let\huge\relax
+\let\LARGE\relax
+\let\Large\relax
+\let\large\relax
+\let\small\relax
+\let\footnotesize\relax % Locally re-defined within actual footnotes.
+\let\scriptsize\relax
+\let\tiny\relax
 \IfFontExistsTF{Libertinus Serif}{
   \newfontfamily\delegate{Libertinus Serif}[Scale=MatchLowercase]
 }{
@@ -49,25 +49,6 @@
 }
 %%
 
-%% Optional decofont:
-\newif \if@decofont
-\DeclareDocumentCommand\setdecofont { m O{} } {
-  \@tempTFfalse%
-  \IfSubStr{#2}{Color}{\@tempTFtrue}{}%
-  \IfSubStr{#2}{Colour}{\@tempTFtrue}{}%
-  \IfSubStr{#2}{color}{\@tempTFtrue}{}%
-  \IfSubStr{#2}{colour}{\@tempTFtrue}{}%
-  \IfSubStr{#2}{Opacity}{\@tempTFtrue}{}%
-  \IfSubStr{#2}{opacity}{\@tempTFtrue}{}%
-  \if@tempTF%\my@Efco\fi%
-  \newfontfamily\decofont{#1}[#2]
-  \@decofonttrue
-}
-\newcommand\@DecoFont{ % Called \AtBeginDocument.
-  \if@decofont\else\setdecofont{Swainson}[Scale=2]\fi
-  \let\setdecofont\relax
-}
-%%
 
 
 %%
